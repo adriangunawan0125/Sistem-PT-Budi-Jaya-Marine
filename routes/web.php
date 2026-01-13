@@ -11,6 +11,11 @@ use App\Http\Controllers\AdminTransportController;
 use App\Http\Controllers\Admintransport\KelolaUnitController;
 use App\Http\Controllers\AdminTransport\LaporanMitraController;
 use App\Http\Controllers\InvoiceController as ControllersInvoiceController;
+use App\Http\Controllers\PengeluaranInternalController;
+use App\Http\Controllers\PengeluaranPajakController;
+use App\Http\Controllers\PengeluaranTransportController;
+
+
 
 Route::get('/login', function () {
     return view('auth.login');
@@ -102,4 +107,27 @@ Route::middleware(['auth', 'role:admin_transport'])->group(function () {
     )->name('invoice-item.destroy');
 
     Route::resource('invoice', InvoiceController::class);
+    
+Route::resource('pengeluaran_internal', PengeluaranInternalController::class)
+    ->except(['show']); // hapus route show
+
+Route::get('pengeluaran_internal/laporan', [PengeluaranInternalController::class, 'laporan'])->name('pengeluaran_internal.laporan');
+
+
+
+
+// Resource routes untuk CRUD (tanpa show)
+Route::resource('pengeluaran_pajak', PengeluaranPajakController::class)->except(['show']);
+
+// Route khusus untuk laporan per bulan
+Route::get('pengeluaran_pajak/laporan', [PengeluaranPajakController::class, 'laporan'])->name('pengeluaran_pajak.laporan');
+
+Route::get('pengeluaran_pajak/laporan', [PengeluaranPajakController::class, 'laporan'])
+    ->name('pengeluaran_pajak.laporan');
+
+
+
+Route::resource('pengeluaran_transport', PengeluaranTransportController::class)->except(['show']);
+Route::get('pengeluaran_transport/laporan', [PengeluaranTransportController::class,'laporan'])->name('pengeluaran_transport.laporan');
+
 });

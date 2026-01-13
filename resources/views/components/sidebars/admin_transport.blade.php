@@ -145,9 +145,9 @@
          data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">Kelola</h6>
-            <a class="collapse-item" href="#">Pengeluaran Internal</a>
-            <a class="collapse-item" href="utilities-animation.html">Pengeluaran Transport</a>
-            <a class="collapse-item" href="utilities-animation.html">Pengeluaran Pajak Mobil</a>
+            <a class="collapse-item" href="/pengeluaran_internal">Pengeluaran Internal</a>
+            <a class="collapse-item" href="/pengeluaran_transport">Pengeluaran Transport</a>
+            <a class="collapse-item" href="/pengeluaran_pajak">Pengeluaran Pajak Mobil</a>
             <a class="collapse-item" href="utilities-animation.html">Laporan Pengeluaran</a>
         </div>
     </div>
