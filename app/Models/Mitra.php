@@ -28,4 +28,10 @@ class Mitra extends Model
     {
         return $this->hasMany(Invoice::class);
     }
+
+    public function jaminan()
+{
+    return $this->hasOne(JaminanMitra::class);
+}
+
 }

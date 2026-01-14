@@ -10,6 +10,22 @@
  * Copyright 2011-2021 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  */
+
+ /* Sidebar lock (SB Admin 2) */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+/* Content geser ke kanan */
+#content-wrapper {
+    margin-left: 14rem; /* default width sidebar sb admin 2 */
+}
+
 :root {
   --blue: #4e73df;
   --indigo: #6610f2;

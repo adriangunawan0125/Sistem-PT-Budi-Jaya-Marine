@@ -4,13 +4,15 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\OwnerController;
 use App\Http\Controllers\AdminMarineController;
+
 use App\Http\Controllers\InvoiceItemController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\Admintransport\KelolaMitraController;
-use App\Http\Controllers\AdminTransportController;
+use App\Http\Controllers\AdminTransport\AdminTransportController;
 use App\Http\Controllers\Admintransport\KelolaUnitController;
 use App\Http\Controllers\AdminTransport\LaporanMitraController;
 use App\Http\Controllers\InvoiceController as ControllersInvoiceController;
+use App\Http\Controllers\JaminanMitraController;
 use App\Http\Controllers\PengeluaranInternalController;
 use App\Http\Controllers\PengeluaranPajakController;
 use App\Http\Controllers\PengeluaranTransportController;
@@ -39,9 +41,8 @@ Route::middleware(['auth', 'role:admin_marine'])->group(function () {
 });
 
 Route::middleware(['auth', 'role:admin_transport'])->group(function () {
-    Route::get('/admin-transport', function () {
-        return view('admin_transport.dashboard');
-    })->name('admin.transport.dashboard');
+Route::get('/admin-transport', [AdminTransportController::class, 'dashboard'])
+        ->name('admin.transport.dashboard');
 
 
     //unit
@@ -129,5 +130,8 @@ Route::get('pengeluaran_pajak/laporan', [PengeluaranPajakController::class, 'lap
 
 Route::resource('pengeluaran_transport', PengeluaranTransportController::class)->except(['show']);
 Route::get('pengeluaran_transport/laporan', [PengeluaranTransportController::class,'laporan'])->name('pengeluaran_transport.laporan');
+
+Route::resource('jaminan_mitra', JaminanMitraController::class);
+
 
 });

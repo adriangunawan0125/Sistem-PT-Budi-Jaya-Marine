@@ -1,3 +1,6 @@
+ 
+ 
+ 
  <!-- Sidebar -->
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
@@ -104,6 +107,10 @@
                 <a class="collapse-item {{ request()->is('admin-transport/mitra/create') ? 'active' : '' }}"
                    href="/admin-transport/mitra/create">
                     Tambah Mitra
+                </a>
+                <a class="collapse-item {{ request()->is('admin-transport/jaminan/mitra') ? 'active' : '' }}"
+                   href="/admin-transport/jaminan/mitra">
+                    Data Jaminan Mitra
                 </a>
                 <a class="collapse-item {{ request()->is('admin-transport/laporan/mitra') ? 'active' : '' }}"
                    href="/admin-transport/laporan/mitra">

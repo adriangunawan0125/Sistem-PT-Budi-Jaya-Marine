@@ -76,38 +76,58 @@ class KelolaMitraController extends Controller
      * GET
      * Menampilkan form edit mitra
      */
-    public function getEdit($id)
-    {
-        $mitra = Mitra::findOrFail($id);
-        $units = Unit::all();
+   public function getEdit($id)
+{
+    $mitra = Mitra::findOrFail($id);
 
-        return view('admin_transport.kelola_mitra.edit', compact('mitra', 'units'));
-    }
+    $units = Unit::where('status', 'tersedia')
+        ->orWhere('id', $mitra->unit_id) // unit milik mitra ini
+        ->get();
+
+    return view('admin_transport.kelola_mitra.edit', compact('mitra', 'units'));
+}
+
 
     /**
      * PUT
      * Mengupdate data mitra
      */
-    public function putUpdate(Request $request, $id)
-    {
-        $request->validate([
-            'nama_mitra' => 'required',
-            'unit_id'    => 'required|exists:units,id',
-            'alamat'     => 'required',
-            'no_hp'      => 'required'
-        ]);
+   public function putUpdate(Request $request, $id)
+{
+    $request->validate([
+        'nama_mitra' => 'required',
+        'unit_id'    => 'required|exists:units,id',
+        'alamat'     => 'required',
+        'no_hp'      => 'required'
+    ]);
 
-        $mitra = Mitra::findOrFail($id);
-        $mitra->update([
-            'nama_mitra' => $request->nama_mitra,
-            'unit_id'    => $request->unit_id,
-            'alamat'     => $request->alamat,
-            'no_hp'      => $request->no_hp
-        ]);
+    $mitra = Mitra::findOrFail($id);
 
-        return redirect('/admin-transport/mitra')
-            ->with('success', 'Mitra berhasil diperbarui');
+    $unitLama = $mitra->unit_id;
+    $unitBaru = $request->unit_id;
+
+    // kalau unit diganti
+    if ($unitLama != $unitBaru) {
+
+        // unit lama dikembalikan
+        Unit::where('id', $unitLama)
+            ->update(['status' => 'tersedia']);
+
+        // unit baru disewakan
+        Unit::where('id', $unitBaru)
+            ->update(['status' => 'disewakan']);
     }
+
+    $mitra->update([
+        'nama_mitra' => $request->nama_mitra,
+        'unit_id'    => $unitBaru,
+        'alamat'     => $request->alamat,
+        'no_hp'      => $request->no_hp
+    ]);
+
+    return redirect('/admin-transport/mitra')
+        ->with('success', 'Mitra berhasil diperbarui');
+}
 
     /**
      * DELETE

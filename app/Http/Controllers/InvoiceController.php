@@ -16,23 +16,36 @@ class InvoiceController extends Controller
     /**
      * LIST INVOICE
      */
-   public function index()
+   public function index(Request $request)
 {
-    $data = Mitra::with(['invoices.items'])
-        ->get()
-        ->map(function($mitra){
-            $totalAmount = $mitra->invoices->sum(function($invoice){
-                return $invoice->items->sum('amount'); // jumlah semua item per invoice
-            });
+    $query = Mitra::with(['invoices.items']);
 
-            return (object)[
-                'mitra' => $mitra,
-                'total_amount' => $totalAmount
-            ];
+    // 🔍 search nama mitra
+    if ($request->filled('search')) {
+        $query->where('nama_mitra', 'like', '%' . $request->search . '%');
+    }
+
+    $mitras = $query->paginate(10)->withQueryString();
+
+    $data = $mitras->getCollection()->map(function ($mitra) {
+        $totalAmount = $mitra->invoices->sum(function ($invoice) {
+            return $invoice->items->sum('amount');
         });
 
-    return view('invoice.index', compact('data'));
+        return (object)[
+            'mitra' => $mitra,
+            'total_amount' => $totalAmount
+        ];
+    });
+
+    // ganti collection pagination
+    $mitras->setCollection($data);
+
+    return view('invoice.index', [
+        'data' => $mitras
+    ]);
 }
+
 
 
 
@@ -133,13 +146,15 @@ class InvoiceController extends Controller
     /**
      * DETAIL INVOICE
      */
-    public function show($mitra_id)
+  public function show($mitra_id)
 {
-    $invoices = Invoice::with('items','mitra')
-        ->where('mitra_id',$mitra_id)
+    $mitra = Mitra::findOrFail($mitra_id);
+
+    $invoices = Invoice::with(['items','transfers','trips'])
+        ->where('mitra_id', $mitra_id)
         ->get();
 
-    return view('invoice.show', compact('invoices'));
+    return view('invoice.show', compact('mitra','invoices'));
 }
 
 

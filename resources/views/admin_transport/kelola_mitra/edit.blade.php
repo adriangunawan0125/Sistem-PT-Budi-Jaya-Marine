@@ -13,22 +13,22 @@
             <input type="text"
                    name="nama_mitra"
                    class="form-control"
-                   value="{{ $mitra->nama_mitra }}"
+                   value="{{ old('nama_mitra', $mitra->nama_mitra) }}"
                    required>
         </div>
 
         <div class="mb-3">
             <label class="form-label">Unit / No Polisi</label>
             <select name="unit_id" class="form-control" required>
-    @foreach ($units as $unit)
-        <option value="{{ $unit->id }}"
-            {{ $unit->id == $mitra->unit_id ? 'selected' : '' }}>
-            {{ $unit->nama_unit }} ({{ $unit->merek }})
-        </option>
-    @endforeach
-</select>
+                <option value="">-- Pilih Unit --</option>
 
-
+                @foreach ($units as $unit)
+                    <option value="{{ $unit->id }}"
+                        {{ $mitra->unit_id == $unit->id ? 'selected' : '' }}>
+                        {{ $unit->nama_unit }} - {{ $unit->merek }}
+                    </option>
+                @endforeach
+            </select>
         </div>
 
         <div class="mb-3">
@@ -36,12 +36,21 @@
             <textarea name="alamat"
                       class="form-control"
                       rows="3"
-                      required>{{ $mitra->alamat }}</textarea>
+                      required>{{ old('alamat', $mitra->alamat) }}</textarea>
         </div>
 
-        <button type="submit" class="btn btn-primary">
-            Update
-        </button>
+        {{-- 🔥 INI YANG TADI HILANG --}}
+        <div class="mb-3">
+            <label class="form-label">No HP</label>
+            <input type="text"
+                   name="no_hp"
+                   class="form-control"
+                   value="{{ old('no_hp', $mitra->no_hp) }}"
+                   required>
+        </div>
+
+        <button class="btn btn-primary">Update</button>
+        <a href="/admin-transport/mitra" class="btn btn-secondary">Kembali</a>
     </form>
 </div>
 @endsection
