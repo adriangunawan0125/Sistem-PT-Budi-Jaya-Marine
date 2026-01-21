@@ -1,0 +1,36 @@
+<?php
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use App\Models\ContactMessage;
+use Illuminate\Http\Request;
+
+class ContactMessageController extends Controller
+{
+    public function index(Request $request)
+    {
+        $query = ContactMessage::query();
+
+        if ($request->search) {
+            $query->where('nama', 'like', '%' . $request->search . '%');
+        }
+
+        $messages = $query->latest()->get();
+
+        return view('contact.index', compact('messages'));
+    }
+
+    public function show($id)
+    {
+        $message = ContactMessage::findOrFail($id);
+        return view('contact.show', compact('message'));
+    }
+
+    public function destroy($id)
+    {
+        ContactMessage::findOrFail($id)->delete();
+        return redirect()->route('contact.index')
+            ->with('success', 'Pesan berhasil dihapus');
+    }
+}
+

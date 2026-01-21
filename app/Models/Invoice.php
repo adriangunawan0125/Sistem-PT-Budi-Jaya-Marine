@@ -5,19 +5,30 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-use App\Models\Mitra;
 class Invoice extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'mitra_id',
+        'ex_mitra_id', // 🔥 WAJIB
         'tanggal',
         'status',
         'total'
     ];
 
+    // =====================
+    // RELATION
+    // =====================
+
     public function mitra()
     {
         return $this->belongsTo(Mitra::class);
+    }
+
+    public function exMitra()
+    {
+        return $this->belongsTo(ExMitra::class);
     }
 
     public function items()
@@ -34,9 +45,4 @@ class Invoice extends Model
     {
         return $this->hasMany(InvoiceTrip::class);
     }
-    public function unit()
-{
-    return $this->belongsTo(Unit::class);
-}
-
 }

@@ -89,6 +89,11 @@
                             Login
                         </button>
                     </form>
+<div class="mt-3 text-center">
+    <a href="/" class="btn btn-outline-secondary w-100">
+        <i class="bi bi-arrow-left"></i> Kembali
+    </a>
+</div>
 
                 </div>
             </div>

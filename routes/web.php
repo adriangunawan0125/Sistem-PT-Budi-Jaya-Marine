@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ContactMessageController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\OwnerController;
@@ -9,16 +10,49 @@ use App\Http\Controllers\InvoiceItemController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\Admintransport\KelolaMitraController;
 use App\Http\Controllers\AdminTransport\AdminTransportController;
+use App\Http\Controllers\AdminTransport\CalonMitraTransportControllerMitraTransportController;
 use App\Http\Controllers\Admintransport\KelolaUnitController;
 use App\Http\Controllers\AdminTransport\LaporanMitraController;
+use App\Http\Controllers\ExMitraController;
 use App\Http\Controllers\InvoiceController as ControllersInvoiceController;
 use App\Http\Controllers\JaminanMitraController;
 use App\Http\Controllers\PengeluaranInternalController;
 use App\Http\Controllers\PengeluaranPajakController;
 use App\Http\Controllers\PengeluaranTransportController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MitraTransportController;
+use App\Http\Controllers\CalonMitraController;
+use App\Http\Controllers\AdminTransport\CalonMitraController as AdminCalonMitraController;
+ use App\Http\Controllers\PemasukanController;
 
 
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/tentang-kami', [HomeController::class, 'about'])->name('about');
+Route::get('/hubungi-kami', [HomeController::class, 'contact'])->name('hubungi');
+Route::get('/transport-service', [HomeController::class, 'transportService'])->name('transportservice');
+Route::get('/marine-spareparts', [HomeController::class, 'marineSpareparts'])
+    ->name('marinespareparts');
+Route::get('/marine-service', [HomeController::class, 'marineService'])
+    ->name('marinespareparts');
+Route::get('/transport-gallery', [HomeController::class, 'transportgallery'])
+    ->name('transport.gallery');    
+Route::get('/service-gallery', [HomeController::class, 'servicegallery'])
+    ->name('service.gallery');    
+Route::get('/spareparts-gallery', [HomeController::class, 'sparepartsgallery'])
+    ->name('spareparts.gallery');    
+Route::get('/daftar-mitra', [HomeController::class, 'daftarMitra'])
+    ->name('daftar.mitra');
 
+use App\Http\Controllers\ContactController;
+
+Route::post('/hubungi-kami', [ContactController::class, 'store'])
+    ->name('contact.store');
+
+Route::post('/daftar-mitra', [CalonMitraController::class, 'store'])
+    ->name('mitra.store');
+
+
+ // ADMIN   
 Route::get('/login', function () {
     return view('auth.login');
 })->name('login');
@@ -115,8 +149,6 @@ Route::resource('pengeluaran_internal', PengeluaranInternalController::class)
 Route::get('pengeluaran_internal/laporan', [PengeluaranInternalController::class, 'laporan'])->name('pengeluaran_internal.laporan');
 
 
-
-
 // Resource routes untuk CRUD (tanpa show)
 Route::resource('pengeluaran_pajak', PengeluaranPajakController::class)->except(['show']);
 
@@ -133,5 +165,50 @@ Route::get('pengeluaran_transport/laporan', [PengeluaranTransportController::cla
 
 Route::resource('jaminan_mitra', JaminanMitraController::class);
 
+Route::resource('ex-mitra', ExMitraController::class);
+
+
+Route::get('/contact', [ContactMessageController::class, 'index'])
+        ->name('contact.index');
+
+    Route::get('/contact/{id}', [ContactMessageController::class, 'show'])
+        ->name('contact.show');
+
+    Route::delete('/contact/{id}', [ContactMessageController::class, 'destroy'])
+        ->name('contact.destroy');
+
+Route::get('/calon-mitra', [AdminCalonMitraController::class, 'index'])
+        ->name('admin.calonmitra');
+
+   Route::delete('/admin/calon-mitra/{id}', [AdminCalonMitraController::class, 'destroy'])
+        ->name('admin.calonmitra.destroy');
+
+   
+
+/* ================= PEMASUKAN ================= */
+
+Route::get('/pemasukan', [PemasukanController::class, 'index'])
+    ->name('pemasukan.index');
+
+Route::get('/pemasukan/create', [PemasukanController::class, 'create'])
+    ->name('pemasukan.create');
+
+Route::post('/pemasukan/store', [PemasukanController::class, 'store'])
+    ->name('pemasukan.store');
+
+Route::get('/pemasukan/{id}/edit', [PemasukanController::class, 'edit'])
+    ->name('pemasukan.edit');
+
+Route::put('/pemasukan/{id}/update', [PemasukanController::class, 'update'])
+    ->name('pemasukan.update');
+
+Route::delete('/pemasukan/{id}/delete', [PemasukanController::class, 'destroy'])
+    ->name('pemasukan.destroy');
+
+/* ===== LAPORAN HARIAN ===== */
+Route::get('/pemasukan-laporan-harian', [PemasukanController::class, 'laporanHarian'])
+    ->name('pemasukan.laporan.harian');
 
 });
+
+

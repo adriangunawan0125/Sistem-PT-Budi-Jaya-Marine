@@ -22,9 +22,57 @@
     <link href="{{asset('/')}}sbadmin2/css/sb-admin-2.min.css" rel="stylesheet">
     <link href="{{asset('/')}}sbadmin2/css/sb-admin-2.min.css" rel="stylesheet">
 <link href="{{ asset('css/custom.css') }}" rel="stylesheet">
+<style>
+    .dashboard-card {
+    border: none;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+}
 
+.dashboard-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+}
+
+.bg-gradient-primary {
+    background: linear-gradient(45deg, #4e73df, #224abe);
+}
+
+.bg-gradient-success {
+    background: linear-gradient(45deg, #1cc88a, #0f9d58);
+}
+
+.bg-gradient-danger {
+    background: linear-gradient(45deg, #e74a3b, #be2617);
+}
+
+.bg-gradient-warning {
+    background: linear-gradient(45deg, #f6c23e, #dda20a);
+}
+
+.bg-gradient-info {
+    background: linear-gradient(45deg, #36b9cc, #258391);
+}
+
+.icon-circle {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-circle i {
+    font-size: 22px;
+}
+
+</style>
 
 </head>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 
 <body id="page-top">
 
