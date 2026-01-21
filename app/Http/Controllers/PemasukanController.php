@@ -9,19 +9,19 @@ use Illuminate\Support\Facades\Storage;
 class PemasukanController extends Controller
 {
     /* ================= INDEX ================= */
-    public function index(Request $request)
-    {
-        $bulan = $request->bulan ?? date('Y-m');
+  public function index(Request $request)
+{
+    $tanggal = $request->tanggal ?? date('Y-m-d');
 
-        $pemasukan = Pemasukan::whereMonth('tanggal', substr($bulan, 5, 2))
-            ->whereYear('tanggal', substr($bulan, 0, 4))
-            ->orderBy('tanggal', 'desc')
-            ->get();
+    $pemasukan = Pemasukan::whereDate('tanggal', $tanggal)
+        ->orderBy('tanggal', 'desc')
+        ->get();
 
-        $total = $pemasukan->sum('nominal');
+    $total = $pemasukan->sum('nominal');
 
-        return view('pemasukan.index', compact('pemasukan', 'bulan', 'total'));
-    }
+    return view('pemasukan.index', compact('pemasukan', 'tanggal', 'total'));
+}
+
 
     /* ================= CREATE ================= */
     public function create()
@@ -33,16 +33,20 @@ class PemasukanController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'tanggal' => 'required|date',
+            'tanggal'   => 'required|date',
             'deskripsi' => 'required',
-            'nominal' => 'required|numeric',
-            'gambar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+            'nominal'   => 'required|numeric',
+            'gambar'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
         ]);
 
-        $data = $request->all();
+        $data = $request->only(['tanggal','deskripsi','nominal']);
 
         if ($request->hasFile('gambar')) {
-            $data['gambar'] = $request->file('gambar')->store('pemasukan', 'public');
+            $file = $request->file('gambar');
+            $namaFile = time().'_'.$file->getClientOriginalName();
+            $file->storeAs('public/pemasukan', $namaFile);
+
+            $data['gambar'] = $namaFile; // SIMPAN NAMA FILE SAJA
         }
 
         Pemasukan::create($data);
@@ -59,47 +63,39 @@ class PemasukanController extends Controller
     }
 
     /* ================= UPDATE ================= */
-public function update(Request $request, $id)
-{
-    $request->validate([
-        'tanggal'   => 'required|date',
-        'deskripsi' => 'required',
-        'nominal'   => 'required|numeric',
-        'gambar'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-    ]);
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'tanggal'   => 'required|date',
+            'deskripsi' => 'required',
+            'nominal'   => 'required|numeric',
+            'gambar'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
 
-    $pemasukan = Pemasukan::findOrFail($id);
+        $pemasukan = Pemasukan::findOrFail($id);
 
-    // Jika ada file gambar baru
-    if ($request->hasFile('gambar')) {
-        // Hapus gambar lama jika ada
-        if ($pemasukan->gambar) {
-            $oldFile = storage_path('app/public/pemasukan/' . $pemasukan->gambar);
-            if (file_exists($oldFile)) {
-                unlink($oldFile);
+        if ($request->hasFile('gambar')) {
+            // hapus gambar lama
+            if ($pemasukan->gambar) {
+                Storage::disk('public')->delete('pemasukan/'.$pemasukan->gambar);
             }
+
+            $file = $request->file('gambar');
+            $namaFile = time().'_'.$file->getClientOriginalName();
+            $file->storeAs('public/pemasukan', $namaFile);
+
+            $pemasukan->gambar = $namaFile;
         }
 
-        // Simpan file baru
-        $file = $request->file('gambar');
-        $namaFile = time() . '_' . $file->getClientOriginalName();
-        $file->storeAs('public/pemasukan', $namaFile);
+        $pemasukan->update([
+            'tanggal'   => $request->tanggal,
+            'deskripsi' => $request->deskripsi,
+            'nominal'   => $request->nominal,
+        ]);
 
-        $pemasukan->gambar = $namaFile; // update kolom gambar
+        return redirect()->route('pemasukan.index')
+            ->with('success', 'Pemasukan berhasil diperbarui');
     }
-
-    // Update field lain
-    $pemasukan->tanggal   = $request->tanggal;
-    $pemasukan->deskripsi = $request->deskripsi;
-    $pemasukan->nominal   = $request->nominal;
-
-    $pemasukan->save();
-
-    return redirect()->route('pemasukan.index')
-                     ->with('success', 'Pemasukan berhasil diperbarui');
-}
-
-
 
     /* ================= DELETE ================= */
     public function destroy($id)
@@ -107,7 +103,7 @@ public function update(Request $request, $id)
         $pemasukan = Pemasukan::findOrFail($id);
 
         if ($pemasukan->gambar) {
-            Storage::disk('public')->delete($pemasukan->gambar);
+            Storage::disk('public')->delete('pemasukan/'.$pemasukan->gambar);
         }
 
         $pemasukan->delete();
@@ -115,14 +111,46 @@ public function update(Request $request, $id)
         return back()->with('success', 'Pemasukan berhasil dihapus');
     }
 
-    /* ================= LAPORAN PER HARI ================= */
-    public function laporanHarian(Request $request)
-    {
-        $tanggal = $request->tanggal ?? date('Y-m-d');
+    /* ================= LAPORAN HARIAN ================= */
+public function laporanHarian(Request $request)
+{
+    $tanggal = $request->tanggal ?? date('Y-m-d');
 
-        $pemasukan = Pemasukan::whereDate('tanggal', $tanggal)->get();
-        $total = $pemasukan->sum('nominal');
+    $pemasukan = Pemasukan::whereDate('tanggal', $tanggal)
+        ->orderBy('tanggal', 'desc')
+        ->get();
 
-        return view('pemasukan.laporan-harian', compact('pemasukan', 'tanggal', 'total'));
-    }
+    $total = $pemasukan->sum('nominal');
+
+    return view('pemasukan.laporan-harian', compact(
+        'pemasukan',
+        'tanggal',
+        'total'
+    ));
+}
+
+/* ================= LAPORAN BULANAN ================= */
+public function laporanBulanan(Request $request)
+{
+    $bulan = $request->bulan ?? date('Y-m');
+
+    $tahun = substr($bulan, 0, 4);
+    $bulanAngka = substr($bulan, 5, 2);
+
+    $pemasukan = Pemasukan::whereYear('tanggal', $tahun)
+        ->whereMonth('tanggal', $bulanAngka)
+        ->orderBy('tanggal', 'asc')
+        ->get();
+
+    $total = $pemasukan->sum('nominal');
+
+    return view('pemasukan.laporan-bulanan', compact(
+        'pemasukan',
+        'bulan',
+        'total'
+    ));
+}
+
+
+
 }

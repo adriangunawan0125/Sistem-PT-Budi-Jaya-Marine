@@ -23,6 +23,7 @@
                 <th>Tanggal</th>
                 <th>Deskripsi</th>
                 <th>Nominal</th>
+                <th>Gambar</th>
                 <th>Aksi</th>
             </tr>
         </thead>
@@ -31,9 +32,16 @@
             <tr>
                 <td>{{ $index + 1 }}</td>
                 <td>{{ $item->unit->nama_unit }}</td>
-                <td>{{ $item->tanggal }}</td>
+                <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d-m-Y') }}</td>
                 <td>{{ $item->deskripsi }}</td>
                 <td>{{ number_format($item->nominal,0,',','.') }}</td>
+                <td>
+                    @if($item->gambar)
+                        <img src="{{ asset('storage/'.$item->gambar) }}" alt="Gambar" width="80" class="img-thumbnail">
+                    @else
+                        -
+                    @endif
+                </td>
                 <td>
                     <a href="{{ route('pengeluaran_pajak.edit', $item->id) }}" class="btn btn-warning btn-sm">Edit</a>
                     <form action="{{ route('pengeluaran_pajak.destroy', $item->id) }}" method="POST" style="display:inline;">
@@ -46,7 +54,7 @@
             @endforeach
             <tr>
                 <td colspan="4"><strong>Total</strong></td>
-                <td colspan="2"><strong>{{ number_format($total,0,',','.') }}</strong></td>
+                <td colspan="3"><strong>{{ number_format($total,0,',','.') }}</strong></td>
             </tr>
         </tbody>
     </table>

@@ -4,7 +4,7 @@
 <div class="container">
     <h4>Edit Pengeluaran Transport</h4>
 
-    <form method="POST" action="{{ route('pengeluaran_transport.update', $pengeluaran_transport->id) }}">
+    <form method="POST" action="{{ route('pengeluaran_transport.update', $pengeluaran_transport->id) }}" enctype="multipart/form-data">
         @csrf
         @method('PUT')
 
@@ -17,6 +17,7 @@
                 @endforeach
             </select>
         </div>
+
         <div class="mb-3">
             <label>Tanggal</label>
             <input type="date" name="tanggal" class="form-control" value="{{ $pengeluaran_transport->tanggal }}" required>
@@ -28,6 +29,7 @@
                 <tr>
                     <th>Keterangan</th>
                     <th>Nominal</th>
+                    <th>Gambar</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -36,11 +38,22 @@
                 <tr>
                     <td><input type="text" name="keterangan[]" class="form-control" value="{{ $item->keterangan }}" required></td>
                     <td><input type="number" name="nominal[]" class="form-control" value="{{ $item->nominal }}" required></td>
+                   <td>
+    @if($item->gambar)
+        <div class="mb-1">
+            <img src="{{ asset('storage/'.$item->gambar) }}" alt="Gambar" width="80" class="img-thumbnail">
+        </div>
+    @endif
+    <input type="file" name="gambar[]" class="form-control" accept="image/*">
+    <small class="text-muted">Upload gambar (opsional)</small>
+</td>
+
                     <td><button type="button" class="btn btn-danger remove-row">Hapus</button></td>
                 </tr>
                 @endforeach
             </tbody>
         </table>
+
         <button type="button" class="btn btn-secondary mb-3" id="add_item">Tambah Item</button>
         <br>
         <button type="submit" class="btn btn-primary">Update</button>
@@ -54,6 +67,7 @@ document.getElementById('add_item').addEventListener('click', function(){
     newRow.innerHTML = `
         <td><input type="text" name="keterangan[]" class="form-control" required></td>
         <td><input type="number" name="nominal[]" class="form-control" required></td>
+        <td><input type="file" name="gambar[]" class="form-control" accept="image/*"></td>
         <td><button type="button" class="btn btn-danger remove-row">Hapus</button></td>
     `;
     table.appendChild(newRow);

@@ -3,6 +3,125 @@
 @section('title', 'Tentang Kami')
 
 @section('content')
+
+<style>
+/* ==========================
+   FULL SMOOTH ANIMASI TENTANG KAMI & ALASAN MEMILIH KAMI
+   - HERO/BANNER TIDAK ANIMASI
+=========================== */
+
+/* Section content (skip hero-carousel) */
+section:not(.hero-carousel) {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.9s ease-out;
+}
+
+/* Animate muncul */
+section.animate {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Heading & paragraf */
+section h1,
+section h2,
+section h5,
+section p {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.9s ease-out;
+}
+
+section.animate h1,
+section.animate h2,
+section.animate h5,
+section.animate p {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Stagger paragraf */
+section.animate p:nth-of-type(1) { transition-delay: 0.2s; }
+section.animate p:nth-of-type(2) { transition-delay: 0.35s; }
+section.animate p:nth-of-type(3) { transition-delay: 0.5s; }
+section.animate p:nth-of-type(4) { transition-delay: 0.65s; }
+section.animate p:nth-of-type(5) { transition-delay: 0.8s; }
+
+/* Image fade + zoom */
+section img {
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+    transition: all 0.9s ease-out;
+}
+section.animate img {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+/* ==========================
+   ALASAN MEMILIH KAMI - Card
+=========================== */
+
+/* Card awal */
+.row.g-4 > .col-md-4 div {
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+    transition: all 0.5s ease-out; /* hover masuk & keluar smooth */
+}
+
+/* Card muncul dari bawah */
+.row.g-4 > .col-md-4.animate div {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+/* Hover card smooth */
+.row.g-4 > .col-md-4 div:hover {
+    transform: scale(1.03);
+}
+
+/* Icon di card */
+.reason-icon i {
+    transition: transform 0.5s ease-out, color 0.5s ease-out;
+}
+
+.reason-item:hover .reason-icon i {
+    transform: rotate(10deg) scale(1.15);
+    color:#15287f;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    // Animasi section content (Tentang Kami)
+    const sections = document.querySelectorAll('section:not(.hero-carousel)');
+    const observerSection = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if(entry.isIntersecting){
+                entry.target.classList.add('animate');
+            }
+        });
+    }, { threshold: 0.2 });
+    sections.forEach(section => observerSection.observe(section));
+
+    // Animasi cards Alasan Memilih Kami dengan stagger smooth
+    const cards = document.querySelectorAll('.row.g-4 > .col-md-4');
+    const observerCards = new IntersectionObserver((entries) => {
+        entries.forEach((entry, index) => {
+            if(entry.isIntersecting){
+                setTimeout(() => {
+                    entry.target.classList.add('animate');
+                }, index * 300); // delay per card lebih smooth
+            }
+        });
+    }, { threshold: 0.2 });
+    cards.forEach(card => observerCards.observe(card));
+
+});
+</script>
+
 <!-- HERO / BANNER -->
 <section style="
     background: linear-gradient(rgba(5,10,48,.75), rgba(5,10,48,.75)),

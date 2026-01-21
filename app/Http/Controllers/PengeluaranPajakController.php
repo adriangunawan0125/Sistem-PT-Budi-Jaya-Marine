@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\PengeluaranPajak;
 use App\Models\Unit;
+use Illuminate\Support\Facades\Storage;
 
 class PengeluaranPajakController extends Controller
 {
@@ -36,9 +37,16 @@ class PengeluaranPajakController extends Controller
             'tanggal' => 'required|date',
             'deskripsi' => 'required|string',
             'nominal' => 'required|numeric',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
         ]);
 
-        PengeluaranPajak::create($request->all());
+        $data = $request->all();
+
+        if($request->hasFile('gambar')){
+            $data['gambar'] = $request->file('gambar')->store('pengeluaran_pajak','public');
+        }
+
+        PengeluaranPajak::create($data);
 
         return redirect()->route('pengeluaran_pajak.index')->with('success','Pengeluaran pajak berhasil ditambahkan.');
     }
@@ -56,37 +64,47 @@ class PengeluaranPajakController extends Controller
             'tanggal' => 'required|date',
             'deskripsi' => 'required|string',
             'nominal' => 'required|numeric',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
         ]);
 
-        $pengeluaranPajak->update($request->all());
+        $data = $request->all();
+
+        if($request->hasFile('gambar')){
+            // hapus gambar lama jika ada
+            if($pengeluaranPajak->gambar){
+                Storage::disk('public')->delete($pengeluaranPajak->gambar);
+            }
+            $data['gambar'] = $request->file('gambar')->store('pengeluaran_pajak','public');
+        }
+
+        $pengeluaranPajak->update($data);
 
         return redirect()->route('pengeluaran_pajak.index')->with('success','Pengeluaran pajak berhasil diupdate.');
     }
 
     public function destroy(PengeluaranPajak $pengeluaranPajak)
     {
+        // hapus gambar jika ada
+        if($pengeluaranPajak->gambar){
+            Storage::disk('public')->delete($pengeluaranPajak->gambar);
+        }
+
         $pengeluaranPajak->delete();
         return redirect()->route('pengeluaran_pajak.index')->with('success','Pengeluaran pajak berhasil dihapus.');
     }
 
-   public function laporan(Request $request)
-{
-    // Ambil bulan dari query string, default bulan ini
-    $bulan = $request->bulan ?? date('Y-m');
+    public function laporan(Request $request)
+    {
+        $bulan = $request->bulan ?? date('Y-m');
 
-    // Ambil data pengeluaran pajak per bulan
-    $pajak = PengeluaranPajak::with('unit')
-        ->whereYear('tanggal', substr($bulan, 0, 4))
-        ->whereMonth('tanggal', substr($bulan, 5, 2))
-        ->orderBy('tanggal','asc')
-        ->get();
+        $pajak = PengeluaranPajak::with('unit')
+            ->whereYear('tanggal', substr($bulan, 0, 4))
+            ->whereMonth('tanggal', substr($bulan, 5, 2))
+            ->orderBy('tanggal','asc')
+            ->get();
 
-    // Hitung total nominal
-    $total = $pajak->sum('nominal');
+        $total = $pajak->sum('nominal');
 
-    return view('pengeluaran_pajak.laporan', compact('pajak', 'total', 'bulan'));
-}
-
-
-
+        return view('pengeluaran_pajak.laporan', compact('pajak', 'total', 'bulan'));
+    }
 }

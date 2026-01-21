@@ -4,7 +4,7 @@
 <div class="container-fluid px-4">
 
     <h4 class="mb-4 text-secondary fw-semibold">
-        Laporan Pemasukan Harian
+        Laporan Pemasukan Bulanan
     </h4>
 
     {{-- INFO TOTAL --}}
@@ -15,9 +15,9 @@
 
     {{-- FILTER --}}
     <form method="GET" class="mb-4">
-        <input type="date"
-               name="tanggal"
-               value="{{ request('tanggal', date('Y-m-d')) }}"
+        <input type="month"
+               name="bulan"
+               value="{{ request('bulan', date('Y-m')) }}"
                class="form-control d-inline-block me-2 mb-2"
                style="width:180px">
 
@@ -55,7 +55,7 @@
                             <td class="text-muted">{{ $item->deskripsi }}</td>
                             <td class="text-center">
                                 @if($item->gambar)
-                                    {{-- ⬇️ INI DISAMAIN 100% SAMA INDEX --}}
+                                    {{-- ⬇️ DISAMAIN DENGAN INDEX --}}
                                     <img src="{{ asset('storage/pemasukan/'.$item->gambar) }}"
                                          width="70"
                                          class="rounded">
@@ -70,7 +70,7 @@
                         @empty
                         <tr>
                             <td colspan="5" class="text-center py-4 text-muted">
-                                Data pemasukan tidak ditemukan
+                                Tidak ada data untuk bulan ini
                             </td>
                         </tr>
                         @endforelse

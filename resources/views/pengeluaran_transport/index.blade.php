@@ -32,14 +32,14 @@
             @forelse($transport as $index => $t)
                 @foreach($t->items as $itemIndex => $item)
                     <tr>
-                        @if($itemIndex==0)
+                        @if($itemIndex == 0)
                             <td rowspan="{{ $t->items->count() }}">{{ $index + 1 }}</td>
                             <td rowspan="{{ $t->items->count() }}">{{ $t->unit->nama_unit }}</td>
                             <td rowspan="{{ $t->items->count() }}">{{ \Carbon\Carbon::parse($t->tanggal)->format('d-m-Y') }}</td>
                         @endif
                         <td>{{ $item->keterangan }}</td>
                         <td>{{ number_format($item->nominal,0,',','.') }}</td>
-                        @if($itemIndex==0)
+                        @if($itemIndex == 0)
                             <td rowspan="{{ $t->items->count() }}">
                                 <a href="{{ route('pengeluaran_transport.edit', $t->id) }}" class="btn btn-warning btn-sm mb-1">Edit</a>
                                 <form action="{{ route('pengeluaran_transport.destroy', $t->id) }}" method="POST" style="display:inline;">
@@ -51,6 +51,8 @@
                         @endif
                     </tr>
                 @endforeach
+
+                {{-- Total per unit --}}
                 <tr>
                     <td colspan="3"><strong>Total {{ $t->unit->nama_unit }}</strong></td>
                     <td colspan="2"><strong>{{ number_format($t->total_amount,0,',','.') }}</strong></td>
@@ -60,6 +62,8 @@
                     <td colspan="6" class="text-center">Belum ada data pengeluaran transport</td>
                 </tr>
             @endforelse
+
+            {{-- Total Keseluruhan --}}
             <tr>
                 <td colspan="4"><strong>Total Keseluruhan</strong></td>
                 <td colspan="2"><strong>{{ number_format($total_all,0,',','.') }}</strong></td>

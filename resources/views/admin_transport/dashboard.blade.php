@@ -150,6 +150,9 @@
                             <div class="h4 font-weight-bold mt-2">
                                 Rp {{ number_format($totalPengeluaranInternal, 0, ',', '.') }}
                             </div>
+                            <small>
+                        {{ \Carbon\Carbon::createFromDate($tahun, $bulan, 1)->translatedFormat('F Y') }}
+                    </small>
                         </div>
                         <div class="icon-circle">
                             <i class="fas fa-wallet"></i>
@@ -171,6 +174,9 @@
                             <div class="h4 font-weight-bold mt-2">
                                 Rp {{ number_format($totalPengeluaranPajak, 0, ',', '.') }}
                             </div>
+                            <small>
+                        {{ \Carbon\Carbon::createFromDate($tahun, $bulan, 1)->translatedFormat('F Y') }}
+                    </small>
                         </div>
                         <div class="icon-circle">
                             <i class="fas fa-car"></i>
@@ -192,7 +198,11 @@
                             <div class="h4 font-weight-bold mt-2">
                                 Rp {{ number_format($totalPengeluaranTransport, 0, ',', '.') }}
                             </div>
+                            <small>
+                        {{ \Carbon\Carbon::createFromDate($tahun, $bulan, 1)->translatedFormat('F Y') }}
+                    </small>
                         </div>
+                        
                         <div class="icon-circle">
                             <i class="fas fa-truck"></i>
                         </div>
@@ -201,42 +211,119 @@
             </div>
         </div>
 
-    </div>
-
-    {{-- CHART --}}
-    <div class="row mt-4">
-        <div class="col-lg-8 mb-4">
-            <div class="card shadow">
-                <div class="card-header bg-white font-weight-bold">
-                    Grafik Pengeluaran Bulan Ini
+        {{-- PEMASUKAN HARIAN --}}
+<div class="col-xl-3 col-md-6 mb-4">
+    <div class="card dashboard-card bg-gradient-success">
+        <div class="card-body text-white">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <div class="text-uppercase small font-weight-bold">
+                        Pemasukan Hari Ini
+                    </div>
+                    <div class="h4 font-weight-bold mt-2">
+                        Rp {{ number_format($totalPemasukanHarian, 0, ',', '.') }}
+                    </div>
+                    <small>{{ \Carbon\Carbon::today()->translatedFormat('d F Y') }}</small>
                 </div>
-                <div class="card-body">
-                    <canvas id="pengeluaranChart"></canvas>
+                <div class="icon-circle">
+                    <i class="fas fa-coins"></i>
                 </div>
             </div>
         </div>
+    </div>
+</div>
+{{-- PEMASUKAN BULANAN --}}
+<div class="col-xl-3 col-md-6 mb-4">
+    <div class="card dashboard-card bg-gradient-primary">
+        <div class="card-body text-white">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <div class="text-uppercase small font-weight-bold">
+                        Pemasukan Bulanan
+                    </div>
+                    <div class="h4 font-weight-bold mt-2">
+                        Rp {{ number_format($totalPemasukanBulanan, 0, ',', '.') }}
+                    </div>
+                    <small>
+                        {{ \Carbon\Carbon::createFromDate($tahun, $bulan, 1)->translatedFormat('F Y') }}
+                    </small>
+                </div>
+                <div class="icon-circle">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
 
-        <div class="col-lg-4 mb-4">
-            <div class="card shadow">
-                <div class="card-header bg-white font-weight-bold">
-                    Ringkasan
-                </div>
-                <div class="card-body">
-                    <p><strong>Invoice Belum Lunas:</strong> {{ $mitraBelumLunas }}</p>
-                    <p><strong>Total Mitra:</strong> {{ $totalMitra }}</p>
-                    <p><strong>Total Ex Mitra:</strong> {{ $totalExMitra }}</p>
-                </div>
+{{-- CHART --}}
+<div class="row mt-4">
+
+    {{-- CHART PEMASUKAN --}}
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-white fw-semibold">
+                Grafik Pemasukan Bulan Ini
+            </div>
+            <div class="card-body">
+                <canvas id="pemasukanChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    {{-- CHART PENGELUARAN --}}
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-white fw-semibold">
+                Grafik Pengeluaran Bulan Ini
+            </div>
+            <div class="card-body">
+                <canvas id="pengeluaranChart"></canvas>
             </div>
         </div>
     </div>
 
 </div>
-
-{{-- CHART JS --}}
 <script>
-const ctx = document.getElementById('pengeluaranChart');
-new Chart(ctx, {
-    type: 'line',
+const pemasukanCtx = document.getElementById('pemasukanChart');
+
+new Chart(pemasukanCtx, {
+    type: 'bar',
+    data: {
+        labels: ['Total Pemasukan'],
+        datasets: [{
+            label: 'Pemasukan',
+            data: [{{ $totalPemasukanBulanan }}],
+            backgroundColor: '#28a745'
+        }]
+    },
+    options: {
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: function(ctx) {
+                        return 'Rp ' + new Intl.NumberFormat('id-ID').format(ctx.raw);
+                    }
+                }
+            }
+        },
+        scales: {
+            y: {
+                ticks: {
+                    callback: value =>
+                        'Rp ' + new Intl.NumberFormat('id-ID').format(value)
+                }
+            }
+        }
+    }
+});
+</script>
+<script>
+const pengeluaranCtx = document.getElementById('pengeluaranChart');
+
+new Chart(pengeluaranCtx, {
+    type: 'bar',
     data: {
         labels: ['Internal', 'Pajak', 'Transport'],
         datasets: [{
@@ -246,12 +333,30 @@ new Chart(ctx, {
                 {{ $totalPengeluaranPajak }},
                 {{ $totalPengeluaranTransport }}
             ],
-            borderWidth: 3,
-            fill: true,
-            tension: 0.4
+            backgroundColor: '#dc3545'
         }]
+    },
+    options: {
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: function(ctx) {
+                        return 'Rp ' + new Intl.NumberFormat('id-ID').format(ctx.raw);
+                    }
+                }
+            }
+        },
+        scales: {
+            y: {
+                ticks: {
+                    callback: value =>
+                        'Rp ' + new Intl.NumberFormat('id-ID').format(value)
+                }
+            }
+        }
     }
 });
 </script>
+
 
 @endsection

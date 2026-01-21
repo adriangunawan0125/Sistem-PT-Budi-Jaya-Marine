@@ -18,6 +18,7 @@
                 <th>Tanggal</th>
                 <th>Deskripsi</th>
                 <th>Nominal</th>
+              
             </tr>
         </thead>
         <tbody>
@@ -25,14 +26,15 @@
             <tr>
                 <td>{{ $index + 1 }}</td>
                 <td>{{ $item->unit->nama_unit }}</td>
-                <td>{{ $item->tanggal }}</td>
+                <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d-m-Y') }}</td>
                 <td>{{ $item->deskripsi }}</td>
                 <td>{{ number_format($item->nominal,0,',','.') }}</td>
+                
             </tr>
             @endforeach
             <tr>
                 <td colspan="4"><strong>Total</strong></td>
-                <td><strong>{{ number_format($total,0,',','.') }}</strong></td>
+                <td colspan="2"><strong>{{ number_format($total,0,',','.') }}</strong></td>
             </tr>
         </tbody>
     </table>

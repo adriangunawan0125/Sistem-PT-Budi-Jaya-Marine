@@ -1,9 +1,110 @@
 @extends('user.layouts.app')
 
 @section('content')
+<style>
+/* ==========================
+   ANIMASI CONTENT MARINE SPARE PARTS
+=========================== */
+.animate-section {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s ease-out;
+}
+
+.animate-section.animate {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.animate-section h1,
+.animate-section h2,
+.animate-section h3,
+.animate-section h4,
+.animate-section h5,
+.animate-section h6,
+.animate-section p,
+.animate-section li {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.8s ease-out;
+}
+
+.animate-section.animate h1,
+.animate-section.animate h2,
+.animate-section.animate h3,
+.animate-section.animate h4,
+.animate-section.animate h5,
+.animate-section.animate h6,
+.animate-section.animate p,
+.animate-section.animate li {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Card fade + zoom */
+.animate-section .card,
+.animate-section .border {
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+    transition: all 0.6s ease-out;
+}
+
+.animate-section.animate .card,
+.animate-section.animate .border {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+/* Hover card smooth */
+.animate-section .card:hover,
+.animate-section .border:hover {
+    transform: scale(1.03);
+    transition: transform 0.6s ease-out;
+}
+
+/* Icon zoom */
+.animate-section .card i,
+.animate-section .border i {
+    transition: transform 0.6s ease-out, color 0.6s ease-out;
+}
+
+.animate-section .card:hover i,
+.animate-section .border:hover i {
+    transform: scale(1.15);
+    color:#15287f;
+}
+
+/* Images */
+.animate-section img,
+.animate-section iframe {
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+    transition: all 0.8s ease-out;
+}
+
+.animate-section.animate img,
+.animate-section.animate iframe {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const sections = document.querySelectorAll('.animate-section');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if(entry.isIntersecting){
+                entry.target.classList.add('animate');
+            }
+        });
+    }, { threshold: 0.2 });
+    sections.forEach(section => observer.observe(section));
+});
+</script>
 
 <!-- HERO -->
-<section class="text-white" style="
+<section class="text-white animate-section " style="
     background:
     linear-gradient(rgba(5,10,48,.85), rgba(5,10,48,.85)),
     url('{{ asset('assets/hero1.jpg') }}') center/cover no-repeat;
@@ -21,7 +122,7 @@
 </section>
 
 <!-- INTRO -->
-<section class="py-5 bg-light">
+<section class="py-5 bg-light animate-section">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-10 text-center">
@@ -37,7 +138,7 @@
 </section>
 
 <!-- CONTENT -->
-<section class="py-5">
+<section class="py-5 animate-section">
     <div class="container">
         <div class="row align-items-center g-5">
 
@@ -106,8 +207,8 @@
     </div>
 </section>
 
-<<!-- CONTRACT CTA -->
-<section class="py-5">
+<!-- CONTRACT CTA -->
+<section class="py-5 animate-section">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-10">

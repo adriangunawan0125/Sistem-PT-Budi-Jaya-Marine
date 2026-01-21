@@ -9,7 +9,8 @@ class PengeluaranPajak extends Model
     use HasFactory;
 
     protected $table = 'pengeluaran_pajak';
-    protected $fillable = ['unit_id', 'tanggal', 'deskripsi', 'nominal'];
+    protected $fillable = ['unit_id', 'tanggal', 'deskripsi', 'nominal', 'gambar'];
+
 
     public function unit()
     {

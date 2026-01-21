@@ -4,8 +4,9 @@
 <div class="container">
     <h4>Tambah Pengeluaran Transport</h4>
 
-    <form method="POST" action="{{ route('pengeluaran_transport.store') }}">
+    <form method="POST" action="{{ route('pengeluaran_transport.store') }}" enctype="multipart/form-data">
         @csrf
+
         <div class="mb-3">
             <label>Plat Nomor</label>
             <select name="unit_id" class="form-control" required>
@@ -15,6 +16,7 @@
                 @endforeach
             </select>
         </div>
+
         <div class="mb-3">
             <label>Tanggal</label>
             <input type="date" name="tanggal" class="form-control" required>
@@ -26,6 +28,7 @@
                 <tr>
                     <th>Keterangan</th>
                     <th>Nominal</th>
+                    <th>Gambar</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -33,10 +36,12 @@
                 <tr>
                     <td><input type="text" name="keterangan[]" class="form-control" required></td>
                     <td><input type="number" name="nominal[]" class="form-control" required></td>
+                    <td><input type="file" name="gambar[]" class="form-control" accept="image/*"></td>
                     <td><button type="button" class="btn btn-danger remove-row">Hapus</button></td>
                 </tr>
             </tbody>
         </table>
+
         <button type="button" class="btn btn-secondary mb-3" id="add_item">Tambah Item</button>
         <br>
         <button type="submit" class="btn btn-primary">Simpan</button>
@@ -50,6 +55,7 @@ document.getElementById('add_item').addEventListener('click', function(){
     newRow.innerHTML = `
         <td><input type="text" name="keterangan[]" class="form-control" required></td>
         <td><input type="number" name="nominal[]" class="form-control" required></td>
+        <td><input type="file" name="gambar[]" class="form-control" accept="image/*"></td>
         <td><button type="button" class="btn btn-danger remove-row">Hapus</button></td>
     `;
     table.appendChild(newRow);

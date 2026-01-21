@@ -2,101 +2,80 @@
 
 @section('content')
 <div class="container">
-    <h4 class="mb-4">Rekap Pemasukan Transport</h4>
+    <h4 class="mb-4">Edit Pemasukan Transport</h4>
 
-    {{-- Alert sukses --}}
-    @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
+    {{-- Alert error --}}
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
         </div>
     @endif
 
-    {{-- Form filter bulan --}}
-    <form method="GET" class="mb-3 d-flex align-items-center gap-2 flex-wrap">
-        <input type="month"
-               name="bulan"
-               value="{{ request('bulan') }}"
-               class="form-control w-auto">
+    <form action="{{ route('pemasukan.update', $pemasukan->id) }}"
+          method="POST"
+          enctype="multipart/form-data">
+        @csrf
+        @method('PUT')
+
+        {{-- Tanggal --}}
+        <div class="mb-3">
+            <label class="form-label">Tanggal</label>
+            <input type="date"
+                   name="tanggal"
+                   class="form-control"
+                   value="{{ old('tanggal', $pemasukan->tanggal) }}"
+                   required>
+        </div>
+
+        {{-- Deskripsi --}}
+        <div class="mb-3">
+            <label class="form-label">Deskripsi</label>
+            <input type="text"
+                   name="deskripsi"
+                   class="form-control"
+                   value="{{ old('deskripsi', $pemasukan->deskripsi) }}"
+                   required>
+        </div>
+
+        {{-- Nominal --}}
+        <div class="mb-3">
+            <label class="form-label">Nominal</label>
+            <input type="number"
+                   name="nominal"
+                   class="form-control"
+                   value="{{ old('nominal', $pemasukan->nominal) }}"
+                   required>
+        </div>
+
+        {{-- Gambar --}}
+        <div class="mb-3">
+            <label class="form-label">Gambar (Opsional)</label>
+            <input type="file"
+                   name="gambar"
+                   class="form-control">
+
+            {{-- Gambar saat ini --}}
+            @if ($pemasukan->gambar)
+                <div class="mt-2">
+                    <p class="mb-1 text-muted">Gambar saat ini:</p>
+                    <img src="{{ asset('storage/pemasukan/'.$pemasukan->gambar) }}"
+                         width="150"
+                         class="img-thumbnail">
+                </div>
+            @endif
+        </div>
 
         <button type="submit" class="btn btn-primary">
-            Filter
+            Update
         </button>
 
         <a href="{{ route('pemasukan.index') }}" class="btn btn-secondary">
-            Reset
-        </a>
-
-        <a href="{{ route('pemasukan.create') }}" class="btn btn-success">
-            Tambah Pemasukan
-        </a>
-
-        <a href="{{ route('pemasukan.laporan.harian') }}" class="btn btn-info">
-            Laporan Harian
+            Batal
         </a>
     </form>
-
-    {{-- Tabel pemasukan --}}
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped align-middle">
-            <thead class="table-dark">
-                <tr>
-                    <th width="50">No</th>
-                    <th>Tanggal</th>
-                    <th>Deskripsi</th>
-                    <th width="120">Gambar</th>
-                    <th>Nominal</th>
-                    <th width="140">Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($pemasukan as $index => $item)
-                    <tr>
-                        <td>{{ $index + 1 }}</td>
-                        <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d-m-Y') }}</td>
-                        <td>{{ $item->deskripsi }}</td>
-                        <td class="text-center">
-                            @if($item->gambar)
-                                <img src="{{ asset('storage/pemasukan/'.$item->gambar) }}"
-                                     width="80"
-                                     class="img-thumbnail"
-                                     alt="Bukti {{ $item->deskripsi }}">
-                            @else
-                                -
-                            @endif
-                        </td>
-                        <td>Rp {{ number_format($item->nominal, 0, ',', '.') }}</td>
-                        <td>
-                            <a href="{{ route('pemasukan.edit', $item->id) }}"
-                               class="btn btn-warning btn-sm mb-1">
-                                Edit
-                            </a>
-
-                            <form action="{{ route('pemasukan.destroy', $item->id) }}"
-                                  method="POST"
-                                  style="display:inline;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit"
-                                        class="btn btn-danger btn-sm"
-                                        onclick="return confirm('Yakin ingin menghapus?')">
-                                    Hapus
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="6" class="text-center">Data pemasukan tidak ditemukan</td>
-                    </tr>
-                @endforelse
-
-                {{-- Total nominal --}}
-                <tr class="table-secondary">
-                    <td colspan="4" class="text-end"><strong>Total</strong></td>
-                    <td colspan="2"><strong>Rp {{ number_format($total, 0, ',', '.') }}</strong></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
 </div>
 @endsection

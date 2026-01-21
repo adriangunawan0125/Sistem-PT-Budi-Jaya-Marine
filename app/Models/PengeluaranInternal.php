@@ -9,5 +9,5 @@ class PengeluaranInternal extends Model
     use HasFactory;
 
     protected $table = 'pengeluaran_internal';
-    protected $fillable = ['tanggal', 'deskripsi', 'nominal'];
+    protected $fillable = ['tanggal', 'deskripsi', 'nominal', 'gambar'];
 }

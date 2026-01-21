@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,7 +9,7 @@ class PengeluaranTransportItem extends Model
     use HasFactory;
 
     protected $table = 'pengeluaran_transport_item';
-    protected $fillable = ['transport_id','keterangan','nominal'];
+    protected $fillable = ['transport_id', 'keterangan', 'nominal', 'gambar'];
 
     public function transport()
     {

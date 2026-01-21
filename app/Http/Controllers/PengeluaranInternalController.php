@@ -29,18 +29,26 @@ class PengeluaranInternalController extends Controller
 
     // Simpan pengeluaran
     public function store(Request $request)
-    {
-        $request->validate([
-            'tanggal' => 'required|date',
-            'deskripsi' => 'required|string',
-            'nominal' => 'required|numeric',
-        ]);
+{
+    $request->validate([
+        'tanggal' => 'required|date',
+        'deskripsi' => 'required|string',
+        'nominal' => 'required|numeric',
+        'gambar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048', // maksimal 2MB
+    ]);
 
-        PengeluaranInternal::create($request->all());
+    $data = $request->all();
 
-        return redirect()->route('pengeluaran_internal.index')
-                         ->with('success', 'Pengeluaran berhasil ditambahkan.');
+    if ($request->hasFile('gambar')) {
+        $data['gambar'] = $request->file('gambar')->store('pengeluaran', 'public');
     }
+
+    PengeluaranInternal::create($data);
+
+    return redirect()->route('pengeluaran_internal.index')
+                     ->with('success', 'Pengeluaran berhasil ditambahkan.');
+}
+
 
     // Form edit pengeluaran
     public function edit(PengeluaranInternal $pengeluaranInternal)
@@ -50,27 +58,44 @@ class PengeluaranInternalController extends Controller
 
     // Update pengeluaran
     public function update(Request $request, PengeluaranInternal $pengeluaranInternal)
-    {
-        $request->validate([
-            'tanggal' => 'required|date',
-            'deskripsi' => 'required|string',
-            'nominal' => 'required|numeric',
-        ]);
+{
+    $request->validate([
+        'tanggal' => 'required|date',
+        'deskripsi' => 'required|string',
+        'nominal' => 'required|numeric',
+        'gambar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+    ]);
 
-        $pengeluaranInternal->update($request->all());
+    $data = $request->all();
 
-        return redirect()->route('pengeluaran_internal.index')
-                         ->with('success', 'Pengeluaran berhasil diupdate.');
+    if ($request->hasFile('gambar')) {
+        // hapus file lama kalau ada
+        if ($pengeluaranInternal->gambar) {
+            \Storage::disk('public')->delete($pengeluaranInternal->gambar);
+        }
+        $data['gambar'] = $request->file('gambar')->store('pengeluaran', 'public');
     }
+
+    $pengeluaranInternal->update($data);
+
+    return redirect()->route('pengeluaran_internal.index')
+                     ->with('success', 'Pengeluaran berhasil diupdate.');
+}
+
 
     // Hapus pengeluaran
     public function destroy(PengeluaranInternal $pengeluaranInternal)
-    {
-        $pengeluaranInternal->delete();
-
-        return redirect()->route('pengeluaran_internal.index')
-                         ->with('success', 'Pengeluaran berhasil dihapus.');
+{
+    if ($pengeluaranInternal->gambar) {
+        \Storage::disk('public')->delete($pengeluaranInternal->gambar);
     }
+
+    $pengeluaranInternal->delete();
+
+    return redirect()->route('pengeluaran_internal.index')
+                     ->with('success', 'Pengeluaran berhasil dihapus.');
+}
+
     public function laporan(Request $request)
 {
     $bulan = $request->bulan ?? date('Y-m'); // default bulan ini

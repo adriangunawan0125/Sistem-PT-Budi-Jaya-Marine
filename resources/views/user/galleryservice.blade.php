@@ -4,8 +4,116 @@
 
 @section('content')
 
+@push('style')
+<style>
+/* ==========================
+   ANIMASI CONTENT GALLERY SERVICE
+=========================== */
+.animate-section {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s ease-out;
+}
+
+.animate-section.animate {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.animate-section h1,
+.animate-section h2,
+.animate-section h3,
+.animate-section h4,
+.animate-section h5,
+.animate-section h6,
+.animate-section p,
+.animate-section li {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.8s ease-out;
+}
+
+.animate-section.animate h1,
+.animate-section.animate h2,
+.animate-section.animate h3,
+.animate-section.animate h4,
+.animate-section.animate h5,
+.animate-section.animate h6,
+.animate-section.animate p,
+.animate-section.animate li {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Card fade + zoom */
+.animate-section .card,
+.animate-section .border {
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+    transition: all 0.6s ease-out;
+}
+
+.animate-section.animate .card,
+.animate-section.animate .border {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+/* Hover card smooth */
+.animate-section .card:hover,
+.animate-section .border:hover {
+    transform: scale(1.03);
+    transition: transform 0.6s ease-out;
+}
+
+/* Icon zoom */
+.animate-section .card i,
+.animate-section .border i {
+    transition: transform 0.6s ease-out, color 0.6s ease-out;
+}
+
+.animate-section .card:hover i,
+.animate-section .border:hover i {
+    transform: scale(1.15);
+    color:#15287f;
+}
+
+/* Images & Video */
+.animate-section img,
+.animate-section iframe,
+.animate-section video {
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+    transition: all 0.8s ease-out;
+}
+
+.animate-section.animate img,
+.animate-section.animate iframe,
+.animate-section.animate video {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+</style>
+@endpush
+
+@push('script')
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const sections = document.querySelectorAll('.animate-section');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if(entry.isIntersecting){
+                entry.target.classList.add('animate');
+            }
+        });
+    }, { threshold: 0.2 });
+    sections.forEach(section => observer.observe(section));
+});
+</script>
+@endpush
+
 {{-- HERO --}}
-<section class="text-white" style="
+<section class="text-white animate-section" style="
     background: linear-gradient(rgba(5,10,48,.85), rgba(5,10,48,.85)),
     url('{{ asset('assets/bg-service.jpg') }}') center/cover no-repeat;
     padding: 160px 0 90px;
@@ -21,7 +129,7 @@
 </section>
 
 {{-- GALLERY --}}
-<section class="py-5 bg-light">
+<section class="py-5 bg-light animate-section">
     <div class="container">
 
         <div class="card border-0 shadow-lg rounded-4 overflow-hidden">

@@ -209,6 +209,10 @@ Route::delete('/pemasukan/{id}/delete', [PemasukanController::class, 'destroy'])
 Route::get('/pemasukan-laporan-harian', [PemasukanController::class, 'laporanHarian'])
     ->name('pemasukan.laporan.harian');
 
+    Route::get('/pemasukan-laporan-bulanan',
+    [PemasukanController::class, 'laporanBulanan']
+)->name('pemasukan.laporan.bulanan');
+
 });
 
 

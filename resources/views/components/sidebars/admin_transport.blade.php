@@ -34,6 +34,45 @@
 .nav-link.pemasukan span {
     font-weight: 700;
 }
+
+#accordionSidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    overflow-y: auto;
+    width: 224px; /* default SB Admin */
+    z-index: 1030;
+}
+
+/* SCROLLBAR HALUS */
+#accordionSidebar::-webkit-scrollbar {
+    width: 6px;
+}
+#accordionSidebar::-webkit-scrollbar-thumb {
+    background-color: rgba(255,255,255,.25);
+    border-radius: 10px;
+}
+
+/* KONTEN UTAMA GESER KE KANAN */
+#content-wrapper,
+#content {
+    margin-left: 110px;
+}
+
+/* MOBILE MODE */
+@media (max-width: 768px) {
+    #accordionSidebar {
+        position: relative;
+        height: auto;
+        width: 100%;
+    }
+
+    #content-wrapper,
+    #content {
+        margin-left: 0;
+    }
+}
 </style>
 <!-- Sidebar -->
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
@@ -135,8 +174,8 @@
         </a>
         <div id="collapsePemasukan" class="collapse" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="/pemasukan_transport">Pemasukan Transport</a>
-                <a class="collapse-item" href="#">Laporan Pemasukan</a>
+                <a class="collapse-item" href="/pemasukan">Pemasukan Transport</a>
+                <a class="collapse-item" href="/pemasukan-laporan-bulanan">Laporan Pemasukan</a>
             </div>
         </div>
     </li>

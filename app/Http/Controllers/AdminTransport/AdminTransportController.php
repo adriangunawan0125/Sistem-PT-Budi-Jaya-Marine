@@ -11,6 +11,8 @@ use App\Models\PengeluaranInternal;
 use App\Models\PengeluaranPajak;
 use App\Models\PengeluaranTransport;
 use Carbon\Carbon;
+use App\Models\Pemasukan;
+
 
 class AdminTransportController extends Controller
 {
@@ -51,6 +53,20 @@ class AdminTransportController extends Controller
             ->whereYear('tanggal', $tahun)
             ->sum('total_amount');
 
+        // ===============================
+// PEMASUKAN
+// ===============================
+
+// Harian (hari ini)
+$totalPemasukanHarian = Pemasukan::whereDate('tanggal', Carbon::today())
+    ->sum('nominal');
+
+// Bulanan (sesuai filter dashboard)
+$totalPemasukanBulanan = Pemasukan::whereMonth('tanggal', $bulan)
+    ->whereYear('tanggal', $tahun)
+    ->sum('nominal');
+
+
         return view('admin_transport.dashboard', compact(
     'bulan',
     'tahun',
@@ -59,7 +75,9 @@ class AdminTransportController extends Controller
     'totalExMitra',
     'totalPengeluaranInternal',
     'totalPengeluaranPajak',
-    'totalPengeluaranTransport'
+    'totalPengeluaranTransport',
+    'totalPemasukanHarian',
+    'totalPemasukanBulanan'
 ));
 
     }
