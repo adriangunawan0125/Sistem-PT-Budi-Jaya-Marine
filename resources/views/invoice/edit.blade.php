@@ -2,141 +2,79 @@
 
 @section('content')
 <div class="container">
-<h4>Edit Invoice</h4>
+    <h4>Edit Item Invoice</h4>
 
-@if(session('error'))
-<div class="alert alert-danger">
-    {{ session('error') }}
+    <form method="POST"
+          action="{{ route('invoice-item.update', $item->id) }}"
+          enctype="multipart/form-data">
+        @csrf
+        @method('PUT')
+
+        <div class="mb-3">
+            <label>Item</label>
+            <input type="text"
+                   name="item"
+                   class="form-control"
+                   value="{{ $item->item }}"
+                   required>
+        </div>
+
+        <div class="mb-3">
+            <label>Cicilan</label>
+            <input type="number"
+                   name="cicilan"
+                   class="form-control"
+                   value="{{ $item->cicilan }}">
+        </div>
+
+        <div class="mb-3">
+            <label>Tagihan</label>
+            <input type="number"
+                   name="tagihan"
+                   class="form-control"
+                   value="{{ $item->tagihan }}">
+        </div>
+
+        {{-- GAMBAR TRIP --}}
+        <div class="mb-3">
+            <label>Gambar Trip</label><br>
+
+            @if($item->gambar_trip)
+                <img src="{{ asset('storage/'.$item->gambar_trip) }}"
+                     width="120"
+                     class="mb-2 d-block">
+            @endif
+
+            <input type="file"
+                   name="gambar_trip"
+                   class="form-control">
+        </div>
+
+        {{-- GAMBAR TRANSFER --}}
+        <div class="mb-3">
+            <label>Gambar Transfer</label><br>
+
+            @if($item->gambar_transfer)
+                <img src="{{ asset('storage/'.$item->gambar_transfer) }}"
+                     width="120"
+                     class="mb-2 d-block">
+            @endif
+
+            <input type="file"
+                   name="gambar_transfer"
+                   class="form-control">
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <a href="{{ route('invoice.show', $item->invoice->mitra_id) }}"
+               class="btn btn-secondary">
+               Kembali
+            </a>
+
+            <button class="btn btn-primary">
+                Simpan
+            </button>
+        </div>
+    </form>
 </div>
-@endif
-
-<form action="{{ route('invoice.update', $invoice->id) }}" method="POST">
-@csrf
-@method('PUT')
-
-{{-- ===================== --}}
-{{-- MITRA --}}
-{{-- ===================== --}}
-<div class="mb-3">
-    <label>Mitra</label>
-    <select name="mitra_id" class="form-control" required>
-        <option value="">-- Pilih Mitra --</option>
-        @foreach($mitras as $m)
-            <option value="{{ $m->id }}"
-                {{ $invoice->mitra_id == $m->id ? 'selected' : '' }}>
-                {{ $m->nama_mitra }}
-            </option>
-        @endforeach
-    </select>
-</div>
-
-{{-- ===================== --}}
-{{-- TANGGAL --}}
-{{-- ===================== --}}
-<div class="mb-3">
-    <label>Tanggal</label>
-    <input type="date"
-           name="tanggal"
-           class="form-control"
-           value="{{ $invoice->tanggal }}"
-           required>
-</div>
-
-<hr>
-
-{{-- ===================== --}}
-{{-- ITEM INVOICE --}}
-{{-- ===================== --}}
-<h5>Item Invoice</h5>
-
-<table class="table" id="items">
-<thead>
-<tr>
-    <th>Item</th>
-    <th>Cicilan</th>
-    <th>Tagihan</th>
-    <th width="60"></th>
-</tr>
-</thead>
-<tbody>
-
-@foreach($invoice->items as $i => $item)
-<tr>
-    <td>
-        <input name="items[{{ $i }}][item]"
-               class="form-control"
-               value="{{ $item->item }}"
-               required>
-    </td>
-    <td>
-        <input name="items[{{ $i }}][cicilan]"
-               class="form-control"
-               type="number"
-               value="{{ $item->cicilan }}">
-    </td>
-    <td>
-        <input name="items[{{ $i }}][tagihan]"
-               class="form-control"
-               type="number"
-               value="{{ $item->tagihan }}">
-    </td>
-    <td>
-        <button type="button"
-                class="btn btn-danger btn-sm"
-                onclick="this.closest('tr').remove()">✖</button>
-    </td>
-</tr>
-@endforeach
-
-</tbody>
-</table>
-
-<button type="button"
-        class="btn btn-sm btn-secondary"
-        onclick="addItem()">+ Item</button>
-
-<hr>
-
-<div class="d-flex justify-content-between">
-    <a href="{{ route('invoice.show', $invoice->mitra_id) }}"
-       class="btn btn-secondary">
-        Kembali
-    </a>
-
-    <button class="btn btn-primary">
-        Simpan Perubahan
-    </button>
-</div>
-
-</form>
-</div>
-
-{{-- ===================== --}}
-{{-- SCRIPT --}}
-{{-- ===================== --}}
-<script>
-let i = {{ $invoice->items->count() }};
-
-function addItem() {
-    let row = `
-    <tr>
-        <td>
-            <input name="items[${i}][item]" class="form-control" required>
-        </td>
-        <td>
-            <input name="items[${i}][cicilan]" class="form-control" value="0" type="number">
-        </td>
-        <td>
-            <input name="items[${i}][tagihan]" class="form-control" value="0" type="number">
-        </td>
-        <td>
-            <button type="button"
-                    class="btn btn-danger btn-sm"
-                    onclick="this.closest('tr').remove()">✖</button>
-        </td>
-    </tr>`;
-    document.querySelector('#items tbody').insertAdjacentHTML('beforeend', row);
-    i++;
-}
-</script>
 @endsection

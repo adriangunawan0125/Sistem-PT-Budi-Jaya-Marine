@@ -36,13 +36,14 @@ class Invoice extends Model
         return $this->hasMany(InvoiceItem::class);
     }
 
-    public function transfers()
-    {
-        return $this->hasMany(InvoiceTransfer::class);
-    }
+    public function refreshTotalAndStatus()
+{
+    $total = $this->items()->sum('amount');
 
-    public function trips()
-    {
-        return $this->hasMany(InvoiceTrip::class);
-    }
+    $this->update([
+        'total' => $total,
+        'status' => $total <= 0 ? 'lunas' : 'belum_lunas'
+    ]);
+}
+
 }

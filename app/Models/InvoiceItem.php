@@ -12,7 +12,13 @@ class InvoiceItem extends Model
         'tanggal',
         'cicilan',
         'tagihan',
-        'amount'
+        'amount',
+        'gambar_trip',      // baru
+        'gambar_transfer'   // baru
     ];
+    public function invoice()
+    {
+        return $this->belongsTo(Invoice::class);
+    }
 }
 

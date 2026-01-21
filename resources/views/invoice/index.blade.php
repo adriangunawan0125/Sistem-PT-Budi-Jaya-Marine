@@ -48,10 +48,18 @@
                     <td>{{ $row->mitra->nama_mitra }}</td>
                     <td>Rp {{ number_format($row->total_amount) }}</td>
                     <td>
-                        <a href="{{ route('invoice.show', $row->mitra->id) }}"
-                           class="btn btn-info btn-sm">
-                            Detail
-                        </a>
+                        @if($row->mitra->invoices->count())
+                            {{-- Tombol Detail mengarah ke invoice terbaru --}}
+                            @php
+                                $latestInvoice = $row->mitra->invoices->sortByDesc('tanggal')->first();
+                            @endphp
+                            <a href="{{ route('invoice.show', $row->mitra->id) }}" class="btn btn-info btn-sm">
+                                Detail
+                            </a>
+
+                        @else
+                            <span class="text-muted small">Belum ada invoice</span>
+                        @endif
                     </td>
                 </tr>
                 @empty

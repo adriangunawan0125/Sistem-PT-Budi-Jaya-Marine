@@ -3,14 +3,10 @@
 @section('content')
 <div class="container">
 
-@php
-    $header = $invoices->first();
-    $grandTotal = 0;
-@endphp
-
 <h4>Detail Invoice</h4>
 
 <p><b>Mitra:</b> {{ $mitra->nama_mitra }}</p>
+<p><b>Unit:</b> {{ $mitra->unit->nama_unit ?? '-' }}</p>
 
 <a href="{{ route('invoice.create', ['mitra_id' => $mitra->id]) }}"
    class="btn btn-primary mb-3">
@@ -22,7 +18,6 @@
         Mitra ini belum memiliki invoice.
     </div>
 @endif
-
 
 <table class="table table-bordered align-middle">
 <thead>
@@ -39,61 +34,42 @@
 </tr>
 </thead>
 <tbody>
+
 @php $grandTotal = 0; $no = 1; @endphp
 
-@forelse($invoices as $inv)
-    @foreach($inv->items as $i)
-        {{-- baris item --}}
-    @endforeach
-@empty
-    <tr>
-        <td colspan="9" class="text-center text-muted">
-            Belum ada data invoice
-        </td>
-    </tr>
-@endforelse
-
-@php $no = 1; @endphp
-
 @foreach($invoices as $inv)
-    @foreach($inv->items as $i)
+    @foreach($inv->items as $item)
     <tr>
         <td>{{ $no++ }}</td>
         <td>{{ $inv->tanggal }}</td>
-        <td>{{ $i->item }}</td>
-        <td>Rp {{ number_format($i->cicilan) }}</td>
-        <td>Rp {{ number_format($i->tagihan) }}</td>
-        <td>Rp {{ number_format($i->amount) }}</td>
-
-     {{-- BUKTI TRANSFER --}}
-<td>
-    @foreach($inv->transfers as $t)
-        <img src="{{ asset('storage/'.$t->gambar) }}"
-             width="60"
-             class="img-thumbnail mb-1">
-    @endforeach
-</td>
-
-{{-- BUKTI PERJALANAN --}}
-<td>
-    @foreach($inv->trips as $t)
-        <img src="{{ asset('storage/'.$t->gambar) }}"
-             width="60"
-             class="img-thumbnail mb-1">
-    @endforeach
-</td>
-
+        <td>{{ $item->item }}</td>
+        <td>Rp {{ number_format($item->cicilan) }}</td>
+        <td>Rp {{ number_format($item->tagihan) }}</td>
+        <td>Rp {{ number_format($item->amount) }}</td>
 
         <td>
-            <!-- EDIT ITEM -->
-            <button class="btn btn-sm btn-warning"
-                data-bs-toggle="modal"
-                data-bs-target="#editItem{{ $i->id }}">
-                ✏️
-            </button>
+            @if($item->gambar_transfer)
+                <img src="{{ asset('storage/'.$item->gambar_transfer) }}"
+                     width="60" class="img-thumbnail">
+            @endif
+        </td>
 
-            <!-- HAPUS ITEM -->
-            <form action="{{ route('invoice-item.destroy', $i->id) }}"
+        <td>
+            @if($item->gambar_trip)
+                <img src="{{ asset('storage/'.$item->gambar_trip) }}"
+                     width="60" class="img-thumbnail">
+            @endif
+        </td>
+
+        <td>
+            <!-- EDIT KE HALAMAN -->
+            <a href="{{ route('invoice-item.edit', $item->id) }}"
+               class="btn btn-sm btn-warning">
+               ✏️
+            </a>
+
+            <!-- HAPUS -->
+            <form action="{{ route('invoice-item.destroy', $item->id) }}"
                   method="POST"
                   style="display:inline-block"
                   onsubmit="return confirm('Hapus item ini?')">
@@ -104,66 +80,7 @@
         </td>
     </tr>
 
-    @php $grandTotal += $i->amount; @endphp
-
-    <!-- MODAL EDIT ITEM -->
-    <div class="modal fade" id="editItem{{ $i->id }}" tabindex="-1">
-      <div class="modal-dialog">
-        <div class="modal-content">
-
-          <form action="{{ route('invoice-item.update', $i->id) }}" method="POST">
-            @csrf
-            @method('PUT')
-
-            <div class="modal-header">
-              <h5 class="modal-title">Edit Item Invoice</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-
-            <div class="modal-body">
-              <div class="mb-2">
-                <label>Item</label>
-                <input type="text"
-                       name="item"
-                       class="form-control"
-                       value="{{ $i->item }}"
-                       required>
-              </div>
-
-              <div class="mb-2">
-                <label>Cicilan</label>
-                <input type="number"
-                       name="cicilan"
-                       class="form-control"
-                       value="{{ $i->cicilan }}"
-                       min="0">
-              </div>
-
-              <div class="mb-2">
-                <label>Tagihan</label>
-                <input type="number"
-                       name="tagihan"
-                       class="form-control"
-                       value="{{ $i->tagihan }}"
-                       min="0">
-              </div>
-            </div>
-
-            <div class="modal-footer">
-              <button class="btn btn-primary">💾 Simpan</button>
-              <button type="button"
-                      class="btn btn-secondary"
-                      data-bs-dismiss="modal">
-                  Batal
-              </button>
-            </div>
-
-          </form>
-
-        </div>
-      </div>
-    </div>
-    <!-- END MODAL -->
+    @php $grandTotal += $item->amount; @endphp
 
     @endforeach
 @endforeach

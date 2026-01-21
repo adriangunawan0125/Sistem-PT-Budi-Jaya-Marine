@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admintransport;
 use App\Http\Controllers\Controller;
 use App\Models\Unit;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+
 
 class KelolaUnitController extends Controller
 {
@@ -48,23 +50,23 @@ class KelolaUnitController extends Controller
      * Menyimpan data unit baru
      */
     public function postStore(Request $request)
-    {
-        $request->validate([
-            'nama_unit' => 'required',
-            'merek'     => 'required',
-            'status'    => 'required'
-        ]);
+{
+    $request->validate([
+        'nama_unit' => 'required|unique:units,nama_unit',
+        'merek'     => 'required',
+    ], [
+        'nama_unit.unique' => 'Nomor unit / plat kendaraan ini sudah terdaftar!',
+    ]);
 
     Unit::create([
-    'nama_unit' => $request->nama_unit,
-    'merek'     => $request->merek,
-    'status'    => 'tersedia' // 🔥 DEFAULT
-]);
+        'nama_unit' => $request->nama_unit,
+        'merek'     => $request->merek,
+        'status'    => 'tersedia' // default
+    ]);
 
-
-        return redirect('/admin-transport/unit')
-            ->with('success', 'Unit berhasil ditambahkan');
-    }
+    return redirect('/admin-transport/unit')
+        ->with('success', 'Unit berhasil ditambahkan');
+}
 
     /**
      * GET
@@ -80,24 +82,29 @@ class KelolaUnitController extends Controller
      * PUT
      * Mengupdate data unit
      */
-    public function putUpdate(Request $request, $id)
-    {
-        $request->validate([
-            'nama_unit' => 'required',
-            'merek'     => 'required',
-            'status'    => 'required|in:tersedia,disewakan'
-        ]);
+   public function putUpdate(Request $request, $id)
+{
+    $request->validate([
+        'nama_unit' => [
+            'required',
+            Rule::unique('units', 'nama_unit')->ignore($id),
+        ],
+        'merek'  => 'required',
+        'status' => 'required|in:tersedia,disewakan',
+    ], [
+        'nama_unit.unique' => 'Nomor unit / plat kendaraan ini sudah digunakan unit lain!',
+    ]);
 
-        $unit = Unit::findOrFail($id);
-        $unit->update([
-            'nama_unit' => $request->nama_unit,
-            'merek'     => $request->merek,
-            'status'    => $request->status
-        ]);
+    $unit = Unit::findOrFail($id);
+    $unit->update([
+        'nama_unit' => $request->nama_unit,
+        'merek'     => $request->merek,
+        'status'    => $request->status
+    ]);
 
-        return redirect('/admin-transport/unit')
-            ->with('success', 'Unit berhasil diperbarui');
-    }
+    return redirect('/admin-transport/unit')
+        ->with('success', 'Unit berhasil diperbarui');
+}
 
     /**
      * DELETE

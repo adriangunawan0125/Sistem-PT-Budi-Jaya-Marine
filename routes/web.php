@@ -131,6 +131,8 @@ Route::get('/admin-transport', [AdminTransportController::class, 'dashboard'])
     Route::get('/laporan/mitra/pdf', [LaporanMitraController::class, 'exportPdf']);
 
 
+Route::get('/invoice-item/{id}/edit', [InvoiceItemController::class, 'edit'])
+    ->name('invoice-item.edit');
 
     Route::put(
         '/invoice-item/{id}',
