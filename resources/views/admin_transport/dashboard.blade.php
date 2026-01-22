@@ -237,6 +237,31 @@
 
 </div>
 
+  {{-- STATUS LABA/RUGI --}}
+  <div class="row mt-4 justify-content-center">
+      <div class="col-xl-6 col-md-8 mb-4">
+          <div class="card dashboard-card {{ $totalPemasukanBulanan - $totalPengeluaranBulanan >= 0 ? 'bg-gradient-success' : 'bg-gradient-danger' }}">
+              <div class="card-body text-white d-flex justify-content-between align-items-center">
+                  <div>
+                      <div class="text-uppercase small font-weight-bold">Status Laba/Rugi Bulan Ini</div>
+                      @php
+                          $selisih = $totalPemasukanBulanan - $totalPengeluaranBulanan;
+                          $status = $selisih >= 0 ? 'Laba' : 'Rugi';
+                      @endphp
+                      <div class="h4 font-weight-bold mt-2">
+                          {{ $status }}: Rp {{ number_format(abs($selisih), 0, ',', '.') }}
+                      </div>
+                      <small>{{ \Carbon\Carbon::createFromDate($tahun, $bulan, 1)->translatedFormat('F Y') }}</small>
+                  </div>
+                  <div class="icon-circle">
+                      <i class="fas fa-chart-line"></i>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+
+
 {{-- CHART SCRIPT --}}
 <script>
 const pemasukanCtx = document.getElementById('pemasukanChart');
@@ -305,5 +330,6 @@ new Chart(pengeluaranCtx, {
     }
 });
 </script>
+
 
 @endsection

@@ -67,6 +67,8 @@ class AdminTransportController extends Controller
             ->whereYear('tanggal', $tahun)
             ->sum('nominal');
 
+        
+
         return view('admin_transport.dashboard', compact(
             'bulan',
             'tahun',

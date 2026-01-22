@@ -196,7 +196,7 @@
 
                 <li class="nav-item">
                     <a href="/daftar-mitra" class="btn btn-mitra ms-lg-3 mt-3 mt-lg-0">
-                        Jadi Mitra Kami
+                        daftar mitra transport
                     </a>
                 </li>
 
