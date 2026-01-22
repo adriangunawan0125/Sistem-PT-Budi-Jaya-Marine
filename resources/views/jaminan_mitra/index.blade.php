@@ -8,7 +8,7 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <a href="{{ route('jaminan_mitra.create') }}" class="btn btn-success mb-3">
+    <a href="{{ route('jaminan_mitra.create') }}" class="btn btn-primary mb-3">
         + Tambah Jaminan
     </a>
 

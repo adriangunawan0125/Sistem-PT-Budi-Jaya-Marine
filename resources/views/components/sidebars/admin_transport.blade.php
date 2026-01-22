@@ -130,8 +130,8 @@
              data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item" href="/admin-transport/mitra">Mitra Kontrak</a>
-                <a class="collapse-item" href="/ex-mitra">Ex-Mitra</a>
-                <a class="collapse-item" href="/admin-transport/jaminan/mitra">Data Jaminan</a>
+                <a class="collapse-item" href="/admin-transport/mitra/berakhir">Ex-Mitra</a>
+                <a class="collapse-item" href="/jaminan_mitra">Data Jaminan</a>
                 <a class="collapse-item" href="/admin-transport/laporan/mitra">Laporan Mitra</a>
             </div>
         </div>

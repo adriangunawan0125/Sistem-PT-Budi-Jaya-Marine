@@ -42,7 +42,7 @@
             <input type="file" name="gambar_3" class="form-control">
         </div>
 
-        <button class="btn btn-success">Simpan</button>
+        <button class="btn btn-primary">Simpan</button>
         <a href="{{ route('jaminan_mitra.index') }}"
            class="btn btn-secondary">Kembali</a>
     </form>

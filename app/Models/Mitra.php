@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Unit;
 use App\Models\Invoice;
+use App\Models\JaminanMitra;
 
 class Mitra extends Model
 {
@@ -15,23 +16,61 @@ class Mitra extends Model
         'nama_mitra',
         'unit_id',
         'alamat',
-        'no_hp'
+        'no_hp',
+        'kontrak_mulai',
+        'kontrak_berakhir',
+        'status',
     ];
+
+    protected $casts = [
+        'kontrak_mulai' => 'date',
+        'kontrak_berakhir' => 'date',
+    ];
+
+    /* ======================
+     |  RELATION
+     |====================== */
 
     public function unit()
     {
         return $this->belongsTo(Unit::class);
     }
 
-    // Ganti hasOne jadi hasMany
     public function invoices()
     {
         return $this->hasMany(Invoice::class);
     }
 
     public function jaminan()
-{
-    return $this->hasOne(JaminanMitra::class);
-}
+    {
+        return $this->hasOne(JaminanMitra::class);
+    }
 
+    /* ======================
+     |  QUERY SCOPE
+     |====================== */
+
+    public function scopeAktif($query)
+    {
+        return $query->where('status', 'aktif');
+    }
+
+    public function scopeBerakhir($query)
+    {
+        return $query->where('status', 'berakhir');
+    }
+
+    /* ======================
+     |  HELPER
+     |====================== */
+
+    public function isAktif()
+    {
+        return $this->status === 'aktif';
+    }
+
+    public function isBerakhir()
+    {
+        return $this->status === 'berakhir';
+    }
 }

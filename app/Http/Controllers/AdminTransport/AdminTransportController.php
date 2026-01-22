@@ -6,13 +6,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Invoice;
 use App\Models\Mitra;
-use App\Models\ExMitra;
 use App\Models\PengeluaranInternal;
 use App\Models\PengeluaranPajak;
 use App\Models\PengeluaranTransport;
-use Carbon\Carbon;
 use App\Models\Pemasukan;
-
+use Carbon\Carbon;
 
 class AdminTransportController extends Controller
 {
@@ -27,16 +25,16 @@ class AdminTransportController extends Controller
         // ===============================
         // INVOICE BELUM LUNAS (PER BULAN)
         // ===============================
-      $mitraBelumLunas = Invoice::where('status', 'belum_lunas')
-    ->distinct('mitra_id')
-    ->count('mitra_id');
-
+        $mitraBelumLunas = Invoice::where('status', 'belum_lunas')
+            ->distinct('mitra_id')
+            ->count('mitra_id');
 
         // ===============================
-        // MITRA & EX MITRA (TOTAL)
+        // MITRA TOTAL & STATUS
         // ===============================
         $totalMitra = Mitra::count();
-        $totalExMitra = ExMitra::count();
+        $mitraAktif = Mitra::where('status', 'aktif')->count();
+        $mitraBerakhir = Mitra::where('status', 'berakhir')->count();
 
         // ===============================
         // PENGELUARAN (PER BULAN)
@@ -53,32 +51,35 @@ class AdminTransportController extends Controller
             ->whereYear('tanggal', $tahun)
             ->sum('total_amount');
 
+        // Total semua pengeluaran bulan ini
+        $totalPengeluaranBulanan = $totalPengeluaranInternal + $totalPengeluaranPajak + $totalPengeluaranTransport;
+
         // ===============================
-// PEMASUKAN
-// ===============================
+        // PEMASUKAN
+        // ===============================
 
-// Harian (hari ini)
-$totalPemasukanHarian = Pemasukan::whereDate('tanggal', Carbon::today())
-    ->sum('nominal');
+        // Harian (hari ini)
+        $totalPemasukanHarian = Pemasukan::whereDate('tanggal', Carbon::today())
+            ->sum('nominal');
 
-// Bulanan (sesuai filter dashboard)
-$totalPemasukanBulanan = Pemasukan::whereMonth('tanggal', $bulan)
-    ->whereYear('tanggal', $tahun)
-    ->sum('nominal');
-
+        // Bulanan (sesuai filter dashboard)
+        $totalPemasukanBulanan = Pemasukan::whereMonth('tanggal', $bulan)
+            ->whereYear('tanggal', $tahun)
+            ->sum('nominal');
 
         return view('admin_transport.dashboard', compact(
-    'bulan',
-    'tahun',
-    'mitraBelumLunas',
-    'totalMitra',
-    'totalExMitra',
-    'totalPengeluaranInternal',
-    'totalPengeluaranPajak',
-    'totalPengeluaranTransport',
-    'totalPemasukanHarian',
-    'totalPemasukanBulanan'
-));
-
+            'bulan',
+            'tahun',
+            'mitraBelumLunas',
+            'totalMitra',
+            'mitraAktif',
+            'mitraBerakhir',
+            'totalPengeluaranInternal',
+            'totalPengeluaranPajak',
+            'totalPengeluaranTransport',
+            'totalPengeluaranBulanan',
+            'totalPemasukanHarian',
+            'totalPemasukanBulanan'
+        ));
     }
 }

@@ -5,7 +5,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\OwnerController;
 use App\Http\Controllers\AdminMarineController;
-
 use App\Http\Controllers\InvoiceItemController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\Admintransport\KelolaMitraController;
@@ -93,42 +92,24 @@ Route::get('/admin-transport', [AdminTransportController::class, 'dashboard'])
     // DELETE
     Route::delete('/admin-transport/unit/delete/{id}', [KelolaUnitController::class, 'deleteDestroy']);
 
-    //Mitra
-    Route::get(
-        '/admin-transport/mitra',
-        [KelolaMitraController::class, 'getIndex']
-    );
+   
 
-    Route::get(
-        '/admin-transport/mitra/create',
-        [KelolaMitraController::class, 'getCreate']
-    );
+Route::prefix('admin-transport')->group(function () {
+    Route::get('/mitra', [KelolaMitraController::class, 'getIndex']);
+    Route::get('/mitra/berakhir', [KelolaMitraController::class, 'getBerakhir']);
+    Route::get('/mitra/create', [KelolaMitraController::class, 'getCreate']);
+    Route::post('/mitra', [KelolaMitraController::class, 'postStore']);
+    Route::get('/mitra/{id}/edit', [KelolaMitraController::class, 'getEdit']);
+    Route::put('/mitra/{id}', [KelolaMitraController::class, 'putUpdate']);
+    Route::patch('/mitra/{id}/akhiri-kontrak', [KelolaMitraController::class, 'patchAkhiriKontrak']);
+     Route::patch('/mitra/{id}/aktifkan', [KelolaMitraController::class, 'patchAktifkan']);
+     Route::get('/mitra/{id}', [KelolaMitraController::class, 'show']);
+Route::delete(
+    '/mitra/{mitra}',
+    [KelolaMitraController::class, 'destroy']
+);
 
-    Route::post(
-        '/admin-transport/mitra/store',
-        [KelolaMitraController::class, 'postStore']
-    );
-
-    Route::get(
-        '/admin-transport/mitra/edit/{id}',
-        [KelolaMitraController::class, 'getEdit']
-    );
-
-    Route::put(
-        '/admin-transport/mitra/update/{id}',
-        [KelolaMitraController::class, 'putUpdate']
-    );
-
-    Route::delete(
-        '/admin-transport/mitra/delete/{id}',
-        [KelolaMitraController::class, 'deleteDestroy']
-    );
-    //Laporan Mitra
-
-    Route::get('/admin-transport/laporan/mitra', [LaporanMitraController::class, 'getIndex']);
-    Route::get('/admin-transport/laporan/mitra/excel', [LaporanMitraController::class, 'exportExcel']);
-
-    Route::get('/laporan/mitra/pdf', [LaporanMitraController::class, 'exportPdf']);
+});
 
 
 Route::get('/invoice-item/{id}/edit', [InvoiceItemController::class, 'edit'])
@@ -167,9 +148,6 @@ Route::get('pengeluaran_transport/laporan', [PengeluaranTransportController::cla
 
 Route::resource('jaminan_mitra', JaminanMitraController::class);
 
-Route::resource('ex-mitra', ExMitraController::class);
-
-
 Route::get('/contact', [ContactMessageController::class, 'index'])
         ->name('contact.index');
 
@@ -184,8 +162,6 @@ Route::get('/calon-mitra', [AdminCalonMitraController::class, 'index'])
 
    Route::delete('/admin/calon-mitra/{id}', [AdminCalonMitraController::class, 'destroy'])
         ->name('admin.calonmitra.destroy');
-
-   
 
 /* ================= PEMASUKAN ================= */
 
