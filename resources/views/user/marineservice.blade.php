@@ -160,6 +160,48 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
 </section>
 
+<!-- SHIP NEW BUILDINGS & REPAIRS CONTRACTOR -->
+<section class="py-5 bg-light animate-section">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold border-bottom pb-2 mb-4">
+                            <i class="bi bi-gear-wide-connected text-primary me-2"></i>
+                            Kontraktor Kapal Baru & Perbaikan
+                        </h5>
+                        <ul class="list-unstyled mb-0">
+                            <li class="border-bottom py-2">
+                                <i class="bi bi-check-circle-fill text-primary me-2"></i>
+                                Spesialis dalam konstruksi kapal baru
+                            </li>
+                            <li class="border-bottom py-2">
+                                <i class="bi bi-check-circle-fill text-primary me-2"></i>
+                                Perbaikan kapal yang sudah ada
+                            </li>
+                            <li class="border-bottom py-2">
+                                <i class="bi bi-check-circle-fill text-primary me-2"></i>
+                                Menangani berbagai aspek pembangunan dan perbaikan kapal
+                            </li>
+                            <li class="py-2">
+                                <i class="bi bi-check-circle-fill text-primary me-2"></i>
+                                Mendukung industri maritim secara menyeluruh
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <img src="{{ asset('assets/servis_propulsi.jpg') }}"
+                     class="img-fluid rounded shadow-sm"
+                     alt="Kontraktor Kapal">
+            </div>
+        </div>
+    </div>
+</section>
+
+
 
 <!-- SISTEM PROPULSI -->
 <section class="py-5 bg-light animate-section">
