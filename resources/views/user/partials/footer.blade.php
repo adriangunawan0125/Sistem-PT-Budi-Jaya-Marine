@@ -134,9 +134,9 @@
             <div class="col-md-4">
                 <h5 class="footer-title">Layanan</h5>
                 <ul class="footer-links list-unstyled">
-                    <li><i class="fa fa-car me-2"></i> Transportation</li>
-                    <li><i class="fa fa-ship me-2"></i> Marine Services</li>
-                    <li><i class="fa fa-screwdriver-wrench me-2"></i> Marine Spareparts</li>
+                    <li><a href="/transport-service"><i class="fa fa-car me-2"></i> Transportation</a></li>
+                    <li><a href="/marine-service"><i class="fa fa-ship me-2"></i> Marine Services</a></li>
+                    <li><a href="/marine-spareparts"><i class="fa fa-screwdriver-wrench me-2"></i> Marine Spareparts</a></li>
                 </ul>
             </div>
 

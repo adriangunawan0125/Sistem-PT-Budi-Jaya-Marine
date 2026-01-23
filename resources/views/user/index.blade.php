@@ -175,7 +175,7 @@
 <!-- SLIDE 2 -->
 <div class="carousel-item">
     <div class="hero d-flex align-items-center"
-         style="background:url('assets/hero2.jpg') center/cover no-repeat; min-height:600px;">
+         style="background:url('assets/wp12186590 (1).jpg') center/cover no-repeat; min-height:600px;">
         <div class="container">
             <div class="col-md-6 text-white">
                 <h1>Solusi Profesional<br>& Terpercaya</h1>
@@ -195,7 +195,7 @@
 <!-- SLIDE 3 -->
 <div class="carousel-item">
     <div class="hero d-flex align-items-center"
-         style="background:url('assets/hero3.jpg') center/cover no-repeat; min-height:600px;">
+         style="background:url('assets/2685253.jpg') center/cover no-repeat; min-height:600px;">
         <div class="container">
             <div class="col-md-6 text-white">
                 <h1>Mitra Anda<br>Yang Dapat Diandalkan</h1>

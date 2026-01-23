@@ -22,7 +22,8 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MitraTransportController;
 use App\Http\Controllers\CalonMitraController;
 use App\Http\Controllers\AdminTransport\CalonMitraController as AdminCalonMitraController;
- use App\Http\Controllers\PemasukanController;
+use App\Http\Controllers\PemasukanController;
+use App\Http\Controllers\owner_transport\OwnerTransportController;
 
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -63,8 +64,13 @@ Route::post('/logout', [AuthController::class, 'logout'])
     ->name('logout');
 Route::middleware(['auth', 'role:owner'])->group(function () {
     Route::get('/owner', function () {
-        return view('owner.dashboard');
+        return view('owner_transport.dashboard');
     })->name('owner.dashboard');
+
+    Route::get('/laporan-pemasukan-harian', [OwnerTransportController::class, 'laporanHarian'])->name('laporan-harian');
+
+    // Laporan Bulanan
+    Route::get('/laporan-pemasukan-bulanan', [OwnerTransportController::class, 'laporanBulanan'])->name('laporan-bulanan');
 });
 
 Route::middleware(['auth', 'role:admin_marine'])->group(function () {
@@ -190,6 +196,13 @@ Route::get('/pemasukan-laporan-harian', [PemasukanController::class, 'laporanHar
     Route::get('/pemasukan-laporan-bulanan',
     [PemasukanController::class, 'laporanBulanan']
 )->name('pemasukan.laporan.bulanan');
+
+
+
+Route::prefix('owner-transport')->name('owner_transport.')->group(function() {
+    // Laporan Harian
+  
+});
 
 });
 

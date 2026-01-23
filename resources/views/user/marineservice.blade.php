@@ -120,11 +120,18 @@ document.addEventListener('DOMContentLoaded', () => {
 <section class="py-5 animate-section">
     <div class="container">
         <div class="row align-items-center g-5">
+            
+            <!-- Gambar Square -->
             <div class="col-lg-5 text-center">
-                <img src="{{ asset('assets\service-1536x864.jpeg') }}"
-                     class="img-fluid rounded shadow-sm"
-                     alt="Marine Service PT Budi Jaya Marine">
+                <div style="width:100%; padding-top:100%; position:relative; overflow:hidden; margin:auto;">
+                    <img src="{{ asset('assets/gmbrperbaikan.jpeg') }}"
+                         alt="Marine Service PT Budi Jaya Marine"
+                         style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover;"
+                         class="rounded shadow-sm">
+                </div>
             </div>
+
+            <!-- Konten Teks -->
             <div class="col-lg-7">
                 <h3 class="fw-bold mb-4">
                     <i class="bi bi-tools text-primary me-2"></i>
@@ -148,9 +155,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     rutin yang dikerjakan oleh team professional kami.
                 </p>
             </div>
+
         </div>
     </div>
 </section>
+
 
 <!-- SISTEM PROPULSI -->
 <section class="py-5 bg-light animate-section">
@@ -185,7 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             </div>
             <div class="col-lg-6 text-center">
-                <img src="{{ asset('assets\propulsion1.png') }}"
+                <img src="{{ asset('assets/servis_propulsi.jpg') }}"
                      class="img-fluid rounded shadow-sm"
                      alt="Sistem Propulsi Kapal">
             </div>
@@ -222,7 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             </div>
             <div class="col-lg-6 text-center">
-                <img src="{{ asset('assets\WhatsApp-Image-2023-06-30-at-23.57.39-1536x1152.jpeg') }}"
+                <img src="{{ asset('assets/1966062015529-284-Overhaul-of -Auxiliary-Engines.jpg') }}"
                      class="img-fluid rounded shadow-sm"
                      alt="Engine Services Kapal">
             </div>

@@ -143,13 +143,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 <p class="text-muted fs-5">
                     PT Budi Jaya Marine menyediakan layanan transportasi berbasis
-                    <strong>kontrak perusahaan</strong>, baik untuk kebutuhan
+                    kontrak, baik untuk kebutuhan
                     <strong>jangka menengah (6 bulanan)</strong> maupun
                     <strong>jangka panjang (tahunan)</strong>.
                 </p>
 
                 <p class="text-muted fs-5">
-                    Layanan ini ditujukan bagi <strong>perusahaan swasta</strong>,
+                    Layanan ini ditujukan bagi <strong>perorangan, </strong><strong>perusahaan swasta</strong>,
                     <strong>instansi pemerintahan</strong>, serta
                     <strong>perusahaan BUMN</strong> yang membutuhkan solusi
                     transportasi profesional dan terintegrasi.

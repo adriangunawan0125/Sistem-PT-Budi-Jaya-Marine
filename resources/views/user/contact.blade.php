@@ -201,19 +201,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             </div>
 
-            <!-- Telepon -->
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm text-center p-4 h-100">
-                    <i class="bi bi-telephone-fill fs-1 text-primary mb-3"></i>
-                    <h6 class="fw-bold mb-1">Telepon</h6>
-                    <p class="mb-0"><a href="tel:+6281234567890" class="text-decoration-none">+62 812-3456-7890</a></p>
-                </div>
-            </div>
+         <!-- WhatsApp -->
+<div class="col-md-4">
+    <div class="card border-0 shadow-sm text-center p-4 h-100">
+        <i class="bi bi-whatsapp fs-1 text-success mb-3"></i>
+        <h6 class="fw-bold mb-1">WhatsApp</h6>
+        <p class="mb-0">
+            <a href="https://wa.me/6287770239693" target="_blank" class="text-decoration-none">
+                +62 877-7023-9693
+            </a>
+        </p>
+    </div>
+</div>
+
 
             <!-- Alamat -->
             <div class="col-md-4">
                 <div class="card border-0 shadow-sm text-center p-4 h-100">
-                    <i class="bi bi-geo-alt-fill fs-1 text-primary mb-3"></i>
+                    <i class="bi bi-geo-alt-fill fs-1 text-danger mb-3"></i>
                     <h6 class="fw-bold mb-1">Alamat</h6>
                     <p class="mb-0">Ruko Sentra Bisnis, Jl. Harapan Indah No.3 Blok SS 2, RT.3/RW.7, Pejuang, Kecamatan Medan Satria, Kota Bks, Jawa Barat 17132</p>
                 </div>

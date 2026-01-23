@@ -1,136 +1,114 @@
- <!-- Sidebar -->
-        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+<!-- Sidebar -->
+<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
-     <!-- Sidebar - Brand -->
-<a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
-    <div class="sidebar-brand-icon">
-        <img src="{{ asset('assets/logo.png') }}"
-             alt="Logo Perusahaan"
-             width="35">
-    </div>
-    <div class="sidebar-brand-text mx-2">
-        Owner
-    </div>
-</a>
-            
-            <!-- Divider -->
-            <hr class="sidebar-divider my-0">
+    <!-- Sidebar - Brand -->
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
+        <div class="sidebar-brand-text mx-2">Owner Transport</div>
+    </a>
 
-            <!-- Nav Item - Dashboard -->
-            <li class="nav-item">
-                <a class="nav-link" href="index.html">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Dashboard</span></a>
-            </li>
+    <!-- Divider -->
+    <hr class="sidebar-divider my-0">
 
-            <!-- Divider -->
-            <hr class="sidebar-divider">
+    <!-- Nav Item - Dashboard -->
+    <li class="nav-item">
+        <a class="nav-link" href="{{ route('owner.dashboard') }}">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+        </a>
+    </li>
 
-            <!-- Heading -->
-            <div class="sidebar-heading">
-                Kelola
+    <!-- Divider -->
+    <hr class="sidebar-divider">
+
+    <!-- Heading -->
+    <div class="sidebar-heading">Kelola</div>
+
+    <!-- Laporan Pemasukan -->
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePemasukan"
+            aria-expanded="true" aria-controls="collapsePemasukan">
+            <i class="fas fa-fw fa-money-bill-wave"></i>
+            <span>Laporan Pemasukan</span>
+        </a>
+        <div id="collapsePemasukan" class="collapse" aria-labelledby="headingPemasukan" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <h6 class="collapse-header">Pemasukan :</h6>
+                <a class="collapse-item" href="owner.pemasukan.harian">
+                    <i class="fas fa-calendar-day me-1"></i> Hari Ini
+                </a>
+                <a class="collapse-item" href="owner.pemasukan.bulanan">
+                    <i class="fas fa-calendar-alt me-1"></i> Bulan Ini
+                </a>
             </div>
+        </div>
+    </li>
 
-            <!-- Nav Item - Pages Collapse Menu -->
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
-                    aria-expanded="true" aria-controls="collapseTwo">
-                    <i class="fas fa-fw fa-cog"></i>
-                    <span>Laporan pemasukan</span>
+    <!-- Laporan Pengeluaran -->
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePengeluaran"
+            aria-expanded="true" aria-controls="collapsePengeluaran">
+            <i class="fas fa-fw fa-credit-card"></i>
+            <span>Laporan Pengeluaran</span>
+        </a>
+        <div id="collapsePengeluaran" class="collapse" aria-labelledby="headingPengeluaran" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <h6 class="collapse-header">Pengeluaran :</h6>
+                <a class="collapse-item" href="owner.pengeluaran.internal">
+                    <i class="fas fa-wallet me-1"></i> Internal
                 </a>
-                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Custom Components:</h6>
-                        <a class="collapse-item" href="buttons.html">Buttons</a>
-                        <a class="collapse-item" href="cards.html">Cards</a>
-                    </div>
-                </div>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
-                    aria-expanded="true" aria-controls="collapseTwo">
-                    <i class="fas fa-fw fa-cog"></i>
-                    <span>laporan pengeluaran</span>
+                <a class="collapse-item" href="owner.pengeluaran.transport">
+                    <i class="fas fa-truck me-1"></i> Transport
                 </a>
-                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Custom Components:</h6>
-                        <a class="collapse-item" href="buttons.html">Buttons</a>
-                        <a class="collapse-item" href="cards.html">Cards</a>
-                    </div>
-                </div>
-            </li>
-
-            <!-- Nav Item - Utilities Collapse Menu -->
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
-                    aria-expanded="true" aria-controls="collapseUtilities">
-                    <i class="fas fa-fw fa-wrench"></i>
-                    <span>Kelola akun sistem</span>
+                <a class="collapse-item" href="owner.pengeluaran.pajak">
+                    <i class="fas fa-car me-1"></i> Pajak Mobil
                 </a>
-                <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
-                    data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Custom Utilities:</h6>
-                        <a class="collapse-item" href="utilities-color.html">Colors</a>
-                        <a class="collapse-item" href="utilities-border.html">Borders</a>
-                        <a class="collapse-item" href="utilities-animation.html">Animations</a>
-                        <a class="collapse-item" href="utilities-other.html">Other</a>
-                    </div>
-                </div>
-            </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider">
-
-            <!-- Heading -->
-            <div class="sidebar-heading">
-                Addons
             </div>
+        </div>
+    </li>
 
-            <!-- Nav Item - Pages Collapse Menu
-            <li class="nav-item active">
-                <a class="nav-link" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="true"
-                    aria-controls="collapsePages">
-                    <i class="fas fa-fw fa-folder"></i>
-                    <span>Pages</span>
+    <!-- Mitra & Ex-Mitra -->
+<li class="nav-item">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseMitra"
+        aria-expanded="true" aria-controls="collapseMitra">
+        <i class="fas fa-fw fa-users"></i>
+        <span>Mitra & Ex-Mitra</span>
+    </a>
+    <div id="collapseMitra" class="collapse" aria-labelledby="headingMitra" data-parent="#accordionSidebar">
+        <div class="bg-white py-2 collapse-inner rounded">
+            <h6 class="collapse-header">daftar :</h6>
+            <a class="collapse-item" href="owner.mitra.index">
+                <i class="fas fa-user me-1"></i> Mitra
+            </a>
+            <a class="collapse-item" href="owner.ex_mitra.index">
+                <i class="fas fa-user-slash me-1"></i> Ex-Mitra
+            </a>
+            <a class="collapse-item" href="owner.mitra.jaminan">
+                <i class="fas fa-hand-holding-usd me-1"></i> Jaminan Mitra
+            </a>
+        </div>
+    </div>
+</li>
+
+
+    <!-- Laporan Invoice -->
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseInvoice"
+            aria-expanded="true" aria-controls="collapseInvoice">
+            <i class="fas fa-fw fa-file-invoice"></i>
+            <span>Laporan Invoice</span>
+        </a>
+        <div id="collapseInvoice" class="collapse" aria-labelledby="headingInvoice" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <h6 class="collapse-header">daftar :</h6>
+                <a class="collapse-item" href="owner.invoice.lis">
+                    <i class="fas fa-file-invoice-dollar me-1"></i> Invoice Mitra
                 </a>
-                <div id="collapsePages" class="collapse show" aria-labelledby="headingPages"
-                    data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Login Screens:</h6>
-                        <a class="collapse-item" href="login.html">Login</a>
-                        <a class="collapse-item" href="register.html">Register</a>
-                        <a class="collapse-item" href="forgot-password.html">Forgot Password</a>
-                        <div class="collapse-divider"></div>
-                        <h6 class="collapse-header">Other Pages:</h6>
-                        <a class="collapse-item" href="404.html">404 Page</a>
-                        <a class="collapse-item active" href="blank.html">Blank Page</a>
-                    </div>
-                </div>
-            </li>  -->
+            </div>
+        </div>
+    </li>
 
-            <!-- Nav Item - Charts -->
-            <li class="nav-item">
-                <a class="nav-link" href="charts.html">
-                    <i class="fas fa-fw fa-chart-area"></i>
-                    <span>Charts</span></a>
-            </li>
+    <!-- Divider -->
+    <hr class="sidebar-divider d-none d-md-block">
 
-            <!-- Nav Item - Tables -->
-            <li class="nav-item">
-                <a class="nav-link" href="tables.html">
-                    <i class="fas fa-fw fa-table"></i>
-                    <span>Tables</span></a>
-            </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider d-none d-md-block">
-
-            <!-- Sidebar Toggler (Sidebar) 
-            <div class="text-center d-none d-md-inline">
-                <button class="rounded-circle border-0" id="sidebarToggle"></button>
-            </div>-->
-
-        </ul>
-        <!-- End of Sidebar -->
+</ul>
+<!-- End of Sidebar -->
