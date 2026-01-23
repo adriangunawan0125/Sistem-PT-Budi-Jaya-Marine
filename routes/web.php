@@ -7,10 +7,10 @@ use App\Http\Controllers\OwnerController;
 use App\Http\Controllers\AdminMarineController;
 use App\Http\Controllers\InvoiceItemController;
 use App\Http\Controllers\InvoiceController;
-use App\Http\Controllers\Admintransport\KelolaMitraController;
+use App\Http\Controllers\AdminTransport\KelolaMitraController;
 use App\Http\Controllers\AdminTransport\AdminTransportController;
 use App\Http\Controllers\AdminTransport\CalonMitraTransportControllerMitraTransportController;
-use App\Http\Controllers\Admintransport\KelolaUnitController;
+use App\Http\Controllers\AdminTransport\KelolaUnitController;
 use App\Http\Controllers\AdminTransport\LaporanMitraController;
 use App\Http\Controllers\ExMitraController;
 use App\Http\Controllers\InvoiceController as ControllersInvoiceController;
@@ -35,11 +35,11 @@ Route::get('/marine-spareparts', [HomeController::class, 'marineSpareparts'])
 Route::get('/marine-service', [HomeController::class, 'marineService'])
     ->name('marinespareparts');
 Route::get('/transport-gallery', [HomeController::class, 'transportgallery'])
-    ->name('transport.gallery');    
+    ->name('transport.gallery');
 Route::get('/service-gallery', [HomeController::class, 'servicegallery'])
-    ->name('service.gallery');    
+    ->name('service.gallery');
 Route::get('/spareparts-gallery', [HomeController::class, 'sparepartsgallery'])
-    ->name('spareparts.gallery');    
+    ->name('spareparts.gallery');
 Route::get('/daftar-mitra', [HomeController::class, 'daftarMitra'])
     ->name('daftar.mitra');
 
@@ -52,7 +52,7 @@ Route::post('/daftar-mitra', [CalonMitraController::class, 'store'])
     ->name('mitra.store');
 
 
- // ADMIN   
+// ADMIN   
 Route::get('/login', function () {
     return view('auth.login');
 })->name('login');
@@ -80,7 +80,7 @@ Route::middleware(['auth', 'role:admin_marine'])->group(function () {
 });
 
 Route::middleware(['auth', 'role:admin_transport'])->group(function () {
-Route::get('/admin-transport', [AdminTransportController::class, 'dashboard'])
+    Route::get('/admin-transport', [AdminTransportController::class, 'dashboard'])
         ->name('admin.transport.dashboard');
 
 
@@ -98,28 +98,27 @@ Route::get('/admin-transport', [AdminTransportController::class, 'dashboard'])
     // DELETE
     Route::delete('/admin-transport/unit/delete/{id}', [KelolaUnitController::class, 'deleteDestroy']);
 
-   
-
-Route::prefix('admin-transport')->group(function () {
-    Route::get('/mitra', [KelolaMitraController::class, 'getIndex']);
-    Route::get('/mitra/berakhir', [KelolaMitraController::class, 'getBerakhir']);
-    Route::get('/mitra/create', [KelolaMitraController::class, 'getCreate']);
-    Route::post('/mitra', [KelolaMitraController::class, 'postStore']);
-    Route::get('/mitra/{id}/edit', [KelolaMitraController::class, 'getEdit']);
-    Route::put('/mitra/{id}', [KelolaMitraController::class, 'putUpdate']);
-    Route::patch('/mitra/{id}/akhiri-kontrak', [KelolaMitraController::class, 'patchAkhiriKontrak']);
-     Route::patch('/mitra/{id}/aktifkan', [KelolaMitraController::class, 'patchAktifkan']);
-     Route::get('/mitra/{id}', [KelolaMitraController::class, 'show']);
-Route::delete(
-    '/mitra/{mitra}',
-    [KelolaMitraController::class, 'destroy']
-);
-
-});
 
 
-Route::get('/invoice-item/{id}/edit', [InvoiceItemController::class, 'edit'])
-    ->name('invoice-item.edit');
+    Route::prefix('admin-transport')->group(function () {
+        Route::get('/mitra', [KelolaMitraController::class, 'getIndex']);
+        Route::get('/mitra/berakhir', [KelolaMitraController::class, 'getBerakhir']);
+        Route::get('/mitra/create', [KelolaMitraController::class, 'getCreate']);
+        Route::post('/mitra', [KelolaMitraController::class, 'postStore']);
+        Route::get('/mitra/{id}/edit', [KelolaMitraController::class, 'getEdit']);
+        Route::put('/mitra/{id}', [KelolaMitraController::class, 'putUpdate']);
+        Route::patch('/mitra/{id}/akhiri-kontrak', [KelolaMitraController::class, 'patchAkhiriKontrak']);
+        Route::patch('/mitra/{id}/aktifkan', [KelolaMitraController::class, 'patchAktifkan']);
+        Route::get('/mitra/{id}', [KelolaMitraController::class, 'show']);
+        Route::delete(
+            '/mitra/{mitra}',
+            [KelolaMitraController::class, 'destroy']
+        );
+    });
+
+
+    Route::get('/invoice-item/{id}/edit', [InvoiceItemController::class, 'edit'])
+        ->name('invoice-item.edit');
 
     Route::put(
         '/invoice-item/{id}',
@@ -131,30 +130,30 @@ Route::get('/invoice-item/{id}/edit', [InvoiceItemController::class, 'edit'])
     )->name('invoice-item.destroy');
 
     Route::resource('invoice', InvoiceController::class);
-    
-Route::resource('pengeluaran_internal', PengeluaranInternalController::class)
-    ->except(['show']); // hapus route show
 
-Route::get('pengeluaran_internal/laporan', [PengeluaranInternalController::class, 'laporan'])->name('pengeluaran_internal.laporan');
+    Route::resource('pengeluaran_internal', PengeluaranInternalController::class)
+        ->except(['show']); // hapus route show
 
-
-// Resource routes untuk CRUD (tanpa show)
-Route::resource('pengeluaran_pajak', PengeluaranPajakController::class)->except(['show']);
-
-// Route khusus untuk laporan per bulan
-Route::get('pengeluaran_pajak/laporan', [PengeluaranPajakController::class, 'laporan'])->name('pengeluaran_pajak.laporan');
-
-Route::get('pengeluaran_pajak/laporan', [PengeluaranPajakController::class, 'laporan'])
-    ->name('pengeluaran_pajak.laporan');
+    Route::get('pengeluaran_internal/laporan', [PengeluaranInternalController::class, 'laporan'])->name('pengeluaran_internal.laporan');
 
 
+    // Resource routes untuk CRUD (tanpa show)
+    Route::resource('pengeluaran_pajak', PengeluaranPajakController::class)->except(['show']);
 
-Route::resource('pengeluaran_transport', PengeluaranTransportController::class)->except(['show']);
-Route::get('pengeluaran_transport/laporan', [PengeluaranTransportController::class,'laporan'])->name('pengeluaran_transport.laporan');
+    // Route khusus untuk laporan per bulan
+    Route::get('pengeluaran_pajak/laporan', [PengeluaranPajakController::class, 'laporan'])->name('pengeluaran_pajak.laporan');
 
-Route::resource('jaminan_mitra', JaminanMitraController::class);
+    Route::get('pengeluaran_pajak/laporan', [PengeluaranPajakController::class, 'laporan'])
+        ->name('pengeluaran_pajak.laporan');
 
-Route::get('/contact', [ContactMessageController::class, 'index'])
+
+
+    Route::resource('pengeluaran_transport', PengeluaranTransportController::class)->except(['show']);
+    Route::get('pengeluaran_transport/laporan', [PengeluaranTransportController::class, 'laporan'])->name('pengeluaran_transport.laporan');
+
+    Route::resource('jaminan_mitra', JaminanMitraController::class);
+
+    Route::get('/contact', [ContactMessageController::class, 'index'])
         ->name('contact.index');
 
     Route::get('/contact/{id}', [ContactMessageController::class, 'show'])
@@ -163,47 +162,48 @@ Route::get('/contact', [ContactMessageController::class, 'index'])
     Route::delete('/contact/{id}', [ContactMessageController::class, 'destroy'])
         ->name('contact.destroy');
 
-Route::get('/calon-mitra', [AdminCalonMitraController::class, 'index'])
+    Route::get('/calon-mitra', [AdminCalonMitraController::class, 'index'])
         ->name('admin.calonmitra');
 
-   Route::delete('/admin/calon-mitra/{id}', [AdminCalonMitraController::class, 'destroy'])
+    Route::delete('/admin/calon-mitra/{id}', [AdminCalonMitraController::class, 'destroy'])
         ->name('admin.calonmitra.destroy');
 
-/* ================= PEMASUKAN ================= */
+    /* ================= PEMASUKAN ================= */
 
-Route::get('/pemasukan', [PemasukanController::class, 'index'])
-    ->name('pemasukan.index');
+    Route::get('/pemasukan', [PemasukanController::class, 'index'])
+        ->name('pemasukan.index');
 
-Route::get('/pemasukan/create', [PemasukanController::class, 'create'])
-    ->name('pemasukan.create');
+    Route::get('/pemasukan/create', [PemasukanController::class, 'create'])
+        ->name('pemasukan.create');
 
-Route::post('/pemasukan/store', [PemasukanController::class, 'store'])
-    ->name('pemasukan.store');
+    Route::post('/pemasukan/store', [PemasukanController::class, 'store'])
+        ->name('pemasukan.store');
 
-Route::get('/pemasukan/{id}/edit', [PemasukanController::class, 'edit'])
-    ->name('pemasukan.edit');
+    Route::get('/pemasukan/{id}/edit', [PemasukanController::class, 'edit'])
+        ->name('pemasukan.edit');
 
-Route::put('/pemasukan/{id}/update', [PemasukanController::class, 'update'])
-    ->name('pemasukan.update');
+    Route::put('/pemasukan/{id}/update', [PemasukanController::class, 'update'])
+        ->name('pemasukan.update');
 
-Route::delete('/pemasukan/{id}/delete', [PemasukanController::class, 'destroy'])
-    ->name('pemasukan.destroy');
+    Route::delete('/pemasukan/{id}/delete', [PemasukanController::class, 'destroy'])
+        ->name('pemasukan.destroy');
 
-/* ===== LAPORAN HARIAN ===== */
-Route::get('/pemasukan-laporan-harian', [PemasukanController::class, 'laporanHarian'])
-    ->name('pemasukan.laporan.harian');
+    /* ===== LAPORAN HARIAN ===== */
+    Route::get('/pemasukan-laporan-harian', [PemasukanController::class, 'laporanHarian'])
+        ->name('pemasukan.laporan.harian');
 
-    Route::get('/pemasukan-laporan-bulanan',
-    [PemasukanController::class, 'laporanBulanan']
-)->name('pemasukan.laporan.bulanan');
+    Route::get(
+        '/pemasukan-laporan-bulanan',
+        [PemasukanController::class, 'laporanBulanan']
+    )->name('pemasukan.laporan.bulanan');
 
 
 
-Route::prefix('owner-transport')->name('owner_transport.')->group(function() {
-    // Laporan Harian
-  
+    Route::prefix('owner-transport')->name('owner_transport.')->group(function () {
+        // Laporan Harian
+
+    });
 });
 
-});
 
-
+//test
