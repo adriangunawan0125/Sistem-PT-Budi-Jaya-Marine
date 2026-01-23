@@ -136,7 +136,6 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
     </div>
 </section>
-
 <!-- CONTENT -->
 <section class="py-5 animate-section">
     <div class="container">
@@ -193,10 +192,46 @@ document.addEventListener('DOMContentLoaded', () => {
                         </span>
                     </li>
 
+                    <!-- Tambahan Spare Parts Baru -->
+                    <li class="d-flex align-items-start mb-3">
+                        <i class="bi bi-wrench text-primary fs-4 me-3"></i>
+                        <span>
+                            <strong>Engine & Machinery Spare Parts</strong>
+                        </span>
+                    </li>
+
+                    <li class="d-flex align-items-start mb-3">
+                        <i class="bi bi-funnel text-primary fs-4 me-3"></i>
+                        <span>
+                            <strong>Pump Valve & Pipe Fitting</strong>
+                        </span>
+                    </li>
+
+                    <li class="d-flex align-items-start mb-3">
+                        <i class="bi bi-life-preserver text-primary fs-4 me-3"></i>
+                        <span>
+                            <strong>Deck & Mooring Equipment</strong>
+                        </span>
+                    </li>
+
+                    <li class="d-flex align-items-start mb-3">
+                        <i class="bi bi-lightning-fill text-primary fs-4 me-3"></i>
+                        <span>
+                            <strong>Electrical & Automation</strong>
+                        </span>
+                    </li>
+
+                    <li class="d-flex align-items-start mb-3">
+                        <i class="bi bi-shield-exclamation text-primary fs-4 me-3"></i>
+                        <span>
+                            <strong>Safety & Life Saving Equipment</strong>
+                        </span>
+                    </li>
+
                     <li class="d-flex align-items-start">
                         <i class="bi bi-box-seam text-primary fs-4 me-3"></i>
                         <span>
-                            <strong>Marine Consumable Parts</strong>
+                            <strong>Consumable & Maintenance</strong>
                         </span>
                     </li>
 
