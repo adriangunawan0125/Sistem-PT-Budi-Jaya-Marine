@@ -164,6 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
 <section class="py-5 bg-light animate-section">
     <div class="container">
         <div class="row align-items-center g-5">
+            <!-- Konten Teks -->
             <div class="col-lg-6">
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body p-4">
@@ -192,6 +193,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
             </div>
+
+            <!-- Gambar -->
             <div class="col-lg-6 text-center">
                 <img src="{{ asset('assets/servis_propulsi.jpg') }}"
                      class="img-fluid rounded shadow-sm"
@@ -201,12 +204,11 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
 </section>
 
-
-
 <!-- SISTEM PROPULSI -->
-<section class="py-5 bg-light animate-section">
+<section class="py-5 animate-section">
     <div class="container">
-        <div class="row align-items-center g-5">
+        <div class="row align-items-center g-5 flex-lg-row-reverse">
+            <!-- Konten Teks -->
             <div class="col-lg-6">
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body p-4">
@@ -235,6 +237,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
             </div>
+
+            <!-- Gambar -->
             <div class="col-lg-6 text-center">
                 <img src="{{ asset('assets/servis_propulsi.jpg') }}"
                      class="img-fluid rounded shadow-sm"
@@ -245,9 +249,10 @@ document.addEventListener('DOMContentLoaded', () => {
 </section>
 
 <!-- ENGINE -->
-<section class="py-5 animate-section">
+<section class="py-5 bg-light animate-section">
     <div class="container">
-        <div class="row align-items-center g-5 flex-lg-row-reverse">
+        <div class="row align-items-center g-5">
+            <!-- Konten Teks -->
             <div class="col-lg-6">
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body p-4">
@@ -272,6 +277,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
             </div>
+
+            <!-- Gambar -->
             <div class="col-lg-6 text-center">
                 <img src="{{ asset('assets/1966062015529-284-Overhaul-of -Auxiliary-Engines.jpg') }}"
                      class="img-fluid rounded shadow-sm"
@@ -282,9 +289,10 @@ document.addEventListener('DOMContentLoaded', () => {
 </section>
 
 <!-- NAVIGATION -->
-<section class="py-5 bg-light animate-section">
+<section class="py-5 animate-section">
     <div class="container">
-        <div class="row align-items-center g-5">
+        <div class="row align-items-center g-5 flex-lg-row-reverse">
+            <!-- Konten Teks -->
             <div class="col-lg-6">
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body p-4">
@@ -319,8 +327,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
             </div>
+
+            <!-- Gambar -->
             <div class="col-lg-6 text-center">
-                <img src="{{ asset('assets\Radar.png') }}"
+                <img src="{{ asset('assets/Radar.png') }}"
                      class="img-fluid rounded shadow-sm"
                      alt="Navigasi Kapal">
             </div>
@@ -329,9 +339,10 @@ document.addEventListener('DOMContentLoaded', () => {
 </section>
 
 <!-- SAFETY -->
-<section class="py-5 animate-section">
+<section class="py-5 bg-light animate-section">
     <div class="container">
-        <div class="row align-items-center g-5 flex-lg-row-reverse">
+        <div class="row align-items-center g-5">
+            <!-- Konten Teks -->
             <div class="col-lg-6">
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body p-4">
@@ -369,14 +380,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
             </div>
+
+            <!-- Gambar -->
             <div class="col-lg-6 text-center">
-                <img src="{{ asset('assets\life-raft.png') }}"
+                <img src="{{ asset('assets/life-raft.png') }}"
                      class="img-fluid rounded shadow-sm"
                      alt="Safety Equipment Kapal">
             </div>
         </div>
     </div>
 </section>
+
 <!-- CONTRACT CTA -->
 <section class="py-5 animate-section">
     <div class="container">
