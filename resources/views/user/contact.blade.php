@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="card border-0 shadow-sm text-center p-4 h-100">
                     <i class="bi bi-envelope-fill fs-1 text-primary mb-3"></i>
                     <h6 class="fw-bold mb-1">Email</h6>
-                    <p class="mb-0"><a href="mailto:budijayamarine@gmail.com" class="text-decoration-none">budijayamarine@gmail.com</a></p>
+                    <p class="mb-0"><a href="mailto:budijayamarine@gmail.com" class="text-decoration-none">cs@budijayamarine.com</a></p>
                 </div>
             </div>
 
