@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <img src="{{ asset('assets/galleryspareparts/sparepart10.jpg') }}" class="thumb" onclick="changeImage(9)">
                     <img src="{{ asset('assets/galleryspareparts/sparepart11.jpeg') }}" class="thumb" onclick="changeImage(10)">
                     <img src="{{ asset('assets/galleryspareparts/sparepart12.jpg') }}" class="thumb" onclick="changeImage(11)">
-                    <img src="{{ asset('assets/galleryspareparts/sparepart13.jpeg') }}" class="thumb" onclick="changeImage(11)">
+                    <img src="{{ asset('assets/galleryspareparts/sparepart13.jpeg') }}" class="thumb" onclick="changeImage(12)">
                     <img src="{{ asset('assets/galleryspareparts/sparepart14.jpeg') }}" class="thumb" onclick="changeImage(13)">
                     <img src="{{ asset('assets/galleryspareparts/sparepart15.jpeg') }}" class="thumb" onclick="changeImage(14)">
                     <img src="{{ asset('assets/galleryspareparts/sparepart16.jpeg') }}" class="thumb" onclick="changeImage(15)">
