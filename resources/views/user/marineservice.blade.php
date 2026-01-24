@@ -196,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             <!-- Gambar -->
             <div class="col-lg-6 text-center">
-                <img src="{{ asset('assets/servis_propulsi.jpg') }}"
+                <img src="{{ asset('assets/ship contractor.jpeg') }}"
                      class="img-fluid rounded shadow-sm"
                      alt="Kontraktor Kapal">
             </div>
