@@ -271,8 +271,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     <img src="{{ asset('assets/galleryservice/service8.jpg') }}" class="thumb" onclick="changeMedia(10)">
                     <img src="{{ asset('assets/galleryservice/service9.jpg') }}" class="thumb" onclick="changeMedia(11)">
                     <img src="{{ asset('assets/galleryservice/service10.jpg') }}" class="thumb" onclick="changeMedia(12)">
-                    <img src="{{ asset('assets/galleryservice/service11.jpg') }}" class="thumb" onclick="changeMedia(13)">
-                    <img src="{{ asset('assets/galleryservice/service12.jpg') }}" class="thumb" onclick="changeMedia(14)">
+                    <img src="{{ asset('assets/galleryservice/service11.jpeg') }}" class="thumb" onclick="changeMedia(13)">
+                    <img src="{{ asset('assets/galleryservice/service12.jpeg') }}" class="thumb" onclick="changeMedia(14)">
                 </div>
 
             </div>
@@ -297,12 +297,12 @@ const media = [
     { type: 'image', src: "{{ asset('assets/galleryservice/service4.jpg') }}" },
     { type: 'image', src: "{{ asset('assets/galleryservice/service5.jpg') }}" },
     { type: 'image', src: "{{ asset('assets/galleryservice/service6.jpg') }}" },
-    { type: 'image', src: "{{ asset('assets/galleryservice/service7.jpg') }}" },
-    { type: 'image', src: "{{ asset('assets/galleryservice/service8.jpg') }}" },
+    { type: 'image', src: "{{ asset('assets/galleryservice/service7.jpeg') }}" },
+    { type: 'image', src: "{{ asset('assets/galleryservice/service8.jpeg') }}" },
     { type: 'image', src: "{{ asset('assets/galleryservice/service9.jpg') }}" },
     { type: 'image', src: "{{ asset('assets/galleryservice/service10.jpg') }}" },
-    { type: 'image', src: "{{ asset('assets/galleryservice/service11.jpg') }}" },
-    { type: 'image', src: "{{ asset('assets/galleryservice/service12.jpg') }}" },
+    { type: 'image', src: "{{ asset('assets/galleryservice/service11.jpeg') }}" },
+    { type: 'image', src: "{{ asset('assets/galleryservice/service12.jpeg') }}" },
     
 ];
 
