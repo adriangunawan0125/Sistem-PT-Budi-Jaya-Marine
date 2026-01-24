@@ -267,12 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <img src="{{ asset('assets/galleryservice/service4.jpg') }}" class="thumb" onclick="changeMedia(6)">
                     <img src="{{ asset('assets/galleryservice/service5.jpg') }}" class="thumb" onclick="changeMedia(7)">
                     <img src="{{ asset('assets/galleryservice/service6.jpg') }}" class="thumb" onclick="changeMedia(8)">
-                    <img src="{{ asset('assets/galleryservice/service7.jpg') }}" class="thumb" onclick="changeMedia(9)">
-                    <img src="{{ asset('assets/galleryservice/service8.jpg') }}" class="thumb" onclick="changeMedia(10)">
-                    <img src="{{ asset('assets/galleryservice/service9.jpg') }}" class="thumb" onclick="changeMedia(11)">
-                    <img src="{{ asset('assets/galleryservice/WhatsApp Image 2026-01-23 at 17.41.07.jpeg') }}" class="thumb" onclick="changeMedia(12)">
-                    <img src="{{ asset('assets/galleryservice/WhatsApp Image 2026-01-23 at 17.43.05.jpeg') }}" class="thumb" onclick="changeMedia(13)">
-                    <img src="{{ asset('assets/galleryservice/WhatsApp Image 2026-01-23 at 17.51.27.jpeg') }}" class="thumb" onclick="changeMedia(14)">
+
                 </div>
 
             </div>
@@ -297,12 +292,6 @@ const media = [
     { type: 'image', src: "{{ asset('assets/galleryservice/service4.jpg') }}" },
     { type: 'image', src: "{{ asset('assets/galleryservice/service5.jpg') }}" },
     { type: 'image', src: "{{ asset('assets/galleryservice/service6.jpg') }}" },
-    { type: 'image', src: "{{ asset('assets/galleryservice/service7.jpeg') }}" },
-    { type: 'image', src: "{{ asset('assets/galleryservice/service8.jpeg') }}" },
-    { type: 'image', src: "{{ asset('assets/galleryservice/service9.jpg') }}" },
-    { type: 'image', src: "{{ asset('assets/galleryservice/WhatsApp Image 2026-01-23 at 17.41.07.jpeg') }}" },
-    { type: 'image', src: "{{ asset('assets/galleryservice/WhatsApp Image 2026-01-23 at 17.43.05.jpeg') }}" },
-    { type: 'image', src: "{{ asset('assets/galleryservice/WhatsApp Image 2026-01-23 at 17.51.27.jpeg') }}" },
     
 ];
 
