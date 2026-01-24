@@ -163,27 +163,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         </span>
                     </li>
 
-                    <li class="d-flex align-items-start mb-3">
-                        <i class="bi bi-radar text-primary fs-4 me-3"></i>
-                        <span>
-                            <strong>Pengadaan Peralatan Navigasi & Komunikasi</strong><br>
-                            Radar, GPS, AIS, Echo Sounder, Speed Log, Weather Fax
-                        </span>
-                    </li>
-
-                    <li class="d-flex align-items-start mb-3">
-                        <i class="bi bi-compass-fill text-primary fs-4 me-3"></i>
-                        <span>
-                            VDR, Gyro Compass, Navtex, Radio VHF, Radio SSB
-                        </span>
-                    </li>
-
-                    <li class="d-flex align-items-start mb-3">
-                        <i class="bi bi-shield-check text-primary fs-4 me-3"></i>
-                        <span>
-                            <strong>Pengadaan Perlengkapan Safety Kapal</strong>
-                        </span>
-                    </li>
 
                     <li class="d-flex align-items-start mb-3">
                         <i class="bi bi-tools text-primary fs-4 me-3"></i>
