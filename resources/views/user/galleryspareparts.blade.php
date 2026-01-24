@@ -167,25 +167,24 @@ document.addEventListener('DOMContentLoaded', () => {
                     <img src="{{ asset('assets/galleryspareparts/sparepart8.jpg') }}" class="thumb" onclick="changeImage(7)">
                     <img src="{{ asset('assets/galleryspareparts/sparepart9.jpg') }}" class="thumb" onclick="changeImage(8)">
                     <img src="{{ asset('assets/galleryspareparts/sparepart10.jpg') }}" class="thumb" onclick="changeImage(9)">
-                    <img src="{{ asset('assets/galleryspareparts/sparepart11.jpeg') }}" class="thumb" onclick="changeImage(11)">
-                    <img src="{{ asset('assets/galleryspareparts/sparepart12.jpg') }}" class="thumb" onclick="changeImage(12)">
-                    <img src="{{ asset('assets/galleryspareparts/sparepart13.jpeg') }}" class="thumb" onclick="changeImage(13)">
-                    <img src="{{ asset('assets/galleryspareparts/sparepart14.jpeg') }}" class="thumb" onclick="changeImage(14)">
-                    <img src="{{ asset('assets/galleryspareparts/sparepart15.jpeg') }}" class="thumb" onclick="changeImage(15)">
-                    <img src="{{ asset('assets/galleryspareparts/sparepart16.jpeg') }}" class="thumb" onclick="changeImage(16)">
-                    <img src="{{ asset('assets/galleryspareparts/sparepart17.jpeg') }}" class="thumb" onclick="changeImage(17)">
-                    <img src="{{ asset('assets/galleryspareparts/sparepart18.jpeg') }}" class="thumb" onclick="changeImage(18)">
-                    <img src="{{ asset('assets/galleryspareparts/sparepart19.jpeg') }}" class="thumb" onclick="changeImage(19)">
-                    <img src="{{ asset('assets/galleryspareparts/sparepart20.jpeg') }}" class="thumb" onclick="changeImage(20)">
-                    <img src="{{ asset('assets/galleryspareparts/sparepart21.jpeg') }}" class="thumb" onclick="changeImage(21)">
-                    <img src="{{ asset('assets/galleryspareparts/sparepart22.jpeg') }}" class="thumb" onclick="changeImage(22)">
-                    <img src="{{ asset('assets/galleryspareparts/sparepart23.jpeg') }}" class="thumb" onclick="changeImage(23)">
-                    <img src="{{ asset('assets/galleryspareparts/sparepart24.jpeg') }}" class="thumb" onclick="changeImage(24)">
-                    <img src="{{ asset('assets/galleryspareparts/sparepart25.jpeg') }}" class="thumb" onclick="changeImage(25)">
-                    <img src="{{ asset('assets/galleryspareparts/sparepart26.jpeg') }}" class="thumb" onclick="changeImage(26)">
-                    <img src="{{ asset('assets/galleryspareparts/sparepart27.jpeg') }}" class="thumb" onclick="changeImage(27)">
-                    <img src="{{ asset('assets/galleryspareparts/sparepart28.jpeg') }}" class="thumb" onclick="changeImage(28)">
-
+                    <img src="{{ asset('assets/galleryspareparts/sparepart11.jpeg') }}" class="thumb" onclick="changeImage(10)">
+                    <img src="{{ asset('assets/galleryspareparts/sparepart12.jpg') }}" class="thumb" onclick="changeImage(11)">
+                    <img src="{{ asset('assets/galleryspareparts/sparepart13.jpeg') }}" class="thumb" onclick="changeImage(11)">
+                    <img src="{{ asset('assets/galleryspareparts/sparepart14.jpeg') }}" class="thumb" onclick="changeImage(13)">
+                    <img src="{{ asset('assets/galleryspareparts/sparepart15.jpeg') }}" class="thumb" onclick="changeImage(14)">
+                    <img src="{{ asset('assets/galleryspareparts/sparepart16.jpeg') }}" class="thumb" onclick="changeImage(15)">
+                    <img src="{{ asset('assets/galleryspareparts/sparepart17.jpeg') }}" class="thumb" onclick="changeImage(16)">
+                    <img src="{{ asset('assets/galleryspareparts/sparepart18.jpeg') }}" class="thumb" onclick="changeImage(17)">
+                    <img src="{{ asset('assets/galleryspareparts/sparepart19.jpeg') }}" class="thumb" onclick="changeImage(18)">
+                    <img src="{{ asset('assets/galleryspareparts/sparepart20.jpeg') }}" class="thumb" onclick="changeImage(19)">
+                    <img src="{{ asset('assets/galleryspareparts/sparepart21.jpeg') }}" class="thumb" onclick="changeImage(20)">
+                    <img src="{{ asset('assets/galleryspareparts/sparepart22.jpeg') }}" class="thumb" onclick="changeImage(21)">
+                    <img src="{{ asset('assets/galleryspareparts/sparepart23.jpeg') }}" class="thumb" onclick="changeImage(22)">
+                    <img src="{{ asset('assets/galleryspareparts/sparepart24.jpeg') }}" class="thumb" onclick="changeImage(23)">
+                    <img src="{{ asset('assets/galleryspareparts/sparepart25.jpeg') }}" class="thumb" onclick="changeImage(24)">
+                    <img src="{{ asset('assets/galleryspareparts/sparepart26.jpeg') }}" class="thumb" onclick="changeImage(25)">
+                    <img src="{{ asset('assets/galleryspareparts/sparepart27.jpeg') }}" class="thumb" onclick="changeImage(26)">
+                    <img src="{{ asset('assets/galleryspareparts/sparepart28.jpeg') }}" class="thumb" onclick="changeImage(27)">
                 </div>
 
             </div>
