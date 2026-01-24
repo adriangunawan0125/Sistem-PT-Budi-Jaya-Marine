@@ -265,8 +265,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     <img src="{{ asset('assets/galleryservice/service4.jpg') }}" class="thumb" onclick="changeMedia(4)">
                     <img src="{{ asset('assets/galleryservice/service4.jpg') }}" class="thumb" onclick="changeMedia(5)">
                     <img src="{{ asset('assets/galleryservice/service4.jpg') }}" class="thumb" onclick="changeMedia(6)">
-                    <img src="{{ asset('assets/galleryservice/service5.jpg') }}" class="thumb" onclick="changeMedia(7)">
-
+                    <img src="{{ asset('assets/galleryservice/service6.jpg') }}" class="thumb" onclick="changeMedia(7)">
+                    <img src="{{ asset('assets/galleryservice/service7.jpg') }}" class="thumb" onclick="changeMedia(8)">
+                    <img src="{{ asset('assets/galleryservice/service8.jpg') }}" class="thumb" onclick="changeMedia(9)">
+                    <img src="{{ asset('assets/galleryservice/service9.jpg') }}" class="thumb" onclick="changeMedia(10)">
+                    <img src="{{ asset('assets/galleryservice/service10.jpg') }}" class="thumb" onclick="changeMedia(11)">
+                    <img src="{{ asset('assets/galleryservice/service11.jpg') }}" class="thumb" onclick="changeMedia(12)">
+                    <img src="{{ asset('assets/galleryservice/service12.jpg') }}" class="thumb" onclick="changeMedia(13)">
                 </div>
 
             </div>
