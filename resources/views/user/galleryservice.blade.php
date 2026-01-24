@@ -290,7 +290,7 @@ document.addEventListener('DOMContentLoaded', () => {
 <script>
 const media = [
     { type: 'video', src: "{{ asset('assets/galleryservice/vid1.mp4') }}" },
-    { type: 'video', src: "{{ asset('assets/galleryservice/vid2.mp4') }}" },
+    { type: 'video', src: "{{ asset('assets/galleryservice/WhatsApp Video 2026-01-23 at 17.42.23.mp4') }}" },
     { type: 'image', src: "{{ asset('assets/galleryservice/service1.jpg') }}" },
     { type: 'image', src: "{{ asset('assets/galleryservice/service2.jpg') }}" },
     { type: 'image', src: "{{ asset('assets/galleryservice/service3.jpg') }}" },
@@ -300,9 +300,9 @@ const media = [
     { type: 'image', src: "{{ asset('assets/galleryservice/service7.jpeg') }}" },
     { type: 'image', src: "{{ asset('assets/galleryservice/service8.jpeg') }}" },
     { type: 'image', src: "{{ asset('assets/galleryservice/service9.jpg') }}" },
-    { type: 'image', src: "{{ asset('assets/galleryservice/service10.jpg') }}" },
-    { type: 'image', src: "{{ asset('assets/galleryservice/service11.jpeg') }}" },
-    { type: 'image', src: "{{ asset('assets/galleryservice/service12.jpeg') }}" },
+    { type: 'image', src: "{{ asset('assets/galleryservice/WhatsApp Image 2026-01-23 at 17.41.07.jpeg') }}" },
+    { type: 'image', src: "{{ asset('assets/galleryservice/WhatsApp Image 2026-01-23 at 17.43.05.jpeg') }}" },
+    { type: 'image', src: "{{ asset('assets/galleryservice/WhatsApp Image 2026-01-23 at 17.51.27.jpeg') }}" },
     
 ];
 
