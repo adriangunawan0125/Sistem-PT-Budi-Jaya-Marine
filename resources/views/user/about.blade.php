@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 <!-- ABOUT CONTENT -->
-<section class="py-5 bg-white">
+<section class="py-4 bg-white">
     <div class="container py-5">
 
         <!-- ROW ATAS -->
@@ -181,13 +181,13 @@ document.addEventListener('DOMContentLoaded', () => {
             <!-- TEXT (KANAN GAMBAR) -->
             <div class="col-lg-7 col-md-6">
 
-                <h2 class="fw-bold mb-4" style="color:#050a30;">
+                <h2 class="fw-bold mb-4" style="color:#050a30; font-size:30px;">
                     PT. Budi Jaya Marine
                 </h2>
 
                 <p style="
-                    font-size:16.5px;
-                    line-height:1.9;
+                    font-size:15.5px;
+                    line-height:1.8;
                     text-align:justify;
                     color:#555;
                     margin-bottom:16px;
@@ -199,8 +199,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 </p>
 
                 <p style="
-                    font-size:16.5px;
-                    line-height:1.9;
+                    font-size:15.5px;
+                    line-height:1.8;
                     text-align:justify;
                     color:#555;
                 ">
@@ -216,8 +216,8 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="col-12">
 
                 <p style="
-                    font-size:16.5px;
-                    line-height:1.9;
+                    font-size:15.5px;
+                    line-height:1.8;
                     text-align:justify;
                     color:#555;
                     margin-bottom:16px;
@@ -228,8 +228,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 </p>
 
                 <p style="
-                    font-size:16.5px;
-                    line-height:1.9;
+                    font-size:15.5px;
+                    line-height:1.8;
                     text-align:justify;
                     color:#555;
                     margin-bottom:22px;
@@ -240,13 +240,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     memastikan kepuasan pelanggan.
                 </p>
 
-                <p class="fw-semibold mb-3" style="font-size:17px;color:#050a30;">
+                <p class="fw-semibold mb-3" style="font-size:16px;color:#050a30;">
                     Bidang usaha yang kami layani:
                 </p>
 
                 <ol style="
-                    font-size:16.5px;
-                    line-height:1.9;
+                    font-size:15.5px;
+                    line-height:1.8;
                     color:#555;
                     padding-left:18px;
                 ">
@@ -270,6 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     </div>
 </section>
+
 
 <!-- ALASAN MEMILIH KAMI -->
 <section style="padding:80px 0;background:#4f6ef7">
