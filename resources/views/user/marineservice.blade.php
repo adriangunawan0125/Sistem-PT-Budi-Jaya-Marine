@@ -140,8 +140,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <!-- HERO -->
 <section class="text-white animate-section" style="
-    background: linear-gradient(rgba(5,10,48,.85), rgba(5,10,48,.85)),
-    url('assets/hero1.jpg') center/cover no-repeat;
+    background:
+    linear-gradient(
+        to bottom,
+        rgba(5,10,48,.83),
+        rgba(5,10,48,.43)
+    ),
+    url('{{ asset('assets/hero1.jpg') }}') center/cover no-repeat;
     padding: 160px 0 90px;
 ">
     <div class="container text-center">

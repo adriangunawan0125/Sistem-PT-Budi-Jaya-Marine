@@ -110,11 +110,19 @@ document.addEventListener('DOMContentLoaded', () => {
 @endpush
 
 {{-- HERO --}}
+
 <section class="text-white animate-section" style="
-    background: linear-gradient(rgba(5,10,48,.85), rgba(5,10,48,.85)),
-    url('{{ asset('assets/bg-transport.jpg') }}') center/cover no-repeat;
+    background:
+    linear-gradient(
+        to bottom,
+        rgba(5,10,48,.83),
+        rgba(5,10,48,.43)
+    ),
+    url('{{ asset('assets/hero2.jpg') }}') center/cover no-repeat;
     padding: 160px 0 90px;
 ">
+
+
     <div class="container text-center">
         <h1 class="fw-bold mb-3" style="font-size:46px;">
             <i class="bi bi-images text-primary me-2"></i>Gallery Transport

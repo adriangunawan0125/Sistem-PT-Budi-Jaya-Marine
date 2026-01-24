@@ -123,11 +123,15 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 <!-- HERO / BANNER -->
-<section style="
-    background: linear-gradient(rgba(5,10,48,.75), rgba(5,10,48,.75)),
-                url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee') center/cover;
-    padding:180px 0 90px;
-    color:#fff;
+<section class="text-white animate-section" style="
+    background:
+    linear-gradient(
+        to bottom,
+        rgba(5,10,48,.83),
+        rgba(5,10,48,.43)
+    ),
+    url('{{ asset('assets/hero1.jpg') }}') center/cover no-repeat;
+    padding: 160px 0 90px;
 ">
     <div class="container text-center" style="margin-top:30px;">
 
