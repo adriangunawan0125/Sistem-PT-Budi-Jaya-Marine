@@ -9,20 +9,24 @@ use Carbon\Carbon;
 
 class OwnerTransportController extends Controller
 {
-    // Laporan Harian
-    public function laporanHarian(Request $request)
-    {
-        $query = Pemasukan::query();
+  // Laporan Harian
+public function laporanHarian(Request $request)
+{
+    // kalau tidak pilih tanggal → default HARI INI
+    $tanggal = $request->tanggal ?? now()->toDateString();
 
-        if ($request->filled('tanggal')) {
-            $query->whereDate('tanggal', $request->tanggal);
-        }
+    $pemasukan = Pemasukan::whereDate('tanggal', $tanggal)
+        ->orderBy('tanggal', 'desc')
+        ->get();
 
-        $pemasukan = $query->orderBy('tanggal', 'desc')->get();
-        $total = $pemasukan->sum('nominal');
+    $total = $pemasukan->sum('nominal');
 
-        return view('owner_transport.laporan_pemasukan_harian', compact('pemasukan', 'total'));
-    }
+    return view(
+        'owner_transport.laporan_pemasukan_harian',
+        compact('pemasukan', 'total', 'tanggal')
+    );
+}
+
 
     // Laporan Bulanan
     public function laporanBulanan(Request $request)

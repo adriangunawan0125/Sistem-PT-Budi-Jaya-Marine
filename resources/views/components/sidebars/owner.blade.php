@@ -33,10 +33,10 @@
         <div id="collapsePemasukan" class="collapse" aria-labelledby="headingPemasukan" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <h6 class="collapse-header">Pemasukan :</h6>
-                <a class="collapse-item" href="owner.pemasukan.harian">
+                <a class="collapse-item" href="/laporan-pemasukan-harian">
                     <i class="fas fa-calendar-day me-1"></i> Hari Ini
                 </a>
-                <a class="collapse-item" href="owner.pemasukan.bulanan">
+                <a class="collapse-item" href="/laporan-pemasukan-bulanan">
                     <i class="fas fa-calendar-alt me-1"></i> Bulan Ini
                 </a>
             </div>

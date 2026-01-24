@@ -149,7 +149,7 @@
         <div class="row align-items-center">
 
             <div class="col-md-6 text-center text-md-start">
-                © 2025 Budi Jaya Marine. All Rights Reserved.
+                © 2026 Budi Jaya Marine. All Rights Reserved.
             </div>
 
             <div class="col-md-6 mt-3 text-center text-md-end">

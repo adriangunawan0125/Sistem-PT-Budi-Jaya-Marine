@@ -134,7 +134,6 @@ document.addEventListener('DOMContentLoaded', () => {
     padding: 160px 0 90px;
 ">
     <div class="container text-center" style="margin-top:30px;">
-
         <h1 style="
             font-weight:700;
             font-size:42px;
