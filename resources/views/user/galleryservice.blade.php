@@ -266,7 +266,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     <img src="{{ asset('assets/galleryservice/service4.jpg') }}" class="thumb" onclick="changeMedia(5)">
                     <img src="{{ asset('assets/galleryservice/service4.jpg') }}" class="thumb" onclick="changeMedia(6)">
                     <img src="{{ asset('assets/galleryservice/service5.jpg') }}" class="thumb" onclick="changeMedia(7)">
-                    <img src="{{ asset('assets/galleryservice/service6.jpg') }}" class="thumb" onclick="changeMedia(8)">
 
                 </div>
 
@@ -292,6 +291,12 @@ const media = [
     { type: 'image', src: "{{ asset('assets/galleryservice/service4.jpg') }}" },
     { type: 'image', src: "{{ asset('assets/galleryservice/service5.jpg') }}" },
     { type: 'image', src: "{{ asset('assets/galleryservice/service6.jpg') }}" },
+    { type: 'image', src: "{{ asset('assets/galleryservice/service7.jpeg') }}" },
+    { type: 'image', src: "{{ asset('assets/galleryservice/service8.jpeg') }}" },
+    { type: 'image', src: "{{ asset('assets/galleryservice/service9.jpg') }}" },
+    { type: 'image', src: "{{ asset('assets/galleryservice/WhatsApp Image 2026-01-23 at 17.41.07.jpeg') }}" },
+    { type: 'image', src: "{{ asset('assets/galleryservice/WhatsApp Image 2026-01-23 at 17.43.05.jpeg') }}" },
+    { type: 'image', src: "{{ asset('assets/galleryservice/WhatsApp Image 2026-01-23 at 17.51.27.jpeg') }}" },
     
 ];
 
