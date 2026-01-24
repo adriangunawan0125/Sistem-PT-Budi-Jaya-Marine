@@ -270,9 +270,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     <img src="{{ asset('assets/galleryservice/service7.jpg') }}" class="thumb" onclick="changeMedia(9)">
                     <img src="{{ asset('assets/galleryservice/service8.jpg') }}" class="thumb" onclick="changeMedia(10)">
                     <img src="{{ asset('assets/galleryservice/service9.jpg') }}" class="thumb" onclick="changeMedia(11)">
-                    <img src="{{ asset('assets/galleryservice/service10.jpg') }}" class="thumb" onclick="changeMedia(12)">
-                    <img src="{{ asset('assets/galleryservice/service11.jpeg') }}" class="thumb" onclick="changeMedia(13)">
-                    <img src="{{ asset('assets/galleryservice/service12.jpeg') }}" class="thumb" onclick="changeMedia(14)">
+                    <img src="{{ asset('assets/galleryservice/WhatsApp Image 2026-01-23 at 17.41.07.jpeg') }}" class="thumb" onclick="changeMedia(12)">
+                    <img src="{{ asset('assets/galleryservice/WhatsApp Image 2026-01-23 at 17.43.05.jpeg') }}" class="thumb" onclick="changeMedia(13)">
+                    <img src="{{ asset('assets/galleryservice/WhatsApp Image 2026-01-23 at 17.51.27.jpeg') }}" class="thumb" onclick="changeMedia(14)">
                 </div>
 
             </div>
