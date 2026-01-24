@@ -83,6 +83,44 @@
     opacity: 1;
     transform: translateY(0) scale(1);
 }
+
+/* Wrapper gambar seragam */
+/* =========================
+   IMAGE BOX – FINAL STABLE
+========================= */
+
+.img-box {
+    width: 100%;
+    height: 320px;          /* SERAGAM */
+    background: #fff;       /* FIX GAMBAR PUTIH / PNG */
+    border-radius: 12px;
+    overflow: hidden;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* gambar di dalam box */
+.img-box img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;      /* seragam rapi */
+    object-position: center;
+
+    background: #fff;       /* nutup transparansi */
+    display: block;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+    .img-box {
+        height: 240px;
+    }
+}
+
+
 </style>
 
 <script>
@@ -123,13 +161,12 @@ document.addEventListener('DOMContentLoaded', () => {
             
             <!-- Gambar Square -->
             <div class="col-lg-5 text-center">
-                <div style="width:100%; padding-top:100%; position:relative; overflow:hidden; margin:auto;">
-                    <img src="{{ asset('assets/gmbrperbaikan.jpeg') }}"
-                         alt="Marine Service PT Budi Jaya Marine"
-                         style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover;"
-                         class="rounded shadow-sm">
-                </div>
-            </div>
+    <div class="img-box shadow-sm">
+        <img src="{{ asset('assets/gmbrperbaikan.jpeg') }}"
+             alt="Marine Service PT Budi Jaya Marine">
+    </div>
+</div>
+
 
             <!-- Konten Teks -->
             <div class="col-lg-7">
@@ -196,10 +233,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             <!-- Gambar -->
             <div class="col-lg-6 text-center">
-                <img src="{{ asset('assets/ship contractor.jpeg') }}"
-                     class="img-fluid rounded shadow-sm"
-                     alt="Kontraktor Kapal">
-            </div>
+    <div class="img-box shadow-sm">
+        <img src="{{ asset('assets/ship contractor.jpeg') }}"
+             alt="Kontraktor Kapal">
+    </div>
+</div>
+
         </div>
     </div>
 </section>
@@ -240,9 +279,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             <!-- Gambar -->
             <div class="col-lg-6 text-center">
-                <img src="{{ asset('assets/servis_propulsi.jpg') }}"
-                     class="img-fluid rounded shadow-sm"
-                     alt="Sistem Propulsi Kapal">
+                <div class="img-box shadow-sm">
+                    <img src="{{ asset('assets/servis_propulsi.jpg') }}"
+                         class="img-fluid rounded shadow-sm"
+                         alt="Sistem Propulsi Kapal">
+                </div>
             </div>
         </div>
     </div>
@@ -279,11 +320,13 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
 
             <!-- Gambar -->
-            <div class="col-lg-6 text-center">
-                <img src="{{ asset('assets/1966062015529-284-Overhaul-of -Auxiliary-Engines.jpg') }}"
-                     class="img-fluid rounded shadow-sm"
-                     alt="Engine Services Kapal">
-            </div>
+           <div class="col-lg-6 text-center">
+    <div class="img-box shadow-sm">
+        <img src="{{ asset('assets/1966062015529-284-Overhaul-of -Auxiliary-Engines.jpg') }}"
+             alt="Engine Services Kapal">
+    </div>
+</div>
+
         </div>
     </div>
 </section>
@@ -329,11 +372,13 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
 
             <!-- Gambar -->
-            <div class="col-lg-6 text-center">
-                <img src="{{ asset('assets/Radar.png') }}"
-                     class="img-fluid rounded shadow-sm"
-                     alt="Navigasi Kapal">
-            </div>
+           <div class="col-lg-6 text-center">
+    
+        <img src="{{ asset('assets/Radar.png') }}"
+             alt="Navigasi Kapal">
+    </div>
+</div>
+
         </div>
     </div>
 </section>
@@ -382,11 +427,13 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
 
             <!-- Gambar -->
-            <div class="col-lg-6 text-center">
-                <img src="{{ asset('assets/life-raft.png') }}"
-                     class="img-fluid rounded shadow-sm"
-                     alt="Safety Equipment Kapal">
-            </div>
+          <div class="col-lg-6 text-center">
+    <div class="img-box shadow-sm">
+        <img src="{{ asset('assets/life-raft.png') }}"
+             alt="Safety Equipment Kapal">
+    </div>
+</div>
+
         </div>
     </div>
 </section>
