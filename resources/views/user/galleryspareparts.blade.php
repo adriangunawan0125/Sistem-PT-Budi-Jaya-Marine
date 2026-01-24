@@ -203,30 +203,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
 @push('style')
 <style>
+/* FRAME SAMA DENGAN GALLERY SERVICE */
 .gallery-main{
     position:relative;
-    text-align:center;
+    height:520px;
+    background:#000;
+    border-radius:14px;
+    overflow:hidden;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
 }
 
+/* MAIN IMAGE (SAMAIN BEHAVIOR VIDEO/IMAGE) */
 .main-img{
-    width:100%;
-    max-height:520px;
-    object-fit:cover;
-    transition:opacity .3s ease;
+    max-width:100%;
+    max-height:100%;
+    object-fit:contain;
+    display:block;
+    opacity:1;
+    transition:opacity .35s ease;
 }
 
-@media (max-width:768px){
-    .main-img{
-        max-height:none;
-        object-fit:contain;
-    }
-}
-
+/* NAV BUTTON */
 .nav-btn{
     position:absolute;
     top:50%;
     transform:translateY(-50%);
-    background:rgba(0,0,0,.5);
+    background:rgba(0,0,0,.55);
     color:#fff;
     border:none;
     width:46px;
@@ -237,9 +242,10 @@ document.addEventListener('DOMContentLoaded', () => {
     z-index:5;
 }
 
-.nav-btn.left{ left:10px; }
-.nav-btn.right{ right:10px; }
+.nav-btn.left{ left:14px; }
+.nav-btn.right{ right:14px; }
 
+/* THUMB */
 .thumb-wrapper{
     display:flex;
     gap:12px;
@@ -256,14 +262,31 @@ document.addEventListener('DOMContentLoaded', () => {
     border-radius:8px;
     border:3px solid transparent;
     transition:.25s;
+    background:#000;
 }
 
 .thumb.active{
     opacity:1;
     border-color:#0d6efd;
 }
+
+/* MOBILE */
+@media (max-width:768px){
+    .gallery-main{
+        height:auto;
+        padding:12px;
+    }
+    .main-img{
+        max-height:70vh;
+    }
+    .thumb{
+        width:90px;
+        height:60px;
+    }
+}
 </style>
 @endpush
+
 
 @push('script')
 <script>
@@ -298,19 +321,19 @@ const images = [
     "{{ asset('assets/galleryspareparts/sparepart28.jpeg') }}"
 ];
 
-
 let currentIndex = 0;
 const mainImage = document.getElementById('mainImage');
 const thumbs = document.querySelectorAll('.thumb');
 
 function updateImage(){
     mainImage.style.opacity = 0;
+
     setTimeout(() => {
         mainImage.src = images[currentIndex];
         thumbs.forEach(t => t.classList.remove('active'));
-        thumbs[currentIndex].classList.add('active');
+        if (thumbs[currentIndex]) thumbs[currentIndex].classList.add('active');
         mainImage.style.opacity = 1;
-    }, 200);
+    }, 300);
 }
 
 function nextImage(){
@@ -327,5 +350,7 @@ function changeImage(index){
     currentIndex = index;
     updateImage();
 }
+
+updateImage();
 </script>
 @endpush

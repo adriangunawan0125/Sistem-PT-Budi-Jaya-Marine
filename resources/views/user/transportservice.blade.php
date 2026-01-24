@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
         rgba(5,10,48,.83),
         rgba(5,10,48,.43)
     ),
-    url('{{ asset('assets/hero2.jpg') }}') center/cover no-repeat;
+    url('{{ asset('assets/wp12186590 (1).jpg') }}') center/cover no-repeat;
     padding: 160px 0 90px;
 ">
     <div class="container text-center">
@@ -128,95 +128,108 @@ document.addEventListener('DOMContentLoaded', () => {
 </section>
 
 <!-- INTRO -->
+<!-- INTRO -->
 <section class="py-5 animate-section">
-    <div class="container">
+    <div class="container py-4">
         <div class="row align-items-center g-5">
 
             <!-- IMAGE -->
             <div class="col-lg-5 text-center">
                 <img 
-                    src="assets\bg-transport.jpg"
-                    class="img-fluid rounded shadow-sm"
-                    alt="Layanan Transportasi PT Budi Jaya Marine">
+                    src="assets/bg-transport.jpg"
+                    class="img-fluid rounded-4 shadow-sm"
+                    alt="Layanan Transportasi PT Budi Jaya Marine"
+                >
             </div>
 
             <!-- TEXT -->
             <div class="col-lg-7">
-                <h3 class="fw-bold mb-4">
+
+                <h3 class="fw-bold mb-4" style="color:#050a30;">
                     Layanan Transportasi Berbasis Kontrak Perusahaan
                 </h3>
 
-                <p class="text-muted fs-5">
-                    PT Budi Jaya Marine menyediakan layanan transportasi berbasis
-                    kontrak, baik untuk kebutuhan
-                    <strong>jangka menengah (6 bulanan)</strong> maupun
+                <p class="text-muted" style="font-size:16.5px;line-height:1.9;text-align:justify;">
+                    PT Budi Jaya Marine menyediakan layanan transportasi berbasis kontrak
+                    untuk kebutuhan <strong>jangka menengah (6 bulanan)</strong> maupun
                     <strong>jangka panjang (tahunan)</strong>.
                 </p>
 
-                <p class="text-muted fs-5">
-                    Layanan ini ditujukan bagi <strong>perorangan, </strong><strong>perusahaan swasta</strong>,
-                    <strong>instansi pemerintahan</strong>, serta
-                    <strong>perusahaan BUMN</strong> yang membutuhkan solusi
-                    transportasi profesional dan terintegrasi.
+                <p class="text-muted" style="font-size:16.5px;line-height:1.9;text-align:justify;">
+                    Layanan ini ditujukan bagi <strong>perorangan</strong>, 
+                    <strong>perusahaan swasta</strong>, <strong>instansi pemerintahan</strong>,
+                    serta <strong>perusahaan BUMN</strong> yang membutuhkan solusi transportasi
+                    profesional dan terintegrasi.
                 </p>
+
             </div>
 
         </div>
     </div>
 </section>
-
 
 <!-- VALUE -->
 <section class="py-5 bg-light animate-section">
-    <div class="container">
+    <div class="container py-4">
         <div class="row g-5 align-items-center">
+
+            <!-- TEXT -->
             <div class="col-lg-6">
-                <h4 class="fw-bold mb-4">
+
+                <h4 class="fw-bold mb-4" style="color:#050a30;">
                     Fokuskan Bisnis Anda, Biarkan Transportasi Kami Kelola
                 </h4>
 
-                <p class="text-muted fs-6">
-                    Percayakan pengelolaan kebutuhan transportasi perusahaan Anda
-                    kepada kami, sehingga Anda dapat lebih fokus pada
-                    <strong>pengembangan dan aktivitas inti bisnis</strong>
-                    tanpa terbebani urusan operasional kendaraan.
+                <p class="text-muted" style="font-size:16px;line-height:1.9;text-align:justify;">
+                    Percayakan pengelolaan kebutuhan transportasi perusahaan Anda kepada kami,
+                    sehingga Anda dapat lebih fokus pada 
+                    <strong>pengembangan dan aktivitas inti bisnis</strong> tanpa terbebani
+                    urusan operasional kendaraan.
                 </p>
 
-                <p class="text-muted fs-6">
+                <p class="text-muted" style="font-size:16px;line-height:1.9;text-align:justify;">
                     Sebagai penyedia jasa transportasi profesional,
-                    <strong>PT Budi Jaya Marine</strong> berkomitmen memberikan
-                    layanan yang <strong>aman</strong>, <strong>nyaman</strong>,
-                    dan <strong>andal</strong> untuk mendukung mobilitas perusahaan
-                    secara optimal.
+                    <strong>PT Budi Jaya Marine</strong> berkomitmen memberikan layanan yang
+                    <strong>aman</strong>, <strong>nyaman</strong>, dan <strong>andal</strong>
+                    untuk mendukung mobilitas perusahaan secara optimal.
                 </p>
+
             </div>
 
+            <!-- CARD -->
             <div class="col-lg-6">
-                <div class="card border-0 shadow-sm p-4">
-                    <h5 class="fw-bold mb-3">Keunggulan Layanan Kami</h5>
-                    <ul class="list-unstyled mb-0">
-                        <li class="mb-3">
-                            <i class="bi bi-check-circle-fill text-primary me-2"></i>
+                <div class="card border-0 shadow-sm p-4 rounded-4">
+
+                    <h5 class="fw-bold mb-3">
+                        Keunggulan Layanan Kami
+                    </h5>
+
+                    <ul class="list-unstyled mb-0" style="font-size:15.5px;">
+                        <li class="mb-3 d-flex align-items-start">
+                            <i class="bi bi-check-circle-fill text-primary me-2 mt-1"></i>
                             Kontrak fleksibel 6 bulanan dan tahunan
                         </li>
-                        <li class="mb-3">
-                            <i class="bi bi-check-circle-fill text-primary me-2"></i>
+                        <li class="mb-3 d-flex align-items-start">
+                            <i class="bi bi-check-circle-fill text-primary me-2 mt-1"></i>
                             Armada terawat dan siap operasional
                         </li>
-                        <li class="mb-3">
-                            <i class="bi bi-check-circle-fill text-primary me-2"></i>
+                        <li class="mb-3 d-flex align-items-start">
+                            <i class="bi bi-check-circle-fill text-primary me-2 mt-1"></i>
                             Pengelolaan transportasi terintegrasi
                         </li>
-                        <li>
-                            <i class="bi bi-check-circle-fill text-primary me-2"></i>
+                        <li class="d-flex align-items-start">
+                            <i class="bi bi-check-circle-fill text-primary me-2 mt-1"></i>
                             Dukungan operasional untuk perusahaan skala besar
                         </li>
                     </ul>
+
                 </div>
             </div>
+
         </div>
     </div>
 </section>
+
 
 <!-- OPERATIONAL -->
 <section class="py-5 animate-section">

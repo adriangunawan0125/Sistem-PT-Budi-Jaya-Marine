@@ -155,85 +155,122 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 <!-- ABOUT CONTENT -->
-<section style="padding:80px 0;background:#ffffff;">
-    <div class="container">
+<section class="py-5 bg-white">
+    <div class="container py-5">
 
-        <div class="row align-items-center">
+        <!-- ROW ATAS -->
+        <div class="row align-items-start g-5">
 
             <!-- IMAGE -->
-            <div class="col-md-6 mb-4 mb-md-0">
-                <img src="assets\bgabout.jpg"
-                     style="
-                        width:100%;
-                        border-radius:26px;
+            <div class="col-lg-5 col-md-6">
+                <div
+                    style="
+                        border-radius:30px;
+                        overflow:hidden;
                         box-shadow:0 25px 60px rgba(0,0,0,.25);
-                     ">
+                    "
+                >
+                    <img
+                        src="/assets/A-List-of-Inspections-And-Surveys-Deck-Officers-On-Ships-Should-Be-Aware-Of.jpg"
+                        alt="PT Budi Jaya Marine"
+                        class="img-fluid"
+                    >
+                </div>
             </div>
 
-            <!-- TEXT -->
-            <div class="col-md-6">
-                <h2 style="
-                    font-weight:700;
-                    color:#050a30;
-                    margin-bottom:20px;
-                ">
+            <!-- TEXT (KANAN GAMBAR) -->
+            <div class="col-lg-7 col-md-6">
+
+                <h2 class="fw-bold mb-4" style="color:#050a30;">
                     PT. Budi Jaya Marine
                 </h2>
 
                 <p style="
-                    font-size:15px;
+                    font-size:16.5px;
                     line-height:1.9;
+                    text-align:justify;
                     color:#555;
-                    margin-bottom:18px;
+                    margin-bottom:16px;
                 ">
-                    PT Budi Jaya Marine merupakan perusahaan yang bergerak di bidang jasa kontraktor, general supplier, dan transportasi. Kami melayani berbagai sektor usaha, mulai dari usaha menengah hingga perusahaan skala besar, baik perusahaan swasta maupun Badan Usaha Milik Negara (BUMN).
-
+                    PT Budi Jaya Marine merupakan perusahaan yang bergerak di bidang jasa kontraktor,
+                    general supplier, dan transportasi. Kami melayani berbagai sektor usaha, mulai dari
+                    usaha menengah hingga perusahaan skala besar, baik perusahaan swasta maupun
+                    Badan Usaha Milik Negara (BUMN).
                 </p>
 
                 <p style="
-                    font-size:15px;
+                    font-size:16.5px;
                     line-height:1.9;
+                    text-align:justify;
                     color:#555;
                 ">
-                    PT Budi Jaya Marine didirikan pada tahun 2022. Dengan pengalaman hampir 4 tahun, kami memiliki komitmen tinggi dalam memberikan pelayanan terbaik kepada setiap klien. Saat ini, fokus utama perusahaan kami meliputi penyediaan tenaga kerja (manpower) yang berkualitas, pengadaan barang dengan harga yang kompetitif, serta penyediaan teknisi ahli di bidang maritim yang profesional dan berpengalaman.
+                    PT Budi Jaya Marine didirikan pada tahun 2022. Dengan pengalaman hampir 4 tahun,
+                    kami memiliki komitmen tinggi dalam memberikan pelayanan terbaik kepada setiap klien.
                 </p>
-                <p style="
-                    font-size:15px;
-                    line-height:1.9;
-                    color:#555;
-                ">
-                    Tujuan utama perusahaan kami adalah memberikan layanan terbaik dengan tetap menjaga standar kualitas yang tinggi. Dalam mencapai tujuan tersebut, PT Budi Jaya Marine didukung oleh sumber daya manusia yang profesional, kompeten, dan berintegritas. Hal ini kami lakukan untuk memastikan kepuasan pelanggan yang telah mempercayakan kami sebagai mitra dalam mendukung kegiatan operasional usaha mereka.
-Saat ini, PT Budi Jaya Marine menyediakan layanan pada beberapa bidang usaha, yang masing-masing dikelola oleh tim ahli dan profesional, meliputi:
-                </p>
-                 <p style="
-                    font-size:15px;
-                    line-height:1.9;
-                    color:#555;
-                ">
-                   1. Marine Spare Parts Sebagai penyedia layanan pengadaan barang dan suku cadang perkapalan dalam skala besar dengan kualitas terjamin.
-                </p>
-                 <p style="
-                    font-size:15px;
-                    line-height:1.9;
-                    color:#555;
-                ">
-                    
-2. Marine Services Menyediakan jasa inspeksi, troubleshooting, konsultasi, perbaikan, dan perawatan umum (general maintenance), termasuk layanan engine services, auxiliary engine services, serta propulsion system services.
-                </p>
-                 <p style="
-                    font-size:15px;
-                    line-height:1.9;
-                    color:#555;
-                ">
-                  3. Transportasi Menyediakan jasa layanan transportasi berbasis kontrak perusahaan untuk kebutuhan jangka menengah (6 bulanan) maupun jangka panjang (tahunan).
 
-                </p>
             </div>
+        </div>
 
+        <!-- ROW BAWAH (TEXT FULL WIDTH) -->
+        <div class="row mt-4">
+            <div class="col-12">
+
+                <p style="
+                    font-size:16.5px;
+                    line-height:1.9;
+                    text-align:justify;
+                    color:#555;
+                    margin-bottom:16px;
+                ">
+                    Fokus utama perusahaan kami meliputi penyediaan tenaga kerja (manpower) berkualitas,
+                    pengadaan barang dengan harga kompetitif, serta penyediaan teknisi maritim yang
+                    profesional dan berpengalaman.
+                </p>
+
+                <p style="
+                    font-size:16.5px;
+                    line-height:1.9;
+                    text-align:justify;
+                    color:#555;
+                    margin-bottom:22px;
+                ">
+                    Tujuan utama perusahaan kami adalah memberikan layanan terbaik dengan tetap menjaga
+                    standar kualitas yang tinggi. Dalam mencapai tujuan tersebut, PT Budi Jaya Marine
+                    didukung oleh sumber daya manusia yang profesional, kompeten, dan berintegritas guna
+                    memastikan kepuasan pelanggan.
+                </p>
+
+                <p class="fw-semibold mb-3" style="font-size:17px;color:#050a30;">
+                    Bidang usaha yang kami layani:
+                </p>
+
+                <ol style="
+                    font-size:16.5px;
+                    line-height:1.9;
+                    color:#555;
+                    padding-left:18px;
+                ">
+                    <li class="mb-2">
+                        <strong>Marine Spare Parts</strong> – Pengadaan barang dan suku cadang perkapalan
+                        dalam skala besar dengan kualitas terjamin.
+                    </li>
+                    <li class="mb-2">
+                        <strong>Marine Services</strong> – Jasa inspeksi, troubleshooting, konsultasi,
+                        perbaikan, dan perawatan umum, termasuk engine services, auxiliary engine services,
+                        serta propulsion system services.
+                    </li>
+                    <li>
+                        <strong>Transportasi</strong> – Layanan transportasi berbasis kontrak perusahaan
+                        untuk kebutuhan jangka menengah (6 bulanan) maupun jangka panjang (tahunan).
+                    </li>
+                </ol>
+
+            </div>
         </div>
 
     </div>
 </section>
+
 <!-- ALASAN MEMILIH KAMI -->
 <section style="padding:80px 0;background:#4f6ef7">
     <div class="container">
