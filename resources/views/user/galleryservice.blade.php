@@ -93,97 +93,7 @@
     opacity: 1;
     transform: translateY(0) scale(1);
 }
-</style>
-@endpush
 
-@push('script')
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    const sections = document.querySelectorAll('.animate-section');
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if(entry.isIntersecting){
-                entry.target.classList.add('animate');
-            }
-        });
-    }, { threshold: 0.2 });
-    sections.forEach(section => observer.observe(section));
-});
-</script>
-@endpush
-
-{{-- HERO --}}
-<section class="text-white animate-section" style="
-    background: linear-gradient(rgba(5,10,48,.85), rgba(5,10,48,.85)),
-    url('{{ asset('assets/bg-service.jpg') }}') center/cover no-repeat;
-    padding: 160px 0 90px;
-">
-    <div class="container text-center">
-        <h1 class="fw-bold mb-3" style="font-size:46px;">
-            <i class="bi bi-tools text-primary me-2"></i>Gallery Service
-        </h1>
-        <p class="mb-0" style="opacity:.85;">
-            Home / <span class="text-primary">Service</span>
-        </p>
-    </div>
-</section>
-
-{{-- GALLERY --}}
-<section class="py-5 bg-light animate-section">
-    <div class="container">
-
-        <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
-
-            <div class="card-header bg-white text-center py-4">
-                <h3 class="fw-bold mb-1">Dokumentasi Service & Maintenance</h3>
-                <p class="text-muted mb-0">PT. Budi Jaya Marine</p>
-            </div>
-
-            <div class="card-body p-4">
-
-                {{-- MAIN MEDIA --}}
-                <div class="gallery-main mb-4">
-
-                    <button class="nav-btn left" onclick="prevMedia()">‹</button>
-
-                    <img id="mainImage" class="main-media">
-
-                    <video id="mainVideo"
-                           class="main-media"
-                           controls
-                           preload="metadata"
-                           playsinline>
-                    </video>
-
-                    <button class="nav-btn right" onclick="nextMedia()">›</button>
-
-                </div>
-
-                {{-- THUMBNAILS --}}
-                <div class="thumb-wrapper">
-
-                    {{-- VIDEO --}}
-                    <div class="thumb video-thumb active" onclick="changeMedia(0)">
-                        <i class="bi bi-play-circle-fill"></i>
-                    </div>
-
-                    <img src="{{ asset('assets/galleryservice/service1.jpg') }}" class="thumb" onclick="changeMedia(1)">
-                    <img src="{{ asset('assets/galleryservice/service2.jpg') }}" class="thumb" onclick="changeMedia(2)">
-                    <img src="{{ asset('assets/galleryservice/service3.jpg') }}" class="thumb" onclick="changeMedia(3)">
-                    <img src="{{ asset('assets/galleryservice/service4.jpg') }}" class="thumb" onclick="changeMedia(4)">
-
-                </div>
-
-            </div>
-        </div>
-
-    </div>
-</section>
-
-@endsection
-
-@push('style')
-<style>
 /* FRAME */
 .gallery-main{
     position:relative;
@@ -277,12 +187,123 @@ document.addEventListener('DOMContentLoaded', () => {
 
 @push('script')
 <script>
+document.addEventListener('DOMContentLoaded', () => {
+    const sections = document.querySelectorAll('.animate-section');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if(entry.isIntersecting){
+                entry.target.classList.add('animate');
+            }
+        });
+    }, { threshold: 0.2 });
+    sections.forEach(section => observer.observe(section));
+});
+</script>
+@endpush
+
+{{-- HERO --}}
+<section class="text-white animate-section" style="
+    background: linear-gradient(rgba(5,10,48,.85), rgba(5,10,48,.85)),
+    url('{{ asset('assets/bg-service.jpg') }}') center/cover no-repeat;
+    padding: 160px 0 90px;
+">
+    <div class="container text-center">
+        <h1 class="fw-bold mb-3" style="font-size:46px;">
+            <i class="bi bi-tools text-primary me-2"></i>Gallery Service
+        </h1>
+        <p class="mb-0" style="opacity:.85;">
+            Home / <span class="text-primary">Service</span>
+        </p>
+    </div>
+</section>
+
+{{-- GALLERY --}}
+<section class="py-5 bg-light animate-section">
+    <div class="container">
+
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+
+            <div class="card-header bg-white text-center py-4">
+                <h3 class="fw-bold mb-1">Dokumentasi Service & Maintenance</h3>
+                <p class="text-muted mb-0">PT. Budi Jaya Marine</p>
+            </div>
+
+            <div class="card-body p-4">
+
+                {{-- MAIN MEDIA --}}
+                <div class="gallery-main mb-4">
+
+                    <button class="nav-btn left" onclick="prevMedia()">‹</button>
+
+                    <img id="mainImage" class="main-media">
+
+                    <video id="mainVideo"
+                           class="main-media"
+                           controls
+                           preload="metadata"
+                           playsinline>
+                    </video>
+
+                    <button class="nav-btn right" onclick="nextMedia()">›</button>
+
+                </div>
+
+                {{-- THUMBNAILS --}}
+                <div class="thumb-wrapper">
+
+                    {{-- VIDEO --}}
+                    <div class="thumb video-thumb active" onclick="changeMedia(0)">
+                        <i class="bi bi-play-circle-fill"></i>
+                    </div>
+                     <div class="thumb video-thumb" onclick="changeMedia(1)">
+        <i class="bi bi-play-circle-fill"></i>
+    </div>
+
+                    <img src="{{ asset('assets/galleryservice/service1.jpg') }}" class="thumb" onclick="changeMedia(2)">
+                    <img src="{{ asset('assets/galleryservice/service2.jpg') }}" class="thumb" onclick="changeMedia(3)">
+                    <img src="{{ asset('assets/galleryservice/service3.jpg') }}" class="thumb" onclick="changeMedia(4)">
+                    <img src="{{ asset('assets/galleryservice/service4.jpg') }}" class="thumb" onclick="changeMedia(4)">
+                    <img src="{{ asset('assets/galleryservice/service4.jpg') }}" class="thumb" onclick="changeMedia(5)">
+                    <img src="{{ asset('assets/galleryservice/service4.jpg') }}" class="thumb" onclick="changeMedia(6)">
+                    <img src="{{ asset('assets/galleryservice/service5.jpg') }}" class="thumb" onclick="changeMedia(7)">
+                    <img src="{{ asset('assets/galleryservice/service6.jpg') }}" class="thumb" onclick="changeMedia(8)">
+                    <img src="{{ asset('assets/galleryservice/service7.jpg') }}" class="thumb" onclick="changeMedia(9)">
+                    <img src="{{ asset('assets/galleryservice/service8.jpg') }}" class="thumb" onclick="changeMedia(10)">
+                    <img src="{{ asset('assets/galleryservice/service9.jpg') }}" class="thumb" onclick="changeMedia(11)">
+                    <img src="{{ asset('assets/galleryservice/service10.jpg') }}" class="thumb" onclick="changeMedia(12)">
+                    <img src="{{ asset('assets/galleryservice/service11.jpg') }}" class="thumb" onclick="changeMedia(13)">
+                    <img src="{{ asset('assets/galleryservice/service12.jpg') }}" class="thumb" onclick="changeMedia(14)">
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</section>
+
+@endsection
+
+@push('style')
+@endpush
+
+@push('script')
+<script>
 const media = [
     { type: 'video', src: "{{ asset('assets/galleryservice/vid1.mp4') }}" },
+    { type: 'video', src: "{{ asset('assets/galleryservice/vid2.mp4') }}" },
     { type: 'image', src: "{{ asset('assets/galleryservice/service1.jpg') }}" },
     { type: 'image', src: "{{ asset('assets/galleryservice/service2.jpg') }}" },
     { type: 'image', src: "{{ asset('assets/galleryservice/service3.jpg') }}" },
     { type: 'image', src: "{{ asset('assets/galleryservice/service4.jpg') }}" },
+    { type: 'image', src: "{{ asset('assets/galleryservice/service5.jpg') }}" },
+    { type: 'image', src: "{{ asset('assets/galleryservice/service6.jpg') }}" },
+    { type: 'image', src: "{{ asset('assets/galleryservice/service7.jpg') }}" },
+    { type: 'image', src: "{{ asset('assets/galleryservice/service8.jpg') }}" },
+    { type: 'image', src: "{{ asset('assets/galleryservice/service9.jpg') }}" },
+    { type: 'image', src: "{{ asset('assets/galleryservice/service10.jpg') }}" },
+    { type: 'image', src: "{{ asset('assets/galleryservice/service11.jpg') }}" },
+    { type: 'image', src: "{{ asset('assets/galleryservice/service12.jpg') }}" },
+    
 ];
 
 let currentIndex = 0;
