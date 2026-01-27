@@ -33,7 +33,7 @@
         {{-- TANGGAL --}}
         <div class="mb-3">
             <label>Tanggal</label>
-            <input type="date" name="tanggal" class="form-control" required>
+            <input type="date" name="tanggal" class="form-control">
         </div>
 
         <hr>

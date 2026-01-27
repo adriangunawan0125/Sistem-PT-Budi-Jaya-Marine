@@ -5,6 +5,7 @@
 
     <h3 class="mb-4">Laporan Pemasukan Bulanan</h3>
 
+  
     {{-- FILTER BULAN & TAHUN --}}
     <form method="GET" class="mb-4">
         <div class="row g-2">
@@ -34,7 +35,11 @@
             </div>
         </div>
     </form>
-
+  {{-- INFO TOTAL --}}
+    <div class="alert alert-info mb-4">
+        Total Pemasukan:
+        <strong>Rp {{ number_format($total, 0, ',', '.') }}</strong>
+    </div>
     {{-- TABLE --}}
     <div class="card shadow-sm">
         <div class="card-body p-0">

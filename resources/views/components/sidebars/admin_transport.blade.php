@@ -79,7 +79,6 @@
 
     <!-- Sidebar Brand -->
     <a class="sidebar-brand d-flex align-items-center justify-content-center py-4" href="/admin-transport">
-        
         <div class="sidebar-brand-text">
             <div class="brand-title">
                 ADMIN<br>TRANSPORT
@@ -99,9 +98,7 @@
 
     <hr class="sidebar-divider">
 
-    <div class="sidebar-heading">
-        Kelola
-    </div>
+    <div class="sidebar-heading">Kelola</div>
 
     <!-- Kelola Unit -->
     <li class="nav-item {{ request()->is('admin-transport/unit*') ? 'active' : '' }}">
@@ -113,8 +110,12 @@
              class="collapse {{ request()->is('admin-transport/unit*') ? 'show' : '' }}"
              data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="/admin-transport/unit">Daftar Unit</a>
-                <a class="collapse-item" href="/admin-transport/unit/create">Tambah Unit</a>
+                <a class="collapse-item" href="/admin-transport/unit">
+                    <i class="fas fa-list me-2"></i> Daftar Unit
+                </a>
+                <a class="collapse-item" href="/admin-transport/unit/create">
+                    <i class="fas fa-plus-circle me-2"></i> Tambah Unit
+                </a>
             </div>
         </div>
     </li>
@@ -129,10 +130,18 @@
              class="collapse {{ request()->is('admin-transport/mitra*') ? 'show' : '' }}"
              data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="/admin-transport/mitra">Mitra Kontrak</a>
-                <a class="collapse-item" href="/admin-transport/mitra/berakhir">Ex-Mitra</a>
-                <a class="collapse-item" href="/jaminan_mitra">Data Jaminan</a>
-                <a class="collapse-item" href="/admin-transport/laporan/mitra">Laporan Mitra</a>
+                <a class="collapse-item" href="/admin-transport/mitra">
+                    <i class="fas fa-user-check me-2"></i> Mitra Kontrak
+                </a>
+                <a class="collapse-item" href="/admin-transport/mitra/berakhir">
+                    <i class="fas fa-user-times me-2"></i> Ex-Mitra
+                </a>
+                <a class="collapse-item" href="/jaminan_mitra">
+                    <i class="fas fa-shield-alt me-2"></i> Data Jaminan
+                </a>
+                <a class="collapse-item" href="/admin-transport/laporan/mitra">
+                    <i class="fas fa-file-alt me-2"></i> Laporan Mitra
+                </a>
             </div>
         </div>
     </li>
@@ -145,7 +154,10 @@
         </a>
         <div id="collapseInvoice" class="collapse" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="/invoice">Invoice Mitra</a>
+                <a class="collapse-item" href="/invoice">
+                    <i class="fas fa-file-invoice-dollar me-2"></i> Invoice Mitra
+                </a>
+            </div>
         </div>
     </li>
 
@@ -157,14 +169,20 @@
         </a>
         <div id="collapsePengeluaran" class="collapse" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="/pengeluaran_internal">Internal</a>
-                <a class="collapse-item" href="/pengeluaran_transport">Transport</a>
-                <a class="collapse-item" href="/pengeluaran_pajak">Pajak Mobil</a>
+                <a class="collapse-item" href="/pengeluaran_internal">
+                    <i class="fas fa-building me-2"></i> Internal
+                </a>
+                <a class="collapse-item" href="/pengeluaran_transport">
+                    <i class="fas fa-truck-moving me-2"></i> Transport
+                </a>
+                <a class="collapse-item" href="/pengeluaran_pajak">
+                    <i class="fas fa-receipt me-2"></i> Pajak Mobil
+                </a>
             </div>
         </div>
     </li>
 
-    <!-- PEMASUKAN (SUDAH FIX) -->
+    <!-- Pemasukan -->
     <li class="nav-item">
         <a class="nav-link collapsed pemasukan" href="#" data-toggle="collapse" data-target="#collapsePemasukan">
             <i class="fas fa-fw fa-coins"></i>
@@ -172,17 +190,19 @@
         </a>
         <div id="collapsePemasukan" class="collapse" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="/pemasukan">Pemasukan Transport</a>
-                <a class="collapse-item" href="/pemasukan-laporan-bulanan">Laporan Pemasukan</a>
+                <a class="collapse-item" href="/pemasukan">
+                    <i class="fas fa-wallet me-2"></i> Pemasukan Transport
+                </a>
+                <a class="collapse-item" href="/pemasukan-laporan-bulanan">
+                    <i class="fas fa-chart-line me-2"></i> Laporan Pemasukan
+                </a>
             </div>
         </div>
     </li>
 
     <hr class="sidebar-divider">
 
-    <div class="sidebar-heading">
-        Addons
-    </div>
+    <div class="sidebar-heading">Addons</div>
 
     <li class="nav-item">
         <a class="nav-link" href="/contact">

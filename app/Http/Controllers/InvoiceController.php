@@ -8,6 +8,7 @@ use App\Models\Mitra;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use DB;
+  use Barryvdh\DomPDF\Facade\Pdf;
 
 class InvoiceController extends Controller
 {
@@ -55,7 +56,7 @@ class InvoiceController extends Controller
     {
         $request->validate([
             'mitra_id' => 'required',
-            'tanggal' => 'required|date',
+            'tanggal' => 'nullable|date',
             'items.*.item' => 'required',
             'items.*.cicilan' => 'nullable|numeric',
             'items.*.tagihan' => 'nullable|numeric',
@@ -152,4 +153,17 @@ class InvoiceController extends Controller
 
         return back()->with('success','Invoice ditandai lunas');
     }
+
+public function print($id)
+{
+    $invoice = Invoice::with(['mitra.unit', 'items'])
+        ->findOrFail($id);
+
+    $pdf = Pdf::loadView('invoice.print', compact('invoice'))
+        ->setPaper('A4', 'portrait');
+
+    return $pdf->stream('invoice-'.$invoice->id.'.pdf');
+}
+
+
 }

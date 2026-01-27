@@ -45,21 +45,23 @@
                 @forelse($data as $index => $row)
                 <tr>
                     <td>{{ $data->firstItem() + $index }}</td>
-                    <td>{{ $row->mitra->nama_mitra }}</td>
-                    <td>Rp {{ number_format($row->total_amount) }}</td>
-                    <td>
-                        @if($row->mitra->invoices->count())
-                            {{-- Tombol Detail mengarah ke invoice terbaru --}}
-                            @php
-                                $latestInvoice = $row->mitra->invoices->sortByDesc('tanggal')->first();
-                            @endphp
-                            <a href="{{ route('invoice.show', $row->mitra->id) }}" class="btn btn-info btn-sm">
-                                Detail
-                            </a>
 
+                    <td>{{ $row->mitra->nama_mitra }}</td>
+
+                    <td>
+                        @if($row->total_amount > 0)
+                            Rp {{ number_format($row->total_amount) }}
                         @else
-                            <span class="text-muted small">Belum ada invoice</span>
+                            <span class="text-muted">Rp 0</span>
                         @endif
+                    </td>
+
+                    <td>
+                        {{-- DETAIL SELALU BISA DIAKSES --}}
+                        <a href="{{ route('invoice.show', $row->mitra->id) }}"
+                           class="btn btn-info btn-sm">
+                            Detail
+                        </a>
                     </td>
                 </tr>
                 @empty

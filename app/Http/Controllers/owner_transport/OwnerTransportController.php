@@ -5,7 +5,13 @@ namespace App\Http\Controllers\owner_transport;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Pemasukan;
+use App\Models\PengeluaranInternal;
 use Carbon\Carbon;
+use App\Models\PengeluaranTransport;
+use App\Models\PengeluaranPajak;
+use App\Models\Mitra;
+use App\Models\Invoice;
+use App\Models\InvoiceItem;
 
 class OwnerTransportController extends Controller
 {
@@ -43,4 +49,217 @@ public function laporanHarian(Request $request)
 
         return view('owner_transport.laporan_pemasukan_bulanan', compact('pemasukan', 'total'));
     }
+
+public function laporanPengeluaranInternal(Request $request)
+{
+    // default bulan sekarang (YYYY-MM)
+    $bulan = $request->bulan ?? now()->format('Y-m');
+
+    $pengeluaran = PengeluaranInternal::whereMonth(
+            'tanggal',
+            Carbon::parse($bulan)->month
+        )
+        ->whereYear(
+            'tanggal',
+            Carbon::parse($bulan)->year
+        )
+        ->orderBy('tanggal', 'asc')
+        ->get();
+
+    $total = $pengeluaran->sum('nominal');
+
+    return view(
+        'owner_transport.laporan_pengeluaran_internal',
+        compact('pengeluaran', 'total', 'bulan')
+    );
+}
+public function rekapPengeluaranTransport(Request $request)
+{
+    // default bulan sekarang
+    $bulan = $request->bulan ?? now()->format('Y-m');
+
+    $pengeluaran = PengeluaranTransport::with(['unit', 'items'])
+        ->whereMonth('tanggal', Carbon::parse($bulan)->month)
+        ->whereYear('tanggal', Carbon::parse($bulan)->year)
+        ->orderBy('tanggal', 'desc')
+        ->get();
+
+    $total = $pengeluaran->sum('total_amount');
+
+    return view(
+        'owner_transport.laporan_pengeluaran_transport',
+        compact('pengeluaran', 'total', 'bulan')
+    );
+}
+public function detailPengeluaranTransport($id)
+{
+    $pengeluaran = PengeluaranTransport::with([
+        'unit',
+        'items' => function ($q) {
+            $q->select(
+                'id',
+                'transport_id',
+                'keterangan',
+                'nominal',
+                'gambar'
+            );
+        }
+    ])->findOrFail($id);
+
+    return view(
+        'owner_transport.detail_pengeluaran_transport',
+        compact('pengeluaran')
+    );
+}
+
+// Laporan Pengeluaran Pajak Mobil
+public function rekapPengeluaranPajak(Request $request)
+{
+    // default bulan sekarang
+    $bulan = $request->bulan ?? now()->format('Y-m');
+
+    $pengeluaran = PengeluaranPajak::with('unit')
+        ->whereMonth('tanggal', Carbon::parse($bulan)->month)
+        ->whereYear('tanggal', Carbon::parse($bulan)->year)
+        ->orderBy('tanggal', 'desc')
+        ->get();
+
+    $total_all = $pengeluaran->sum('nominal');
+
+    return view(
+        'owner_transport.laporan_pengeluaran_pajak',
+        compact('pengeluaran', 'total_all', 'bulan')
+    );
+}
+
+
+// Laporan Mitra Aktif
+    public function laporanMitraAktif()
+    {
+        $mitras = Mitra::aktif()->with('unit')->orderBy('nama_mitra')->get();
+        $total = $mitras->count();
+
+        return view('owner_transport.laporan_mitra_aktif', compact('mitras', 'total'));
+    }
+
+    // Laporan Ex Mitra
+    public function laporanExMitra()
+    {
+        $mitras = Mitra::berakhir()->with('unit')->orderBy('nama_mitra')->get();
+        $total = $mitras->count();
+
+        return view('owner_transport.laporan_ex_mitra', compact('mitras', 'total'));
+    }
+
+    // Detail Mitra
+    public function detailMitra($id)
+    {
+        $mitra = Mitra::with(['unit', 'jaminan'])->findOrFail($id);
+
+        return view('owner_transport.detail_mitra', compact('mitra'));
+    }
+
+  public function laporanInvoice(Request $request)
+{
+    $nama = $request->nama ?? '';      // filter nama mitra
+    $status = $request->status ?? '';  // filter status: 'lunas' atau 'belum'
+
+    $query = Invoice::with('mitra');
+
+    // Filter nama mitra
+    if (!empty($nama)) {
+        $query->whereHas('mitra', function($q) use ($nama) {
+            $q->where('nama_mitra', 'like', "%{$nama}%");
+        });
+    }
+
+    // Filter status
+    if (!empty($status)) {
+        $query->where('status', $status);
+    }
+
+    $invoices = $query->orderBy('tanggal', 'desc')->get();
+    $total_all = $invoices->sum('total');
+
+    return view('owner_transport.laporan_invoice', compact('invoices', 'nama', 'status', 'total_all'));
+}
+
+
+public function detailInvoice($id)
+{
+    $invoice = Invoice::with('mitra', 'items')->findOrFail($id);
+
+    return view('owner_transport.detail_invoice', compact('invoice'));
+}
+
+public function dashboard(Request $request)
+{
+    // =========================
+    // BULAN & TAHUN AKTIF
+    // =========================
+    $bulan = (int) ($request->bulan ?? now()->month);
+    $tahun = (int) ($request->tahun ?? now()->year);
+
+    // =========================
+    // MITRA
+    // =========================
+    $totalMitra = Mitra::count();
+    $mitraAktif = Mitra::aktif()->count();
+    $mitraBerakhir = Mitra::berakhir()->count();
+
+    // Mitra dengan invoice belum lunas (distinct mitra)
+    $mitraBelumLunas = Invoice::where('status', 'belum_lunas')
+        ->distinct('mitra_id')
+        ->count('mitra_id');
+
+    // =========================
+    // PEMASUKAN
+    // =========================
+    $totalPemasukanHarian = Pemasukan::whereDate('tanggal', now()->toDateString())
+        ->sum('nominal');
+
+    $totalPemasukanBulanan = Pemasukan::whereMonth('tanggal', $bulan)
+        ->whereYear('tanggal', $tahun)
+        ->sum('nominal');
+
+    // =========================
+    // PENGELUARAN
+    // =========================
+    $totalPengeluaranInternal = PengeluaranInternal::whereMonth('tanggal', $bulan)
+        ->whereYear('tanggal', $tahun)
+        ->sum('nominal');
+
+    $totalPengeluaranTransport = PengeluaranTransport::whereMonth('tanggal', $bulan)
+        ->whereYear('tanggal', $tahun)
+        ->sum('total_amount');
+
+    $totalPengeluaranPajak = PengeluaranPajak::whereMonth('tanggal', $bulan)
+        ->whereYear('tanggal', $tahun)
+        ->sum('nominal');
+
+    $totalPengeluaranBulanan =
+        $totalPengeluaranInternal +
+        $totalPengeluaranTransport +
+        $totalPengeluaranPajak;
+
+    // =========================
+    // KIRIM KE VIEW
+    // =========================
+    return view('owner_transport.dashboard', compact(
+        'bulan',
+        'tahun',
+        'totalMitra',
+        'mitraAktif',
+        'mitraBerakhir',
+        'mitraBelumLunas',
+        'totalPemasukanHarian',
+        'totalPemasukanBulanan',
+        'totalPengeluaranInternal',
+        'totalPengeluaranTransport',
+        'totalPengeluaranPajak',
+        'totalPengeluaranBulanan'
+    ));
+}
+
+
 }

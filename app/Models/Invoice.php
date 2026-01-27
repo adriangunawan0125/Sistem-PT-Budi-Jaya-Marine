@@ -11,7 +11,7 @@ class Invoice extends Model
 
     protected $fillable = [
         'mitra_id',
-        'ex_mitra_id', // 🔥 WAJIB
+   
         'tanggal',
         'status',
         'total'
@@ -26,10 +26,6 @@ class Invoice extends Model
         return $this->belongsTo(Mitra::class);
     }
 
-    public function exMitra()
-    {
-        return $this->belongsTo(ExMitra::class);
-    }
 
     public function items()
     {

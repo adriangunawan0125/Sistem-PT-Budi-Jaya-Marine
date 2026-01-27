@@ -18,36 +18,41 @@
         Tambah Unit
     </a>
 
-    {{-- SEARCH & FILTER --}}
-    <form method="GET" class="row mb-3">
-        <div class="col-md-4">
-            <input type="text"
-                   name="search"
-                   class="form-control"
-                   placeholder="Cari nama unit..."
-                   value="{{ request('search') }}">
-        </div>
+    {{-- SEARCH & FILTER (FIXED) --}}
+    <form method="GET" class="mb-3">
+        <div class="d-flex align-items-center flex-wrap" style="gap: 6px;">
 
-        <div class="col-md-3">
-            <select name="status" class="form-select">
+            <input
+                type="text"
+                name="search"
+                class="form-control"
+                placeholder="Cari nama unit..."
+                value="{{ request('search') }}"
+                style="width: 240px;"
+            >
+{{-- STATUS (FIXED) --}}
+            <select
+                name="status"
+                class="form-control"
+                style="width: 180px;"
+            >
                 <option value="">-- Semua Status --</option>
-                <option value="tersedia"
-                    {{ request('status') == 'tersedia' ? 'selected' : '' }}>
+                <option value="tersedia" {{ request('status') == 'tersedia' ? 'selected' : '' }}>
                     Tersedia
                 </option>
-                <option value="disewakan"
-                    {{ request('status') == 'disewakan' ? 'selected' : '' }}>
+                <option value="disewakan" {{ request('status') == 'disewakan' ? 'selected' : '' }}>
                     Disewakan
                 </option>
             </select>
-        </div>
+            <button type="submit" class="btn btn-primary px-3">
+                Filter
+            </button>
 
-        <div class="col-md-3">
-            <button class="btn btn-primary">Filter</button>
             <a href="{{ url('/admin-transport/unit') }}"
-               class="btn btn-secondary">
+               class="btn btn-secondary px-3">
                 Reset
             </a>
+
         </div>
     </form>
 

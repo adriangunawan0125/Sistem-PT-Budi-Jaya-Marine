@@ -52,9 +52,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // OWNER TRANSPORT
 Route::middleware(['auth', 'role:owner'])->group(function () {
-    Route::get('/owner', function () {
-        return view('owner_transport.dashboard');
-        })->name('owner.dashboard');
+    Route::get('/owner',[OwnerTransportController::class, 'dashboard'])->name('owner.dashboard');
 
     // Laporan pemasukan Harian
     Route::get('/laporan-pemasukan-harian', [OwnerTransportController::class, 'laporanHarian'])->name('laporan-harian');
@@ -62,8 +60,30 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
     // Laporan pemasukan Bulanan
     Route::get('/laporan-pemasukan-bulanan', [OwnerTransportController::class, 'laporanBulanan'])->name('laporan-bulanan');
 
-});
+    Route::get('/laporan-pengeluaran-internal', [OwnerTransportController::class, 'laporanPengeluaranInternal'])->name('owner_transport.laporan_pengeluaran');
 
+    Route::get('/laporan-pengeluaran-transport',[OwnerTransportController::class, 'rekapPengeluaranTransport'])->name('pengeluaran_transport.rekap');
+
+    Route::get('/laporan-pengeluaran-transport/laporan',[OwnerTransportController::class, 'laporanPengeluaranTransport'])->name('owner_transport.laporan_pengeluaran_transport');
+
+    Route::get( '/laporan-pengeluaran-transport/{id}', [OwnerTransportController::class, 'detailPengeluaranTransport'])->name('pengeluaran_transport.show');
+
+    Route::get('/laporan-pengeluaran-pajak', [OwnerTransportController::class, 'rekapPengeluaranPajak'])->name('pengeluaran_pajak.rekap');
+
+    // Laporan Mitra Aktif
+    Route::get('/laporan-mitra-aktif', [OwnerTransportController::class, 'laporanMitraAktif'])->name('mitra.aktif');
+
+    // Laporan Ex Mitra
+    Route::get('/laporan-ex-mitra', [OwnerTransportController::class, 'laporanExMitra'])->name('mitra.ex');
+
+    // Detail Mitra
+    Route::get('/laporan-mitra/{id}', [OwnerTransportController::class, 'detailMitra']) ->name('mitra.detail');
+
+    // Laporan Invoice
+    Route::get('/laporan-invoice', [OwnerTransportController::class, 'laporanInvoice'])->name('invoice.rekap');   
+    Route::get('/laporan-invoice/detail/{id}', [OwnerTransportController::class, 'detailInvoice'])->name('owner.invoice.show'); // ubah route name supaya unik
+
+});
 
 // ADMIN TRANSPORT
 Route::middleware(['auth', 'role:admin_transport'])->group(function () {
@@ -98,6 +118,8 @@ Route::middleware(['auth', 'role:admin_transport'])->group(function () {
     Route::put('/invoice-item/{id}',[InvoiceItemController::class, 'update'])->name('invoice-item.update');
     Route::delete('/invoice-item/{id}',[InvoiceItemController::class, 'destroy'])->name('invoice-item.destroy');
     Route::resource('invoice', InvoiceController::class);
+    Route::get('/invoice/{invoice}/print', [InvoiceController::class, 'print'])
+    ->name('invoice.print');
    
    //Pengeluaran Internal
     Route::resource('pengeluaran_internal', PengeluaranInternalController::class)->except(['show']); // hapus route show
