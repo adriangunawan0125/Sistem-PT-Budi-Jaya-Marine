@@ -42,7 +42,6 @@
                             <th class="ps-4" width="50">No</th>
                             <th>Tanggal</th>
                             <th>Deskripsi</th>
-                            <th class="text-center" width="120">Gambar</th>
                             <th>Nominal</th>
                         </tr>
                     </thead>
@@ -53,16 +52,6 @@
                             <td class="ps-4">{{ $loop->iteration }}</td>
                             <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d-m-Y') }}</td>
                             <td class="text-muted">{{ $item->deskripsi }}</td>
-                            <td class="text-center">
-                                @if($item->gambar)
-                                    {{-- ⬇️ INI DISAMAIN 100% SAMA INDEX --}}
-                                    <img src="{{ asset('storage/pemasukan/'.$item->gambar) }}"
-                                         width="70"
-                                         class="rounded">
-                                @else
-                                    -
-                                @endif
-                            </td>
                             <td class="fw-semibold">
                                 Rp {{ number_format($item->nominal, 0, ',', '.') }}
                             </td>
