@@ -88,7 +88,8 @@
         <div id="content">
 
             <!-- TOPBAR -->
-            <x-topbar />
+         @includeIf('components.topbars.' . auth()->user()->role)
+
 
             <!-- PAGE CONTENT -->
             <div class="container-fluid">

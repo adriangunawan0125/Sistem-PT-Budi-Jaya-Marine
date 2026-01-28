@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\ContactMessage;
 use Illuminate\Http\Request;
+use App\Models\AdminNotification;
 
 class ContactMessageController extends Controller
 {
@@ -19,12 +20,17 @@ class ContactMessageController extends Controller
 
         return view('contact.index', compact('messages'));
     }
+public function show($id)
+{
+    // tandai notif contact sebagai dibaca
+    AdminNotification::where('type', 'contact')
+        ->where('data_id', $id)
+        ->update(['is_read' => 1]);
 
-    public function show($id)
-    {
-        $message = ContactMessage::findOrFail($id);
-        return view('contact.show', compact('message'));
-    }
+    $message = ContactMessage::findOrFail($id);
+    return view('contact.show', compact('message'));
+}
+
 
     public function destroy($id)
     {

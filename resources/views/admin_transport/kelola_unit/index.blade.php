@@ -18,7 +18,7 @@
         Tambah Unit
     </a>
 
-    {{-- SEARCH & FILTER (FIXED) --}}
+    {{-- SEARCH & FILTER --}}
     <form method="GET" class="mb-3">
         <div class="d-flex align-items-center flex-wrap" style="gap: 6px;">
 
@@ -30,7 +30,8 @@
                 value="{{ request('search') }}"
                 style="width: 240px;"
             >
-{{-- STATUS (FIXED) --}}
+
+            {{-- STATUS --}}
             <select
                 name="status"
                 class="form-control"
@@ -44,6 +45,7 @@
                     Disewakan
                 </option>
             </select>
+
             <button type="submit" class="btn btn-primary px-3">
                 Filter
             </button>
@@ -64,6 +66,7 @@
                 <th>Nama Unit</th>
                 <th>Merek Mobil</th>
                 <th>Status</th>
+                <th>Masa Berlaku STNK</th>
                 <th width="220">Aksi</th>
             </tr>
         </thead>
@@ -93,6 +96,32 @@
                         </span>
                     @endif
                 </td>
+{{-- MASA BERLAKU STNK --}}
+<td>
+    @if($unit->stnk_expired_at)
+        @php
+            $stnk = \Carbon\Carbon::parse($unit->stnk_expired_at)->format('Y-m-d');
+            $sisa_hari = \Carbon\Carbon::today()->diffInDays(\Carbon\Carbon::parse($unit->stnk_expired_at), false);
+        @endphp
+
+        @if($sisa_hari < 0)
+            <span class="badge bg-dark text-white px-3 py-2 d-inline-block text-center" style="min-width:110px">
+                Expired
+            </span>
+        @elseif($sisa_hari <= 7)
+            <span class="badge bg-danger text-white px-3 py-2 d-inline-block text-center" style="min-width:110px">
+                {{ $stnk }} ({{ $sisa_hari }} hari lagi)
+            </span>
+        @else
+            <span class="badge bg-info text-white px-3 py-2 d-inline-block text-center" style="min-width:110px">
+                {{ $stnk }}
+            </span>
+        @endif
+    @else
+        <span class="text-muted">Belum diisi</span>
+    @endif
+</td>
+
 
                 {{-- AKSI --}}
                 <td>
@@ -115,7 +144,7 @@
             </tr>
         @empty
             <tr>
-                <td colspan="5" class="text-center text-muted">
+                <td colspan="6" class="text-center text-muted">
                     Data unit tidak ditemukan
                 </td>
             </tr>

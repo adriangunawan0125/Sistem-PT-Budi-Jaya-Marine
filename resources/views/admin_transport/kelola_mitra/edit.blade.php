@@ -43,8 +43,7 @@
         <div class="mb-3">
             <label>Unit</label>
             <select name="unit_id"
-                    class="form-control @error('unit_id') is-invalid @enderror"
-                    required>
+                    class="form-control @error('unit_id') is-invalid @enderror">
                 <option value="">-- Pilih Unit --</option>
                 @foreach($units as $unit)
                     <option value="{{ $unit->id }}"

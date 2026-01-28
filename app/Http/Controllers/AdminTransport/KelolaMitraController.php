@@ -59,7 +59,7 @@ class KelolaMitraController extends Controller
     {
         $request->validate([
             'nama_mitra' => 'required',
-            'unit_id' => 'required|exists:units,id',
+            'unit_id' => 'nullable|exists:units,id',
             'alamat' => 'required',
             'no_hp' => 'required',
             'kontrak_mulai' => 'nullable|date',
@@ -104,7 +104,7 @@ class KelolaMitraController extends Controller
     {
         $request->validate([
             'nama_mitra' => 'required',
-            'unit_id' => 'required|exists:units,id',
+            'unit_id' => 'nullable|exists:units,id',
             'alamat' => 'required',
             'no_hp' => 'required',
             'kontrak_mulai' => 'nullable|date',

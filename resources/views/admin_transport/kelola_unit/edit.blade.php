@@ -53,6 +53,50 @@
             @enderror
         </div>
 
+        {{-- STATUS --}}
+        <div class="mb-3">
+            <label>Status</label>
+            <select name="status"
+                    class="form-control @error('status') is-invalid @enderror"
+                    required>
+                <option value="tersedia" {{ old('status', $unit->status) == 'tersedia' ? 'selected' : '' }}>Tersedia</option>
+                <option value="disewakan" {{ old('status', $unit->status) == 'disewakan' ? 'selected' : '' }}>Disewakan</option>
+            </select>
+
+            @error('status')
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
+            @enderror
+        </div>
+
+        {{-- STNK --}}
+        <div class="mb-3">
+            <label>Masa Berlaku STNK</label>
+            @php
+                // Pastikan format Y-m-d aman walau string
+                $stnkDate = old('stnk_expired_at') ?? $unit->stnk_expired_at;
+                if ($stnkDate) {
+                    try {
+                        $stnkDate = \Carbon\Carbon::parse($stnkDate)->format('Y-m-d');
+                    } catch (\Exception $e) {
+                        $stnkDate = '';
+                    }
+                }
+            @endphp
+            <input type="date"
+                   name="stnk_expired_at"
+                   class="form-control @error('stnk_expired_at') is-invalid @enderror"
+                   value="{{ $stnkDate }}">
+
+            @error('stnk_expired_at')
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
+            @enderror
+            <small class="text-muted">Kosongkan jika belum diisi</small>
+        </div>
+
         <button class="btn btn-primary">Update</button>
         <a href="/admin-transport/unit" class="btn btn-secondary">Kembali</a>
     </form>

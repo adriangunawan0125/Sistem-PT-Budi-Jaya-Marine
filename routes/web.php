@@ -135,7 +135,7 @@ Route::middleware(['auth', 'role:admin_transport'])->group(function () {
     Route::get('pengeluaran_transport/laporan', [PengeluaranTransportController::class, 'laporan'])->name('pengeluaran_transport.laporan');
 
     //Jaminan Mitra
-    Route::resource('jaminan_mitra', JaminanMitraController::class);
+    Route::resource(    'jaminan_mitra', JaminanMitraController::class);
 
     //kontak hubungi kami
     Route::get('/contact', [ContactMessageController::class, 'index'])->name('contact.index');
@@ -145,6 +145,19 @@ Route::middleware(['auth', 'role:admin_transport'])->group(function () {
     //calon mitra
     Route::get('/calon-mitra', [AdminCalonMitraController::class, 'index'])->name('admin.calonmitra');
     Route::delete('/admin/calon-mitra/{id}', [AdminCalonMitraController::class, 'destroy'])->name('admin.calonmitra.destroy');
+    Route::get('/calon-mitra/{id}', 
+    [AdminCalonMitraController::class, 'show']
+)->name('calonmitra.show');
+
+Route::post('/admin/notifikasi/read-all', function () {
+    \App\Models\AdminNotification::where('is_read', 0)->update([
+        'is_read' => 1
+    ]);
+    return response()->json(['status' => 'ok']);
+})->name('admin.notif.readall');
+
+
+
 
     //PEMASUKAN 
     Route::get('/pemasukan', [PemasukanController::class, 'index'])->name('pemasukan.index');
@@ -156,6 +169,7 @@ Route::middleware(['auth', 'role:admin_transport'])->group(function () {
     Route::get('/pemasukan-laporan-harian', [PemasukanController::class, 'laporanHarian'])->name('pemasukan.laporan.harian');
     Route::get('/pemasukan-laporan-bulanan',[PemasukanController::class, 'laporanBulanan'])->name('pemasukan.laporan.bulanan');
 
+    
 });
 
 

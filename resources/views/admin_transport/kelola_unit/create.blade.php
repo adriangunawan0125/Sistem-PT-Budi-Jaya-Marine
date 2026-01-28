@@ -52,14 +52,28 @@
             @enderror
         </div>
 
+        {{-- STATUS --}}
         <div class="mb-3">
             <label>Status</label>
-            <select name="status" class="form-control" required>
-                <option value="">-- Pilih Status --</option>
-                <option value="tersedia" {{ old('status') == 'tersedia' ? 'selected' : '' }}>
-                    Tersedia
-                </option>
+            <select name="status" class="form-control @error('status') is-invalid @enderror" required>
+                <option value="tersedia" selected>Tersedia</option>
             </select>
+        </div>
+
+        {{-- STNK --}}
+        <div class="mb-3">
+            <label>Masa Berlaku STNK</label>
+            <input type="date"
+                   name="stnk_expired_at"
+                   class="form-control @error('stnk_expired_at') is-invalid @enderror"
+                   value="{{ old('stnk_expired_at') }}">
+
+            @error('stnk_expired_at')
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
+            @enderror
+            <small class="text-muted">Kosongkan jika belum diisi</small>
         </div>
 
         <button class="btn btn-primary">Simpan</button>

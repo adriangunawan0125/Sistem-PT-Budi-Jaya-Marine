@@ -30,6 +30,11 @@
                     <td>{{ $item->no_handphone }}</td>
                     <td>{{ $item->alamat }}</td>
                     <td class="text-center">
+                        <a href="{{ route('calonmitra.show', $item->id) }}" 
+   class="btn btn-info btn-sm">
+   Detail
+</a>
+
                         <form action="{{ route('admin.calonmitra.destroy', $item->id) }}"
                               method="POST"
                               style="display:inline-block">

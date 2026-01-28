@@ -13,8 +13,14 @@ class Unit extends Model
     protected $fillable = [
         'nama_unit',
         'merek',
-        'status'
+        'status',
+        'stnk_expired_at'
     ];
+
+    protected $casts = [
+    'stnk_expired_at' => 'datetime',
+];
+
 
     public function mitra()
 {
