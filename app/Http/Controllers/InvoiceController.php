@@ -156,14 +156,18 @@ class InvoiceController extends Controller
 
 public function print($id)
 {
-    $invoice = Invoice::with(['mitra.unit', 'items'])
-        ->findOrFail($id);
+    $invoice = Invoice::with([
+        'mitra',
+        'mitra.unit',
+        'items'
+    ])->findOrFail($id);
 
     $pdf = Pdf::loadView('invoice.print', compact('invoice'))
         ->setPaper('A4', 'portrait');
 
     return $pdf->stream('invoice-'.$invoice->id.'.pdf');
 }
+
 
 
 }

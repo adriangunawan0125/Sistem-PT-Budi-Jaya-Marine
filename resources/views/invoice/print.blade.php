@@ -70,7 +70,10 @@
     <div class="bold">PT. BUDI JAYA MARINE</div>
     <div>Bill To:</div>
     <div class="bold">{{ $invoice->mitra->nama_mitra }}</div>
-    <div class="">{{ $invoice->mitra->unit->nama_unit ?? '-' }} - {{ $invoice->mitra->unit->merek ?? '-' }}</div>
+   <div>
+    {{ optional($invoice->mitra->unit)->merek ?? '-' }}
+    ({{ optional($invoice->mitra->unit)->nama_unit ?? '-' }})
+</div>
 
 </div>
 

@@ -113,7 +113,7 @@
                 {{ $stnk }} ({{ $sisa_hari }} hari lagi)
             </span>
         @else
-            <span class="badge bg-info text-white px-3 py-2 d-inline-block text-center" style="min-width:110px">
+            <span class="badge bg-success text-white px-3 py-2 d-inline-block text-center" style="min-width:110px">
                 {{ $stnk }}
             </span>
         @endif

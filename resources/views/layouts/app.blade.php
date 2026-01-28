@@ -84,19 +84,17 @@
     <!-- CONTENT WRAPPER -->
     <div id="content-wrapper" class="d-flex flex-column">
 
-        <!-- MAIN CONTENT -->
-        <div id="content">
+    <!-- MAIN CONTENT -->
+<div id="content" style="padding-top:40px;">  <!-- <--- ini aja -->
+    <!-- TOPBAR -->
+    @includeIf('components.topbars.' . auth()->user()->role)
 
-            <!-- TOPBAR -->
-         @includeIf('components.topbars.' . auth()->user()->role)
+    <!-- PAGE CONTENT -->
+    <div class="container-fluid">
+        @yield('content')
+    </div>
+</div>
 
-
-            <!-- PAGE CONTENT -->
-            <div class="container-fluid">
-                @yield('content')
-            </div>
-
-        </div>
 
         <!-- FOOTER -->
         <x-footer />

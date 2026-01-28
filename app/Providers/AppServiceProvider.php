@@ -11,17 +11,11 @@ use Carbon\Carbon;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
         //
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
         // Pagination bootstrap
@@ -30,19 +24,18 @@ class AppServiceProvider extends ServiceProvider
         // SHARE NOTIF KE SEMUA VIEW
         View::composer('*', function ($view) {
 
-            // 1️⃣ Notif dari AdminNotification
-            $adminNotifCount = AdminNotification::where('is_read', 0)->count();
-            $adminNotifs = AdminNotification::orderBy('created_at', 'desc')
-                                ->take(5)
-                                ->get()
-                                ->map(function($notif) {
-                                    return (object)[
-                                        'message'    => $notif->message,
-                                        'data_id'    => $notif->data_id,
-                                        'type'       => $notif->type,
-                                        'created_at' => $notif->created_at,
-                                    ];
-                                });
+            // 1️⃣ Notif dari AdminNotification (hanya yang belum dibaca)
+            $adminNotifsQuery = AdminNotification::where('is_read', 0)->orderBy('created_at', 'desc');
+            $adminNotifCount = $adminNotifsQuery->count();
+            $adminNotifs = $adminNotifsQuery->take(5)->get()->map(function($notif) {
+                return (object)[
+                    'id'         => $notif->id,
+                    'message'    => $notif->message,
+                    'data_id'    => $notif->data_id,
+                    'type'       => $notif->type,
+                    'created_at' => $notif->created_at,
+                ];
+            });
 
             // 2️⃣ Tambah notif STNK hampir habis dari Unit
             $today = Carbon::today();
@@ -53,6 +46,7 @@ class AppServiceProvider extends ServiceProvider
                               ->get()
                               ->map(function($unit) {
                                   return (object)[
+                                      'id'         => null, // bukan dari DB notif, jadi ga dihitung badge
                                       'message'    => "STNK Unit {$unit->nama_unit} akan habis pada {$unit->stnk_expired_at->format('d/m/Y')}",
                                       'data_id'    => $unit->id,
                                       'type'       => 'unit',
@@ -60,12 +54,11 @@ class AppServiceProvider extends ServiceProvider
                                   ];
                               });
 
-            // 3️⃣ Gabung kedua notif
+            // 3️⃣ Gabung kedua notif, urutkan berdasarkan created_at
             $allNotifs = $adminNotifs->concat($stnkNotifs)->sortByDesc('created_at')->take(5);
-            $allNotifCount = $allNotifs->count();
 
             $view->with([
-                'adminNotifCount' => $allNotifCount,
+                'adminNotifCount' => $adminNotifCount, // badge = notif DB belum dibaca
                 'adminNotifs'     => $allNotifs,
             ]);
         });
