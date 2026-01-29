@@ -156,10 +156,11 @@
     <td width="85%">Balance Due</td>
     <td width="15%" class="money">
         <span class="cur">IDR</span>
-        <span class="val">{{ number_format($invoice->total) }}</span>
+        <span class="val">{{ number_format($grandTotal) }}</span>
     </td>
 </tr>
 </table>
+
 
 {{-- ================= NOTES ================= --}}
 <table class="no-border mb-3">

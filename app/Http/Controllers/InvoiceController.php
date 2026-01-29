@@ -170,6 +170,9 @@ public function print($id)
     // gabungkan semua items jadi 1 collection
     $items = $invoices->flatMap->items;
 
+    // HITUNG GRAND TOTAL DI SINI (setelah $items tersedia)
+    $grandTotal = $items->sum('amount');
+
     // invoice number (contoh)
     $invoiceNumber = str_pad($items->count(), 3, '0', STR_PAD_LEFT)
         . '/BJM/'
@@ -178,7 +181,8 @@ public function print($id)
     $pdf = Pdf::loadView('invoice.print', [
         'invoice' => $invoice,
         'items' => $items,
-        'invoiceNumber' => $invoiceNumber
+        'invoiceNumber' => $invoiceNumber,
+        'grandTotal' => $grandTotal
     ])->setPaper('A4', 'portrait');
 
     return $pdf->stream('invoice-'.$invoice->id.'.pdf');
