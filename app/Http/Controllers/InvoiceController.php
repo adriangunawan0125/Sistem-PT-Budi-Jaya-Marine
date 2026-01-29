@@ -56,6 +56,7 @@ class InvoiceController extends Controller
     {
         $request->validate([
             'mitra_id' => 'required',
+            'items.*.tanggal' => 'nullable',
             'items.*.item' => 'required',
             'items.*.cicilan' => 'nullable|numeric',
             'items.*.tagihan' => 'nullable|numeric',
