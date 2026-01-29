@@ -21,13 +21,13 @@ class PengeluaranPajakController extends Controller
 
         $total = $pajak->sum('nominal');
 
-        return view('pengeluaran_pajak.index', compact('pajak','total','bulan'));
+        return view('admin_transport.pengeluaran_pajak.index', compact('pajak','total','bulan'));
     }
 
     public function create()
     {
         $units = Unit::all();
-        return view('pengeluaran_pajak.create', compact('units'));
+        return view('admin_transport.pengeluaran_pajak.create', compact('units'));
     }
 
     public function store(Request $request)
@@ -54,7 +54,7 @@ class PengeluaranPajakController extends Controller
     public function edit(PengeluaranPajak $pengeluaranPajak)
     {
         $units = Unit::all();
-        return view('pengeluaran_pajak.edit', compact('pengeluaranPajak','units'));
+        return view('admin_transport.pengeluaran_pajak.edit', compact('pengeluaranPajak','units'));
     }
 
     public function update(Request $request, PengeluaranPajak $pengeluaranPajak)
@@ -105,6 +105,6 @@ class PengeluaranPajakController extends Controller
 
         $total = $pajak->sum('nominal');
 
-        return view('pengeluaran_pajak.laporan', compact('pajak', 'total', 'bulan'));
+        return view('admin_transport.pengeluaran_pajak.laporan', compact('pajak', 'total', 'bulan'));
     }
 }

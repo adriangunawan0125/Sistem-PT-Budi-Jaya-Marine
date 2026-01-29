@@ -36,7 +36,7 @@ class InvoiceController extends Controller
 
         $mitras->setCollection($data);
 
-        return view('invoice.index', ['data' => $mitras]);
+        return view('admin_transport.invoice.index', ['data' => $mitras]);
     }
 
     // FORM TAMBAH INVOICE
@@ -44,11 +44,11 @@ class InvoiceController extends Controller
     {
         if ($request->filled('mitra_id')) {
             $mitra = Mitra::findOrFail($request->mitra_id);
-            return view('invoice.create', compact('mitra'));
+            return view('admin_transport.invoice.create', compact('mitra'));
         }
 
         $mitras = Mitra::all();
-        return view('invoice.create', compact('mitras'));
+        return view('admin_transport.invoice.create', compact('mitras'));
     }
 
     // SIMPAN INVOICE BARU
@@ -122,7 +122,7 @@ class InvoiceController extends Controller
 
         $invoices = $mitra->invoices;
 
-        return view('invoice.show', compact('mitra', 'invoices'));
+        return view('admin_transport.invoice.show', compact('mitra', 'invoices'));
     }
 
     // HAPUS INVOICE

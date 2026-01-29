@@ -19,14 +19,14 @@ class PemasukanController extends Controller
 
     $total = $pemasukan->sum('nominal');
 
-    return view('pemasukan.index', compact('pemasukan', 'tanggal', 'total'));
+    return view('admin_transport.pemasukan.index', compact('pemasukan', 'tanggal', 'total'));
 }
 
 
     /* ================= CREATE ================= */
     public function create()
     {
-        return view('pemasukan.create');
+        return view('admin_transport.pemasukan.create');
     }
 
     /* ================= STORE ================= */
@@ -59,7 +59,7 @@ class PemasukanController extends Controller
     public function edit($id)
     {
         $pemasukan = Pemasukan::findOrFail($id);
-        return view('pemasukan.edit', compact('pemasukan'));
+        return view('admin_transport.pemasukan.edit', compact('pemasukan'));
     }
 
     /* ================= UPDATE ================= */
@@ -122,7 +122,7 @@ public function laporanHarian(Request $request)
 
     $total = $pemasukan->sum('nominal');
 
-    return view('pemasukan.laporan-harian', compact(
+    return view('admin_transport.pemasukan.laporan-harian', compact(
         'pemasukan',
         'tanggal',
         'total'
@@ -144,7 +144,7 @@ public function laporanBulanan(Request $request)
 
     $total = $pemasukan->sum('nominal');
 
-    return view('pemasukan.laporan-bulanan', compact(
+    return view('admin_transport.pemasukan.laporan-bulanan', compact(
         'pemasukan',
         'bulan',
         'total'

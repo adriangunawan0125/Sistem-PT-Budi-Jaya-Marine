@@ -18,13 +18,13 @@ class PengeluaranInternalController extends Controller
 
         $total = $pengeluaran->sum('nominal');
 
-        return view('pengeluaran_internal.index', compact('pengeluaran', 'total', 'bulan'));
+        return view('admin_transport.pengeluaran_internal.index', compact('pengeluaran', 'total', 'bulan'));
     }
 
     // Form tambah pengeluaran
     public function create()
     {
-        return view('pengeluaran_internal.create');
+        return view('admin_transport.pengeluaran_internal.create');
     }
 
     // Simpan pengeluaran
@@ -53,7 +53,7 @@ class PengeluaranInternalController extends Controller
     // Form edit pengeluaran
     public function edit(PengeluaranInternal $pengeluaranInternal)
     {
-        return view('pengeluaran_internal.edit', compact('pengeluaranInternal'));
+        return view('admin_transport.pengeluaran_internal.edit', compact('pengeluaranInternal'));
     }
 
     // Update pengeluaran
@@ -107,7 +107,7 @@ class PengeluaranInternalController extends Controller
 
     $total = $pengeluaran->sum('nominal');
 
-    return view('pengeluaran_internal.laporan', compact('pengeluaran', 'total', 'bulan'));
+    return view('admin_transport.pengeluaran_internal.laporan', compact('pengeluaran', 'total', 'bulan'));
 }
 
 }

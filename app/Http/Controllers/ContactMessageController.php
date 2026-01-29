@@ -18,7 +18,7 @@ class ContactMessageController extends Controller
 
         $messages = $query->latest()->get();
 
-        return view('contact.index', compact('messages'));
+        return view('admin_transport.contact.index', compact('messages'));
     }
 public function show($id)
 {
@@ -28,7 +28,7 @@ public function show($id)
         ->update(['is_read' => 1]);
 
     $message = ContactMessage::findOrFail($id);
-    return view('contact.show', compact('message'));
+    return view('admin_transport.contact.show', compact('message'));
 }
 
 

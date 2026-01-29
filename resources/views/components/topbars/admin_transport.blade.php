@@ -7,18 +7,23 @@
         <i class="fa fa-bars"></i>
     </button>
 
-    <!-- Search Form -->
-    <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
-        <div class="input-group">
+    <!-- Search Form (Quick Menu Live Search) -->
+    <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search" id="topbarQuickMenuForm">
+        <div class="input-group position-relative">
             <input type="text"
                    class="form-control bg-light border-0 small"
-                   placeholder="Search..."
-                   aria-label="Search">
+                   placeholder="Search menu..."
+                   aria-label="Search"
+                   id="topbarQuickMenuInput"
+                   autocomplete="off">
             <div class="input-group-append">
-                <button class="btn btn-primary" type="button">
+                <button class="btn btn-primary" type="button" id="topbarQuickMenuBtn">
                     <i class="fas fa-search fa-sm"></i>
                 </button>
             </div>
+            <!-- Dropdown hasil search -->
+            <ul id="topbarQuickMenuDropdown" class="list-group position-absolute bg-white shadow"
+                style="top:100%; left:0; right:0; z-index:1050; display:none; max-height:250px; overflow-y:auto;"></ul>
         </div>
     </form>
 
@@ -89,7 +94,7 @@
 <!-- Spacer supaya konten nggak ketutup topbar -->
 <div style="height:70px;"></div>
 
-<!-- JS: Update Badge Notifikasi & DB -->
+<!-- JS -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -139,6 +144,66 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .catch(err => console.error(err));
         });
+    });
+
+    // ================== Topbar Quick Menu Live Search ==================
+    const menuMap = {
+        'Dashboard': '/dashboard',
+        'Invoice': '/invoices',
+        'Mitra': '/mitras',
+        'Pengeluaran': '/pengeluaran',
+        'User': '/users',
+        'Unit': '/units',
+        'Calon Mitra': '/calonmitra',
+        'Contact': '/contact'
+    };
+
+    const searchInput = document.getElementById('topbarQuickMenuInput');
+    const searchDropdown = document.getElementById('topbarQuickMenuDropdown');
+    const searchBtn = document.getElementById('topbarQuickMenuBtn');
+
+    function filterMenu() {
+        const query = searchInput.value.toLowerCase();
+        searchDropdown.innerHTML = '';
+        let hasResult = false;
+        for(const name in menuMap){
+            if(name.toLowerCase().includes(query)){
+                hasResult = true;
+                const li = document.createElement('li');
+                li.textContent = name;
+                li.className = 'list-group-item list-group-item-action';
+                li.style.cursor = 'pointer';
+                li.addEventListener('click', function(){
+                    window.location.href = menuMap[name];
+                });
+                searchDropdown.appendChild(li);
+            }
+        }
+        searchDropdown.style.display = hasResult ? 'block' : 'none';
+    }
+
+    searchInput.addEventListener('input', filterMenu);
+
+    // Klik tombol search → pilih first result
+    searchBtn.addEventListener('click', function(){
+        const firstItem = searchDropdown.querySelector('li');
+        if(firstItem) firstItem.click();
+    });
+
+    // Enter di input → pilih first result
+    searchInput.addEventListener('keydown', function(e){
+        if(e.key === 'Enter'){
+            e.preventDefault();
+            const firstItem = searchDropdown.querySelector('li');
+            if(firstItem) firstItem.click();
+        }
+    });
+
+    // Klik luar → hide dropdown
+    document.addEventListener('click', function(e){
+        if(!searchInput.contains(e.target) && !searchDropdown.contains(e.target)){
+            searchDropdown.style.display = 'none';
+        }
     });
 
 });

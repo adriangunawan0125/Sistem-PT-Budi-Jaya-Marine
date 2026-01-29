@@ -11,13 +11,13 @@ class JaminanMitraController extends Controller
     public function index()
     {
         $data = JaminanMitra::with('mitra')->get();
-        return view('jaminan_mitra.index', compact('data'));
+        return view('admin_transport.jaminan_mitra.index', compact('data'));
     }
 
     public function create()
     {
         $mitras = Mitra::all();
-        return view('jaminan_mitra.create', compact('mitras'));
+        return view('admin_transport.jaminan_mitra.create', compact('mitras'));
     }
 
     public function store(Request $request)

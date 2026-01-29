@@ -22,14 +22,14 @@ class PengeluaranTransportController extends Controller
 
         $total_all = $transport->sum('total_amount');
 
-        return view('pengeluaran_transport.index', compact('transport','total_all','bulan'));
+        return view('admin_transport.pengeluaran_transport.index', compact('transport','total_all','bulan'));
     }
 
     // Form tambah pengeluaran
     public function create()
     {
         $units = Unit::all();
-        return view('pengeluaran_transport.create', compact('units'));
+        return view('admin_transport.pengeluaran_transport.create', compact('units'));
     }
 
     // Simpan pengeluaran
@@ -82,7 +82,7 @@ class PengeluaranTransportController extends Controller
 
         $total_all = $transport->sum('total_amount');
 
-        return view('pengeluaran_transport.laporan', compact('transport','total_all','bulan'));
+        return view('admin_transport.pengeluaran_transport.laporan', compact('transport','total_all','bulan'));
     }
 
     // Form edit
@@ -90,7 +90,7 @@ class PengeluaranTransportController extends Controller
     {
         $units = Unit::all();
         $pengeluaran_transport->load('items'); // ambil semua item
-        return view('pengeluaran_transport.edit', compact('pengeluaran_transport','units'));
+        return view('admin_transport.pengeluaran_transport.edit', compact('pengeluaran_transport','units'));
     }
 
     // Update
