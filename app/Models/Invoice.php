@@ -11,7 +11,6 @@ class Invoice extends Model
 
     protected $fillable = [
         'mitra_id',
-   
         'tanggal',
         'status',
         'total'
@@ -27,10 +26,11 @@ class Invoice extends Model
     }
 
 
-    public function items()
-    {
-        return $this->hasMany(InvoiceItem::class);
-    }
+public function items()
+{
+    return $this->hasMany(InvoiceItem::class, 'invoice_id', 'id');
+}
+
 
     public function refreshTotalAndStatus()
 {

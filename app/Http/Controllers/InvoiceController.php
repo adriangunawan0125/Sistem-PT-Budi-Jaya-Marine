@@ -56,7 +56,6 @@ class InvoiceController extends Controller
     {
         $request->validate([
             'mitra_id' => 'required',
-            'tanggal' => 'nullable|date',
             'items.*.item' => 'required',
             'items.*.cicilan' => 'nullable|numeric',
             'items.*.tagihan' => 'nullable|numeric',
@@ -69,7 +68,7 @@ class InvoiceController extends Controller
         try {
             $invoice = Invoice::create([
                 'mitra_id' => $request->mitra_id,
-                'tanggal' => $request->tanggal,
+               
                 'status' => 'belum_lunas',
                 'total' => 0
             ]);
@@ -156,18 +155,33 @@ class InvoiceController extends Controller
 
 public function print($id)
 {
+    // ambil invoice yang diklik
     $invoice = Invoice::with([
         'mitra',
-        'mitra.unit',
-        'items'
+        'mitra.unit'
     ])->findOrFail($id);
 
-    $pdf = Pdf::loadView('invoice.print', compact('invoice'))
-        ->setPaper('A4', 'portrait');
+    // ambil SEMUA invoice milik mitra ini + items
+    $invoices = Invoice::with('items')
+        ->where('mitra_id', $invoice->mitra_id)
+        ->get();
+
+    // gabungkan semua items jadi 1 collection
+    $items = $invoices->flatMap->items;
+
+    // invoice number (contoh)
+    $invoiceNumber = str_pad($items->count(), 3, '0', STR_PAD_LEFT)
+        . '/BJM/'
+        . now()->format('m/Y');
+
+    $pdf = Pdf::loadView('invoice.print', [
+        'invoice' => $invoice,
+        'items' => $items,
+        'invoiceNumber' => $invoiceNumber
+    ])->setPaper('A4', 'portrait');
 
     return $pdf->stream('invoice-'.$invoice->id.'.pdf');
 }
-
 
 
 }

@@ -35,11 +35,13 @@
         padding: 6px;
         border: 1px solid #000;
         font-size: 10px;
+        white-space: nowrap;
     }
 
     td {
         padding: 5px;
         border: 1px solid #000;
+        vertical-align: middle;
     }
 
     .no-border td {
@@ -50,12 +52,36 @@
     .total-box td {
         font-size: 12px;
         font-weight: bold;
+        border: 1px solid #000;
+        padding: 8px;
     }
 
-    /* ===== GAMBAR KECIL ===== */
+    .money {
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    .money span {
+        display: inline-block;
+    }
+
+    .money .cur {
+        width: 28px;
+        text-align: left;
+    }
+
+    .money .val {
+        min-width: 100px;
+        text-align: right;
+    }
+
+    .date {
+        white-space: nowrap;
+        text-align: center;
+    }
+
     .img-proof {
-        width: 160px;   /* kecil & rapi */
-        height: auto;
+        width: 160px;
         border: 1px solid #000;
     }
 </style>
@@ -66,26 +92,22 @@
 
 {{-- ================= HEADER ================= --}}
 <div class="row mb-3">
-   <div class="col">
-    <div class="bold">PT. BUDI JAYA MARINE</div>
-    <div>Bill To:</div>
-    <div class="bold">{{ $invoice->mitra->nama_mitra }}</div>
-   <div>
-    {{ optional($invoice->mitra->unit)->merek ?? '-' }}
-    ({{ optional($invoice->mitra->unit)->nama_unit ?? '-' }})
-</div>
-
-</div>
+    <div class="col">
+        <div class="bold">PT. BUDI JAYA MARINE</div>
+        <div>Bill To:</div>
+        <div class="bold">{{ $invoice->mitra->nama_mitra }}</div>
+        <div>
+            {{ optional($invoice->mitra->unit)->merek ?? '-' }}
+            ({{ optional($invoice->mitra->unit)->nama_unit ?? '-' }})
+        </div>
+    </div>
 
     <div class="col text-right">
         <div class="bold" style="font-size:40px;">INVOICE</div>
-        <div>
-            Invoice #:
-            {{ str_pad($invoice->id, 3, '0', STR_PAD_LEFT) }}/BJM/{{ now()->format('m/Y') }}
-        </div>
-        <div>Date: {{ optional($invoice->tanggal)->format('d-m-Y') }}</div>
+        <div>Invoice #: {{ $invoiceNumber }}</div>
+        <div>Date: {{ \Carbon\Carbon::parse($invoice->tanggal)->format('d M Y') }}</div>
         <div>Payment Terms: Transfer</div>
-        <div>Due Date: <b>{{ now()->format('d-m-Y') }}</b></div>
+        <div>Due Date: <b>{{ now()->format('d M Y') }}</b></div>
     </div>
 </div>
 
@@ -94,22 +116,35 @@
 <thead>
 <tr>
     <th width="5%">NO</th>
-    <th width="40%">ITEM</th>
-    <th width="10%">TANGGAL</th>
-    <th width="15%">CICILAN</th>
-    <th width="15%">TAGIHAN</th>
-    <th width="15%">AMOUNT</th>
+    <th width="30%">ITEM</th>
+    <th width="15%">TANGGAL TF</th>
+    <th width="16%">CICILAN</th>
+    <th width="16%">TAGIHAN</th>
+    <th width="18%">AMOUNT</th>
 </tr>
 </thead>
 <tbody>
-@foreach ($invoice->items as $i => $item)
+@foreach ($items as $i => $item)
 <tr>
     <td class="text-center">{{ $i + 1 }}</td>
     <td>{{ $item->item }}</td>
-    <td class="text-center">-</td>
-    <td class="text-right">IDR {{ number_format($item->cicilan) }}</td>
-    <td class="text-right">IDR {{ number_format($item->tagihan) }}</td>
-    <td class="text-right">IDR {{ number_format($item->amount) }}</td>
+    <td class="date">
+        {{ $item->tanggal
+            ? \Carbon\Carbon::parse($item->tanggal)->format('d M Y')
+            : '-' }}
+    </td>
+    <td class="money">
+        <span class="cur">IDR</span>
+        <span class="val">{{ number_format($item->cicilan) }}</span>
+    </td>
+    <td class="money">
+        <span class="cur">IDR</span>
+        <span class="val">{{ number_format($item->tagihan) }}</span>
+    </td>
+    <td class="money">
+        <span class="cur">IDR</span>
+        <span class="val">{{ number_format($item->amount) }}</span>
+    </td>
 </tr>
 @endforeach
 </tbody>
@@ -118,9 +153,10 @@
 {{-- ================= TOTAL ================= --}}
 <table class="total-box mb-3">
 <tr>
-    <td class="text-right">Balance Due</td>
-    <td width="25%" class="text-right">
-        IDR {{ number_format($invoice->total) }}
+    <td width="85%">Balance Due</td>
+    <td width="15%" class="money">
+        <span class="cur">IDR</span>
+        <span class="val">{{ number_format($invoice->total) }}</span>
     </td>
 </tr>
 </table>
@@ -128,54 +164,53 @@
 {{-- ================= NOTES ================= --}}
 <table class="no-border mb-3">
 <tr>
-    <td>
-        <b>Notes:</b><br>
-        Pembayaran melalui rekening perusahaan.<br>
-        BCA 5212309133 a/n PT. Budi Jaya Marine.<br>
-        <br>
-        Terms: <br>
-        <i> Apabila tidak melakukan pembayaran <br>selama 3 hari berturut-turut,
-        maka unit akan ditarik ke pool.</i>
-       
-    </td>
+<td>
+<b>Notes:</b><br>
+Pembayaran melalui rekening perusahaan.<br>
+BCA 5212309133 a/n PT. Budi Jaya Marine.<br><br>
+
+<b>Terms:</b><br>
+<i>
+Apabila tidak melakukan pembayaran selama 3 hari berturut-turut,
+maka unit akan ditarik ke pool.
+</i>
+</td>
 </tr>
 </table>
 
-{{-- ================= BUKTI GAMBAR ================= --}}
+{{-- ================= BUKTI (FIX LOGIC) ================= --}}
 @php
-    $lastTransfer = $invoice->items->whereNotNull('gambar_transfer')->last();
-    $lastTrip = $invoice->items->whereNotNull('gambar_trip')->last();
+    // ambil ITEM TERAKHIR (BUKAN item lain yang punya gambar)
+    $lastItem = $items->last();
+
+    $lastTransfer = ($lastItem && $lastItem->gambar_transfer)
+        ? $lastItem
+        : null;
+
+    $lastTrip = ($lastItem && $lastItem->gambar_trip)
+        ? $lastItem
+        : null;
 @endphp
-
-
 
 <table class="no-border" width="100%">
 <tr>
-    {{-- BUKTI TRANSFER --}}
-    <td width="50%" valign="top" style="text-align: left; padding-left: 25px;">
-        <b>Bukti Transfer Terakhir</b><br><br>
+<td width="50%" valign="top">
+<b>Bukti Transfer Terakhir</b><br><br>
+@if($lastTransfer)
+<img src="{{ public_path('storage/'.$lastTransfer->gambar_transfer) }}" class="img-proof">
+@else
+<i>Tidak ada bukti transfer</i>
+@endif
+</td>
 
-        @if($lastTransfer && $lastTransfer->gambar_transfer)
-            <img
-                src="{{ public_path('storage/'.$lastTransfer->gambar_transfer) }}"
-                class="img-proof">
-        @else
-            <i>Tidak ada bukti transfer</i>
-        @endif
-    </td>
-
-    {{-- BUKTI PERJALANAN --}}
-    <td width="50%" valign="top" style="text-align: right; padding-right: 25px;">
-        <b>Bukti Perjalanan Terakhir</b><br><br>
-
-        @if($lastTrip && $lastTrip->gambar_trip)
-            <img
-                src="{{ public_path('storage/'.$lastTrip->gambar_trip) }}"
-                class="img-proof">
-        @else
-            <i>Tidak ada bukti perjalanan</i>
-        @endif
-    </td>
+<td width="50%" valign="top" class="text-right">
+<b>Bukti Perjalanan Terakhir</b><br><br>
+@if($lastTrip)
+<img src="{{ public_path('storage/'.$lastTrip->gambar_trip) }}" class="img-proof">
+@else
+<i>Tidak ada bukti perjalanan</i>
+@endif
+</td>
 </tr>
 </table>
 

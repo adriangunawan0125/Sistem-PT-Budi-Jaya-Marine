@@ -10,6 +10,8 @@
         @csrf
         @method('PUT')
 
+
+
         <div class="mb-3">
             <label>Item</label>
             <input type="text"
@@ -17,6 +19,16 @@
                    class="form-control"
                    value="{{ $item->item }}"
                    required>
+        </div>
+
+          {{-- TANGGAL --}}
+        <div class="mb-3">
+            <label>Tanggal</label>
+            <input type="date"
+       name="tanggal"
+       class="form-control"
+       value="{{ $item->tanggal }}">
+
         </div>
 
         <div class="mb-3">

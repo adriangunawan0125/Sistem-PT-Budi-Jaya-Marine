@@ -16,9 +16,9 @@ class InvoiceItem extends Model
         'gambar_trip',      // baru
         'gambar_transfer'   // baru
     ];
-    public function invoice()
+  public function invoice()
     {
-        return $this->belongsTo(Invoice::class);
+        return $this->belongsTo(Invoice::class, 'invoice_id', 'id');
     }
 }
 

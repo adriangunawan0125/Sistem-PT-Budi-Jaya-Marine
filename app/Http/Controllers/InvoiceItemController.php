@@ -67,6 +67,7 @@ class InvoiceItemController extends Controller
 
         $request->validate([
             'item' => 'required|string',
+            'tanggal' => 'nullable|date',
             'tagihan' => 'required|numeric',
             'cicilan' => 'nullable|numeric',
             'gambar_trip' => 'nullable|image|max:2048',
@@ -94,6 +95,7 @@ class InvoiceItemController extends Controller
 
         $item->update([
             'item' => $request->item,
+            'tanggal' => $request->tanggal,
             'tagihan' => $request->tagihan,
             'cicilan' => $request->cicilan ?? 0,
             'amount' => $amount,
