@@ -143,11 +143,21 @@ Route::middleware(['auth', 'role:admin_transport'])->group(function () {
     Route::delete('/contact/{id}', [ContactMessageController::class, 'destroy'])->name('contact.destroy');
    
     //calon mitra
-    Route::get('/calon-mitra', [AdminCalonMitraController::class, 'index'])->name('admin.calonmitra');
-    Route::delete('/admin/calon-mitra/{id}', [AdminCalonMitraController::class, 'destroy'])->name('admin.calonmitra.destroy');
+ Route::get('/calon-mitra', 
+        [AdminCalonMitraController::class, 'index']
+    )->name('admin.calon-mitra.index');
+
     Route::get('/calon-mitra/{id}', 
-    [AdminCalonMitraController::class, 'show']
-)->name('calonmitra.show');
+        [AdminCalonMitraController::class, 'show']
+    )->name('calonmitra.show');
+
+    Route::post('/calon-mitra/{id}/approve', 
+        [AdminCalonMitraController::class, 'approve']
+    );
+
+    Route::delete('/calon-mitra/{id}', 
+        [AdminCalonMitraController::class, 'destroy']
+    );
 
 Route::post('/admin/notifikasi/read-all', function () {
     \App\Models\AdminNotification::where('is_read', 0)->update([

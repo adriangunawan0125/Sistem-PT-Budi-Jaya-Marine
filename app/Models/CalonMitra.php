@@ -15,6 +15,11 @@ class CalonMitra extends Model
         'nama',
         'no_handphone',
         'alamat',
+        'jaminan',
+        'gambar_1',
+        'gambar_2',
+        'gambar_3',
+        'is_checked'
         
     ];
 }

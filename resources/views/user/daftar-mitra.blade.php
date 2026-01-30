@@ -12,9 +12,7 @@
         padding: 140px 0 90px;
     ">
     <div class="container text-center">
-        <h1 class="fw-bold mb-3">
-            Daftar Mitra Transport
-        </h1>
+        <h1 class="fw-bold mb-3">Daftar Mitra Transport</h1>
         <p class="mb-0">
             Home / <span class="text-primary">Daftar Mitra</span>
         </p>
@@ -24,72 +22,45 @@
 <!-- ===== CONTENT ===== -->
 <section class="py-5 bg-light">
     <div class="container">
-
         <div class="row g-4 align-items-stretch">
 
-            <!-- ===== KIRI (GAMBAR + SYARAT) ===== -->
+            <!-- ===== KIRI ===== -->
             <div class="col-md-6">
                 <div class="card h-100 border-0 shadow rounded-4 overflow-hidden">
-
                     <div class="ratio ratio-16x9">
                         <img src="{{ asset('assets/bg-transport.jpg') }}"
-                             class="img-fluid object-fit-cover"
-                             alt="Transport Image">
+                             class="img-fluid object-fit-cover">
                     </div>
 
                     <div class="card-body p-4">
-                        <h5 class="fw-bold mb-3">
-                            Syarat Menjadi Mitra Transport
-                        </h5>
-
-                        <p class="text-muted mb-3">
-                            Untuk menjaga kualitas layanan dan profesionalisme,
-                            calon mitra wajib memenuhi ketentuan berikut:
-                        </p>
-
+                        <h5 class="fw-bold mb-3">Syarat Menjadi Mitra Transport</h5>
                         <ul class="text-muted ps-3 mb-0">
-                            <li class="mb-2">
-                                Terdaftar sebagai <strong>driver aktif Grab, Gojek, atau Maxim</strong>.
-                            </li>
-                            <li class="mb-2">
-                                Bersedia menyiapkan <strong>jaminan sesuai ketentuan perusahaan</strong>.
-                            </li>
-                            <li class="mb-2">
-                                Sanggup memenuhi <strong>setoran harian sebesar Rp200.000</strong>.
-                            </li>
-                            <li>
-                                Memiliki sikap profesional dan bertanggung jawab.
-                            </li>
+                            <li class="mb-2">Driver aktif Grab / Gojek / Maxim</li>
+                            <li class="mb-2">Menyiapkan jaminan sesuai ketentuan</li>
+                            <li class="mb-2">Setoran harian Rp200.000</li>
+                            <li>Bertanggung jawab & profesional</li>
                         </ul>
                     </div>
-
                 </div>
             </div>
 
             <!-- ===== KANAN (FORM) ===== -->
             <div class="col-md-6">
                 <div class="card h-100 border-0 shadow rounded-4">
-
-                    <!-- HEADER CARD -->
                     <div class="card-header bg-white text-center py-4">
-                        <h4 class="fw-bold mb-1">
-                            Form Pendaftaran Mitra Transport
-                        </h4>
-                        <p class="text-muted mb-0">
-                            Bergabunglah sebagai mitra transport profesional
-                        </p>
+                        <h4 class="fw-bold mb-1">Form Pendaftaran Mitra Transport</h4>
+                        <p class="text-muted mb-0">Bergabung sebagai mitra profesional</p>
                     </div>
 
-                    <div class="card-body p-5 d-flex flex-column justify-content-center">
+                    <div class="card-body p-5">
 
-                        {{-- ALERT SUCCESS --}}
+                        {{-- ALERT --}}
                         @if (session('success'))
                             <div class="alert alert-success">
                                 {{ session('success') }}
                             </div>
                         @endif
 
-                        {{-- ALERT ERROR --}}
                         @if ($errors->any())
                             <div class="alert alert-danger">
                                 <ul class="mb-0">
@@ -100,9 +71,12 @@
                             </div>
                         @endif
 
-                        <form method="POST" action="{{ route('mitra.store') }}">
+                        <form method="POST"
+                              action="{{ route('mitra.store') }}"
+                              enctype="multipart/form-data">
                             @csrf
 
+                            <!-- NAMA -->
                             <div class="mb-3">
                                 <label class="form-label">Nama Lengkap</label>
                                 <input type="text"
@@ -112,6 +86,7 @@
                                        required>
                             </div>
 
+                            <!-- NO HP -->
                             <div class="mb-3">
                                 <label class="form-label">No Handphone</label>
                                 <input type="number"
@@ -121,12 +96,47 @@
                                        required>
                             </div>
 
-                            <div class="mb-4">
+                            <!-- ALAMAT -->
+                            <div class="mb-3">
                                 <label class="form-label">Alamat</label>
                                 <textarea name="alamat"
                                           class="form-control"
-                                          rows="4"
+                                          rows="3"
                                           required>{{ old('alamat') }}</textarea>
+                            </div>
+
+                            <!-- JAMINAN TEXT -->
+                            <div class="mb-3">
+                                <label class="form-label">Jaminan</label>
+                                <input type="text"
+                                       name="jaminan"
+                                       class="form-control"
+                                       placeholder="Contoh: STNK / STNK + KTP / STNK + KTP + BPKB"
+                                       value="{{ old('jaminan') }}"
+                                       required>
+                            </div>
+
+                            <!-- GAMBAR JAMINAN -->
+                            <div class="mb-3">
+                                <label class="form-label">Upload Jaminan 1 (Wajib)</label>
+                                <input type="file"
+                                       name="gambar_1"
+                                       class="form-control"
+                                       required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Upload Jaminan 2 (Opsional)</label>
+                                <input type="file"
+                                       name="gambar_2"
+                                       class="form-control">
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label">Upload Jaminan 3 (Opsional)</label>
+                                <input type="file"
+                                       name="gambar_3"
+                                       class="form-control">
                             </div>
 
                             <div class="text-center">
@@ -142,7 +152,6 @@
             </div>
 
         </div>
-
     </div>
 </section>
 
