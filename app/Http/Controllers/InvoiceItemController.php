@@ -55,7 +55,7 @@ class InvoiceItemController extends Controller
     public function edit($id)
     {
         $item = InvoiceItem::with('invoice')->findOrFail($id);
-        return view('invoice.edit', compact('item'));
+        return view('admin_transport.invoice.edit', compact('item'));
     }
 
     /**
