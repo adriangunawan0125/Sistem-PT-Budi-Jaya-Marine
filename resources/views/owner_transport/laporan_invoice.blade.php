@@ -2,85 +2,89 @@
 
 @section('content')
 <div class="container">
-    <h4 class="mb-3">Laporan Invoice</h4>
+    <h4>Data Invoice</h4>
 
-<form method="GET" class="mb-3">
-    <div class="d-flex align-items-center flex-wrap" style="gap: 6px;">
+    {{-- SEARCH --}}
+    <form method="GET" class="row g-2 mb-3">
+        <div class="col-md-4">
+            <input type="text"
+                   name="search"
+                   class="form-control"
+                   placeholder="Cari nama mitra..."
+                   value="{{ request('search') }}">
+        </div>
 
-        {{-- Cari Nama --}}
-        <input
-            type="text"
-            name="nama"
-            value="{{ $nama }}"
-            placeholder="Cari nama mitra"
-            class="form-control"
-            style="width: 240px;"
-        >
+        <div class="col-md-2">
+            <button class="btn btn-primary w-100">Cari</button>
+        </div>
 
-        {{-- Status --}}
-        <select
-            name="status"
-            class="form-control"
-            style="width: 170px;"
-        >
-            <option value="">-- Semua Status --</option>
-            <option value="lunas" {{ $status == 'lunas' ? 'selected' : '' }}>Lunas</option>
-            <option value="belum_lunas" {{ $status == 'belum_lunas' ? 'selected' : '' }}>Belum Lunas</option>
-        </select>
+        <div class="col-md-2">
+            <a href="{{ route('invoice.rekap') }}"
+               class="btn btn-secondary w-100">
+                Reset
+            </a>
+        </div>
+    </form>
+    <div class="alert alert-info mb-3">
+    Total Invoice: <strong>Rp {{ number_format($total_all, 0, ',', '.') }}</strong>
+</div>
+ in
 
-        {{-- Cari --}}
-        <button type="submit" class="btn btn-primary px-3">
-            Tampilkan
-        </button>
-
-        {{-- Reset --}}
-        <a href="{{ route('invoice.rekap') }}" class="btn btn-secondary px-3">
-            Reset
-        </a>
-
-    </div>
-</form>
-
-
-
-    {{-- INFO TOTAL --}}
-    <div class="alert alert-info mb-4">
-        Total Invoice: <strong>Rp {{ number_format($total_all, 0, ',', '.') }}</strong>
-    </div>
-
-    {{-- TABEL --}}
+    {{-- TABLE --}}
     <div class="table-responsive">
-        <table class="table table-bordered table-striped align-middle">
+        <table class="table table-bordered align-middle">
             <thead class="table-light">
                 <tr>
-                    <th>No</th>
-                    <th>Mitra</th>
-                    <th>Tanggal</th>
-                    <th>Status</th>
-                    <th>Total</th>
-                    <th>Aksi</th>
+                    <th style="width:60px">No</th>
+                    <th>Nama Mitra</th>
+                    <th>Total Tagihan</th>
+                    <th>TF Terakhir</th>       
+                    <th style="width:120px">Aksi</th>
                 </tr>
             </thead>
             <tbody>
-               @forelse($invoices as $index => $inv)
-<tr>
-    <td>{{ $index + 1 }}</td>
-    <td>{{ $inv->mitra->nama_mitra ?? '-' }}</td>
-    <td>{{ \Carbon\Carbon::parse($inv->tanggal)->format('d-m-Y') }}</td>
-    <td>{{ ucfirst($inv->status) }}</td>
-    <td>Rp {{ number_format($inv->total,0,',','.') }}</td>
-    <td>
-       <a class="btn btn-info" href="{{ route('owner.invoice.show', $inv->id) }}">Detail</a>
-    </td>
-</tr>
-@empty
-<tr>
-    <td colspan="6" class="text-center text-muted">Tidak ada invoice</td>
-</tr>
-@endforelse
+                @forelse($data as $index => $row)
+                <tr>
+                    <td>{{ $data->firstItem() + $index }}</td>
 
+                    <td>{{ $row->nama_mitra }}</td>
+
+                    <td>
+                        @if($row->total_amount > 0)
+                            Rp {{ number_format($row->total_amount, 0, ',', '.') }}
+                        @else
+                            <span class="text-muted">Rp 0</span>
+                        @endif
+                    </td>
+                    <td>
+    @if($row->tanggal_tf_terakhir)
+        {{ \Carbon\Carbon::parse($row->tanggal_tf_terakhir)->format('d-m-Y') }}
+    @else
+        <span class="text-muted">-</span>
+    @endif
+</td>
+
+                    <td>
+                        <a href="{{ route('owner.invoice.show', $row->id) }}"
+                           class="btn btn-info btn-sm">
+                            Detail
+                        </a>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="4" class="text-center">
+                        Data tidak ditemukan
+                    </td>
+                </tr>
+                @endforelse
             </tbody>
         </table>
+    </div>
+
+    {{-- PAGINATION --}}
+    <div class="d-flex justify-content-center">
+        {{ $data->links('pagination::bootstrap-5') }}
     </div>
 </div>
 @endsection

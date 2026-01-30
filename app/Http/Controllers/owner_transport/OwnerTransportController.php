@@ -159,29 +159,34 @@ public function rekapPengeluaranPajak(Request $request)
         return view('owner_transport.detail_mitra', compact('mitra'));
     }
 
-  public function laporanInvoice(Request $request)
+public function laporanInvoice(Request $request)
 {
-    $nama = $request->nama ?? '';      // filter nama mitra
-    $status = $request->status ?? '';  // filter status: 'lunas' atau 'belum'
+    $search = $request->search ?? '';
 
-    $query = Invoice::with('mitra');
+    $data = Invoice::selectRaw('
+            mitras.id,
+            mitras.nama_mitra,
+            COALESCE(SUM(invoices.total), 0) as total_amount,
+            MAX(invoice_items.tanggal) as tanggal_tf_terakhir
+        ')
+        ->rightJoin('mitras', 'mitras.id', '=', 'invoices.mitra_id')
+        ->leftJoin('invoice_items', function ($join) {
+            $join->on('invoice_items.invoice_id', '=', 'invoices.id')
+                 ->whereNotNull('invoice_items.tanggal');
+        })
+        ->when($search, function ($q) use ($search) {
+            $q->where('mitras.nama_mitra', 'like', "%{$search}%");
+        })
+        ->groupBy('mitras.id', 'mitras.nama_mitra')
+        ->paginate(10)
+        ->withQueryString();
 
-    // Filter nama mitra
-    if (!empty($nama)) {
-        $query->whereHas('mitra', function($q) use ($nama) {
-            $q->where('nama_mitra', 'like', "%{$nama}%");
-        });
-    }
+    $total_all = Invoice::sum('total');
 
-    // Filter status
-    if (!empty($status)) {
-        $query->where('status', $status);
-    }
-
-    $invoices = $query->orderBy('tanggal', 'desc')->get();
-    $total_all = $invoices->sum('total');
-
-    return view('owner_transport.laporan_invoice', compact('invoices', 'nama', 'status', 'total_all'));
+    return view(
+        'owner_transport.laporan_invoice',
+        compact('data', 'total_all')
+    );
 }
 
 

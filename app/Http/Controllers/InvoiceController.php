@@ -178,7 +178,7 @@ public function print($id)
         . '/BJM/'
         . now()->format('m/Y');
 
-    $pdf = Pdf::loadView('invoice.print', [
+    $pdf = Pdf::loadView('admin_transport.invoice.print', [
         'invoice' => $invoice,
         'items' => $items,
         'invoiceNumber' => $invoiceNumber,
