@@ -436,7 +436,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     ">
                         <i class="fa fa-eye" style="font-size:36px;color:#4f6ef7;"></i>
                     </div>
-                    <h5 style="font-weight:600;color:#050a30;">Visi Jelas</h5>
+                    <h5 style="font-weight:600;color:#050a30;">Visi Kami</h5>
                     <p style="font-size:14px;color:#555;line-height:1.8;">
                         Memiliki visi menjadi perusahaan marine
                         dan transportasi yang unggul dan terpercaya.
@@ -465,7 +465,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     ">
                         <i class="fa fa-bullseye" style="font-size:36px;color:#4f6ef7;"></i>
                     </div>
-                    <h5 style="font-weight:600;color:#050a30;">Misi Terarah</h5>
+                    <h5 style="font-weight:600;color:#050a30;">Misi Kami</h5>
                     <p style="font-size:14px;color:#555;line-height:1.8;">
                         Fokus memberikan solusi terbaik dan
                         membangun kerja sama jangka panjang.
