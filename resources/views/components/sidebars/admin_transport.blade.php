@@ -139,9 +139,9 @@
                 <a class="collapse-item" href="/jaminan_mitra">
                     <i class="fas fa-shield-alt me-2"></i> Data Jaminan
                 </a>
-                <a class="collapse-item" href="/admin-transport/laporan/mitra">
+               <!--<a class="collapse-item" href="/admin-transport/laporan/mitra">
                     <i class="fas fa-file-alt me-2"></i> Laporan Mitra
-                </a>
+                </a>-->
             </div>
         </div>
     </li>
