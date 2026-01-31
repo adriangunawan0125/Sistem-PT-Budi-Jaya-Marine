@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\PengeluaranInternal;
+ use Barryvdh\DomPDF\Facade\Pdf;
 
 class PengeluaranInternalController extends Controller
 {
@@ -96,18 +97,47 @@ class PengeluaranInternalController extends Controller
                      ->with('success', 'Pengeluaran berhasil dihapus.');
 }
 
-    public function laporan(Request $request)
+public function laporan(Request $request)
+    {
+        $bulan = $request->bulan ?? date('Y-m');
+
+        $pengeluaran = PengeluaranInternal::whereYear('tanggal', substr($bulan, 0, 4))
+            ->whereMonth('tanggal', substr($bulan, 5, 2))
+            ->orderBy('tanggal', 'asc')
+            ->get();
+
+        $total = $pengeluaran->sum('nominal');
+
+        return view(
+            'admin_transport.pengeluaran_internal.laporan',
+            compact('pengeluaran', 'total', 'bulan')
+        );
+    }
+
+    // HALAMAN KHUSUS PRINT
+  
+
+public function pdf(Request $request)
 {
-    $bulan = $request->bulan ?? date('Y-m'); // default bulan ini
+    $bulan = $request->bulan ?? date('Y-m');
 
     $pengeluaran = PengeluaranInternal::whereYear('tanggal', substr($bulan, 0, 4))
-                    ->whereMonth('tanggal', substr($bulan, 5, 2))
-                    ->orderBy('tanggal', 'asc')
-                    ->get();
+        ->whereMonth('tanggal', substr($bulan, 5, 2))
+        ->orderBy('tanggal', 'asc')
+        ->get();
 
     $total = $pengeluaran->sum('nominal');
 
-    return view('admin_transport.pengeluaran_internal.laporan', compact('pengeluaran', 'total', 'bulan'));
+    $pdf = Pdf::loadView(
+        'admin_transport.pengeluaran_internal.print',
+        compact('pengeluaran', 'total', 'bulan')
+    )->setPaper('A4', 'portrait');
+
+    return $pdf->stream('laporan-pengeluaran-'.$bulan.'.pdf');
 }
 
 }
+
+
+
+

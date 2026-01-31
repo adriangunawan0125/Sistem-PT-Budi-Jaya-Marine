@@ -44,7 +44,11 @@
             </tr>
         </tbody>
     </table>
+<a href="{{ route('pengeluaran_transport.print', ['bulan' => $bulan]) }}"
+   target="_blank"
+   class="btn btn-success">
+   Print
+</a>
 
-    <button onclick="window.print()" class="btn btn-success">Cetak Laporan</button>
 </div>
 @endsection

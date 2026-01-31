@@ -191,10 +191,10 @@
         <div id="collapsePemasukan" class="collapse" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item" href="/pemasukan">
-                    <i class="fas fa-wallet me-2"></i> Pemasukan Transport
+                    <i class="fas fa-wallet me-2"></i> Pemasukan Harian
                 </a>
                 <a class="collapse-item" href="/pemasukan-laporan-bulanan">
-                    <i class="fas fa-chart-line me-2"></i> Laporan Pemasukan
+                    <i class="fas fa-chart-line me-2"></i> Laporan Bulanan
                 </a>
             </div>
         </div>

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\PengeluaranPajak;
 use App\Models\Unit;
 use Illuminate\Support\Facades\Storage;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PengeluaranPajakController extends Controller
 {
@@ -107,4 +108,29 @@ class PengeluaranPajakController extends Controller
 
         return view('admin_transport.pengeluaran_pajak.laporan', compact('pajak', 'total', 'bulan'));
     }
+
+
+
+public function print(Request $request)
+{
+    $bulan = $request->bulan ?? date('Y-m');
+
+    $pajak = PengeluaranPajak::with('unit')
+        ->whereYear('tanggal', substr($bulan, 0, 4))
+        ->whereMonth('tanggal', substr($bulan, 5, 2))
+        ->orderBy('tanggal','asc')
+        ->get();
+
+    $total = $pajak->sum('nominal');
+
+    $pdf = Pdf::loadView(
+        'admin_transport.pengeluaran_pajak.print',
+        compact('pajak', 'total', 'bulan')
+    )->setPaper('A4', 'portrait');
+
+    return $pdf->stream(
+        'laporan-pajak-'.$bulan.'.pdf'
+    );
+}
+
 }

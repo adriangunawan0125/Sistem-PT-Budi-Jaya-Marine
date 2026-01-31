@@ -7,6 +7,8 @@ use App\Models\PengeluaranTransport;
 use App\Models\PengeluaranTransportItem;
 use App\Models\Unit;
 use Illuminate\Support\Facades\Storage;
+use Barryvdh\DomPDF\Facade\Pdf;
+
 
 class PengeluaranTransportController extends Controller
 {
@@ -157,4 +159,27 @@ class PengeluaranTransportController extends Controller
         return redirect()->route('pengeluaran_transport.index')
                          ->with('success','Pengeluaran transport berhasil dihapus.');
     }
+
+public function print(Request $request)
+{
+    $bulan = $request->bulan ?? date('Y-m');
+
+    $transport = PengeluaranTransport::with('unit','items')
+        ->whereYear('tanggal', substr($bulan, 0, 4))
+        ->whereMonth('tanggal', substr($bulan, 5, 2))
+        ->orderBy('tanggal', 'asc')
+        ->get();
+
+    $total_all = $transport->sum('total_amount');
+
+    $pdf = Pdf::loadView(
+        'admin_transport.pengeluaran_transport.print',
+        compact('transport', 'total_all', 'bulan')
+    )->setPaper('A4', 'portrait');
+
+    return $pdf->stream(
+        'laporan-pengeluaran-transport-'.$bulan.'.pdf'
+    );
+}
+
 }

@@ -25,6 +25,11 @@
                 class="btn btn-primary me-2 mb-2">
             Filter
         </button>
+<a href="{{ route('pemasukan.print.harian', ['tanggal' => $tanggal]) }}"
+   target="_blank"
+   class="btn btn-success me-2 mb-2">
+   Print PDF
+</a>
 
         <a href="{{ route('pemasukan.index') }}"
            class="btn btn-secondary me-2 mb-2">

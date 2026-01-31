@@ -8,6 +8,12 @@
     <form method="GET" class="mb-3">
         <input type="month" name="bulan" value="{{ $bulan }}" class="form-control w-auto d-inline">
         <button type="submit" class="btn btn-primary">Tampilkan</button>
+        <a href="{{ route('pemasukan.print.bulanan', ['bulan' => $bulan]) }}"
+   target="_blank"
+   class="btn btn-success ">
+   Print PDF
+</a>
+
         <a href="{{ route('pemasukan.index') }}" class="btn btn-secondary">Kembali</a>
     </form>
 

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Pemasukan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Barryvdh\DomPDF\Facade\Pdf;
+
 
 class PemasukanController extends Controller
 {
@@ -150,6 +152,49 @@ public function laporanBulanan(Request $request)
         'total'
     ));
 }
+
+public function printHarian(Request $request)
+{
+    $tanggal = $request->tanggal ?? date('Y-m-d');
+
+    $pemasukan = Pemasukan::whereDate('tanggal', $tanggal)
+        ->orderBy('tanggal', 'asc')
+        ->get();
+
+    $total = $pemasukan->sum('nominal');
+
+    $pdf = Pdf::loadView('admin_transport.pemasukan.print-harian', [
+        'pemasukan' => $pemasukan,
+        'tanggal'   => $tanggal,
+        'total'     => $total
+    ])->setPaper('A4', 'portrait');
+
+    return $pdf->stream('pemasukan-harian-'.$tanggal.'.pdf');
+}
+
+public function printBulanan(Request $request)
+{
+    $bulan = $request->bulan ?? date('Y-m');
+
+    $tahun = substr($bulan, 0, 4);
+    $bulanAngka = substr($bulan, 5, 2);
+
+    $pemasukan = Pemasukan::whereYear('tanggal', $tahun)
+        ->whereMonth('tanggal', $bulanAngka)
+        ->orderBy('tanggal', 'asc')
+        ->get();
+
+    $total = $pemasukan->sum('nominal');
+
+    $pdf = Pdf::loadView('admin_transport.pemasukan.print-bulanan', [
+        'pemasukan' => $pemasukan,
+        'bulan'     => $bulan,
+        'total'     => $total
+    ])->setPaper('A4', 'portrait');
+
+    return $pdf->stream('pemasukan-bulanan-'.$bulan.'.pdf');
+}
+
 
 
 

@@ -39,6 +39,11 @@
         </tbody>
     </table>
 
-    <button onclick="window.print()" class="btn btn-success">Cetak Laporan</button>
+   <a href="{{ route('pengeluaran_pajak.print', ['bulan' => $bulan]) }}"
+   target="_blank"
+   class="btn btn-success">
+   Print
+</a>
+
 </div>
 @endsection
