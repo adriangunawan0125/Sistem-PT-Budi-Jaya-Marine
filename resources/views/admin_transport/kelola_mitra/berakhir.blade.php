@@ -19,10 +19,7 @@
     @endif
 
     {{-- TOMBOL KEMBALI --}}
-    <a href="{{ url('/admin-transport/mitra') }}"
-       class="btn btn-secondary mb-3">
-        ← Kembali ke Mitra
-    </a>
+   
 
     {{-- SEARCH --}}
     <form method="GET" class="row mb-3">
@@ -112,6 +109,10 @@
         @endforelse
         </tbody>
     </table>
+     <a href="{{ url('/admin-transport/mitra') }}"
+       class="btn btn-secondary mb-3">
+         Kembali 
+    </a>
 
     {{-- PAGINATION --}}
     <div class="d-flex justify-content-center">

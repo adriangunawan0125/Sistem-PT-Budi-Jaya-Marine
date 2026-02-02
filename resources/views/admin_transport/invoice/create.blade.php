@@ -56,12 +56,20 @@
                         <input type="date" name="items[0][tanggal]" class="form-control">
                     </td>
 
+                    {{-- CICILAN --}}
                     <td>
-                        <input name="items[0][cicilan]" class="form-control" value="0" type="number">
+                        <input type="text" class="form-control rupiah"
+                               data-hidden="items[0][cicilan]"
+                               placeholder="Rp 0">
+                        <input type="hidden" name="items[0][cicilan]" value="0">
                     </td>
 
+                    {{-- TAGIHAN --}}
                     <td>
-                        <input name="items[0][tagihan]" class="form-control" value="0" type="number">
+                        <input type="text" class="form-control rupiah"
+                               data-hidden="items[0][tagihan]"
+                               placeholder="Rp 0">
+                        <input type="hidden" name="items[0][tagihan]" value="0">
                     </td>
 
                     <td>
@@ -85,12 +93,60 @@
 
         <hr>
         <button class="btn btn-primary">Simpan</button>
+        <a href="{{ route('invoice.index')}}"
+               class="btn btn-secondary mr-2">
+                Batal
+            </a>
     </form>
 </div>
 
 <script>
 let i = 1;
 
+/* ================= RUPIAH FORMAT ================= */
+function formatRupiah(angka) {
+    let number_string = angka.replace(/[^,\d]/g, ''),
+        split = number_string.split(','),
+        sisa = split[0].length % 3,
+        rupiah = split[0].substr(0, sisa),
+        ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+    if (ribuan) {
+        let separator = sisa ? '.' : '';
+        rupiah += separator + ribuan.join('.');
+    }
+
+    return rupiah ? 'Rp ' + rupiah : 'Rp 0';
+}
+
+function bindRupiah(el) {
+    el.addEventListener('input', function () {
+        // ambil angka murni
+        let raw = this.value.replace(/\D/g, '');
+
+        // HILANGKAN LEADING ZERO
+        raw = raw.replace(/^0+/, '');
+
+        // kalau kosong, biarin kosong (jangan Rp 0 dulu)
+        if (raw === '') {
+            this.value = '';
+        } else {
+            this.value = formatRupiah(raw);
+        }
+
+        // isi hidden input
+        let hiddenName = this.dataset.hidden;
+        let hiddenInput = this.parentElement.querySelector(
+            `input[name="${hiddenName}"]`
+        );
+        hiddenInput.value = raw === '' ? 0 : raw;
+    });
+}
+
+
+document.querySelectorAll('.rupiah').forEach(el => bindRupiah(el));
+
+/* ================= ADD ITEM ================= */
 function addItem() {
     let row = `
     <tr>
@@ -103,11 +159,17 @@ function addItem() {
         </td>
 
         <td>
-            <input name="items[${i}][cicilan]" class="form-control" value="0" type="number">
+            <input type="text" class="form-control rupiah"
+                   data-hidden="items[${i}][cicilan]"
+                   placeholder="Rp 0">
+            <input type="hidden" name="items[${i}][cicilan]" value="0">
         </td>
 
         <td>
-            <input name="items[${i}][tagihan]" class="form-control" value="0" type="number">
+            <input type="text" class="form-control rupiah"
+                   data-hidden="items[${i}][tagihan]"
+                   placeholder="Rp 0">
+            <input type="hidden" name="items[${i}][tagihan]" value="0">
         </td>
 
         <td>
@@ -123,13 +185,17 @@ function addItem() {
         </td>
 
         <td>
-            <button type="button" class="btn btn-danger btn-sm" onclick="this.closest('tr').remove()">✖</button>
+            <button type="button" class="btn btn-danger text-light" onclick="this.closest('tr').remove()">hapus</button>
         </td>
     </tr>`;
+
     document.querySelector('#items tbody').insertAdjacentHTML('beforeend', row);
+
+    document.querySelectorAll('.rupiah').forEach(el => bindRupiah(el));
     i++;
 }
 
+/* ================= PREVIEW IMAGE ================= */
 function previewItemImage(input, previewId) {
     const container = document.getElementById(previewId);
     container.innerHTML = '';

@@ -112,6 +112,10 @@
 
         </tbody>
     </table>
+     <a href="{{ route('invoice.index') }}"
+           class="btn btn-secondary">
+            Kembali
+        </a>
 
 </div>
 @endsection

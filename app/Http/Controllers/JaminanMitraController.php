@@ -8,11 +8,25 @@ use Illuminate\Support\Facades\Storage;
 
 class JaminanMitraController extends Controller
 {
-    public function index()
-    {
-        $data = JaminanMitra::with('mitra')->get();
-        return view('admin_transport.jaminan_mitra.index', compact('data'));
-    }
+   public function index(Request $request)
+{
+    $search = $request->search;
+
+    $data = JaminanMitra::with('mitra')
+        ->when($search, function ($query) use ($search) {
+            $query->whereHas('mitra', function ($q) use ($search) {
+                $q->where('nama_mitra', 'like', "%{$search}%")
+                  ->orWhere('no_hp', 'like', "%{$search}%");
+            })
+            ->orWhere('jaminan', 'like', "%{$search}%");
+        })
+        ->latest()
+        ->paginate(10)
+        ->withQueryString(); // biar search kepake pas pindah halaman
+
+    return view('admin_transport.jaminan_mitra.index', compact('data', 'search'));
+}
+
 
     public function create()
     {

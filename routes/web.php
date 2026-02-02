@@ -203,9 +203,6 @@ Route::post('/admin/notifikasi/read-all', function () {
     return response()->json(['status' => 'ok']);
 })->name('admin.notif.readall');
 
-
-
-
     //PEMASUKAN 
     Route::get('/pemasukan', [PemasukanController::class, 'index'])->name('pemasukan.index');
     Route::get('/pemasukan/create', [PemasukanController::class, 'create'])->name('pemasukan.create');

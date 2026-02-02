@@ -34,10 +34,25 @@
             </thead>
             <tbody>
                 <tr>
-                    <td><input type="text" name="keterangan[]" class="form-control" required></td>
-                    <td><input type="number" name="nominal[]" class="form-control" required></td>
-                    <td><input type="file" name="gambar[]" class="form-control" accept="image/*"></td>
-                    <td><button type="button" class="btn btn-danger remove-row">Hapus</button></td>
+                    <td>
+                        <input type="text" name="keterangan[]" class="form-control" required>
+                    </td>
+
+                    <td>
+                        <input type="text"
+                               class="form-control rupiah"
+                               placeholder="Rp 0"
+                               required>
+                        <input type="hidden" name="nominal[]" value="0">
+                    </td>
+
+                    <td>
+                        <input type="file" name="gambar[]" class="form-control" accept="image/*">
+                    </td>
+
+                    <td>
+                        <button type="button" class="btn btn-danger remove-row">Hapus</button>
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -45,25 +60,62 @@
         <button type="button" class="btn btn-secondary mb-3" id="add_item">Tambah Item</button>
         <br>
         <button type="submit" class="btn btn-primary">Simpan</button>
+         <a href="{{ route('pengeluaran_transport.index') }}"
+           class="btn btn-secondary">
+            Kembali
+        </a>
     </form>
 </div>
 
 <script>
-document.getElementById('add_item').addEventListener('click', function(){
-    let table = document.getElementById('items_table').getElementsByTagName('tbody')[0];
-    let newRow = document.createElement('tr');
-    newRow.innerHTML = `
+// ================= FORMAT RUPIAH =================
+function formatRupiah(angka) {
+    let number_string = angka.replace(/\D/g, ''),
+        sisa = number_string.length % 3,
+        rupiah = number_string.substr(0, sisa),
+        ribuan = number_string.substr(sisa).match(/\d{3}/g);
+
+    if (ribuan) {
+        let separator = sisa ? '.' : '';
+        rupiah += separator + ribuan.join('.');
+    }
+    return rupiah ? 'Rp ' + rupiah : '';
+}
+
+function bindRupiah(input) {
+    input.addEventListener('input', function () {
+        let raw = this.value.replace(/\D/g, '');
+        raw = raw.replace(/^0+/, '');
+
+        this.value = raw ? formatRupiah(raw) : '';
+        this.nextElementSibling.value = raw || 0;
+    });
+}
+
+document.querySelectorAll('.rupiah').forEach(bindRupiah);
+
+// ================= TAMBAH ROW =================
+document.getElementById('add_item').addEventListener('click', function () {
+    let tbody = document.querySelector('#items_table tbody');
+    let row = document.createElement('tr');
+
+    row.innerHTML = `
         <td><input type="text" name="keterangan[]" class="form-control" required></td>
-        <td><input type="number" name="nominal[]" class="form-control" required></td>
+        <td>
+            <input type="text" class="form-control rupiah" placeholder="Rp 0" required>
+            <input type="hidden" name="nominal[]" value="0">
+        </td>
         <td><input type="file" name="gambar[]" class="form-control" accept="image/*"></td>
         <td><button type="button" class="btn btn-danger remove-row">Hapus</button></td>
     `;
-    table.appendChild(newRow);
+
+    tbody.appendChild(row);
+    bindRupiah(row.querySelector('.rupiah'));
 });
 
-// Hapus row
-document.addEventListener('click', function(e){
-    if(e.target && e.target.classList.contains('remove-row')){
+// ================= HAPUS ROW =================
+document.addEventListener('click', function (e) {
+    if (e.target.classList.contains('remove-row')) {
         e.target.closest('tr').remove();
     }
 });

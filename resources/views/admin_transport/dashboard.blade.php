@@ -106,7 +106,7 @@
           <div class="card dashboard-card bg-gradient-dark">
               <div class="card-body text-white d-flex justify-content-between align-items-center">
                   <div>
-                      <div class="text-uppercase small font-weight-bold">Mitra Berakhir</div>
+                      <div class="text-uppercase small font-weight-bold">Ex - Mitra</div>
                       <div class="h4 font-weight-bold mt-2">{{ $mitraBerakhir }}</div>
                       <small>Non Aktif</small>
                   </div>

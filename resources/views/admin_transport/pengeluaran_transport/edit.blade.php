@@ -4,7 +4,9 @@
 <div class="container">
     <h4>Edit Pengeluaran Transport</h4>
 
-    <form method="POST" action="{{ route('pengeluaran_transport.update', $pengeluaran_transport->id) }}" enctype="multipart/form-data">
+    <form method="POST"
+          action="{{ route('pengeluaran_transport.update', $pengeluaran_transport->id) }}"
+          enctype="multipart/form-data">
         @csrf
         @method('PUT')
 
@@ -13,14 +15,21 @@
             <select name="unit_id" class="form-control" required>
                 <option value="">Pilih Unit</option>
                 @foreach($units as $unit)
-                    <option value="{{ $unit->id }}" {{ $pengeluaran_transport->unit_id == $unit->id ? 'selected' : '' }}>{{ $unit->nama_unit }}</option>
+                    <option value="{{ $unit->id }}"
+                        {{ $pengeluaran_transport->unit_id == $unit->id ? 'selected' : '' }}>
+                        {{ $unit->nama_unit }}
+                    </option>
                 @endforeach
             </select>
         </div>
 
         <div class="mb-3">
             <label>Tanggal</label>
-            <input type="date" name="tanggal" class="form-control" value="{{ $pengeluaran_transport->tanggal }}" required>
+            <input type="date"
+                   name="tanggal"
+                   class="form-control"
+                   value="{{ $pengeluaran_transport->tanggal }}"
+                   required>
         </div>
 
         <h5>Item Pengeluaran</h5>
@@ -36,45 +45,121 @@
             <tbody>
                 @foreach($pengeluaran_transport->items as $item)
                 <tr>
-                    <td><input type="text" name="keterangan[]" class="form-control" value="{{ $item->keterangan }}" required></td>
-                    <td><input type="number" name="nominal[]" class="form-control" value="{{ $item->nominal }}" required></td>
-                   <td>
-    @if($item->gambar)
-        <div class="mb-1">
-            <img src="{{ asset('storage/'.$item->gambar) }}" alt="Gambar" width="80" class="img-thumbnail">
-        </div>
-    @endif
-    <input type="file" name="gambar[]" class="form-control" accept="image/*">
-    <small class="text-muted">Upload gambar (opsional)</small>
-</td>
+                    <td>
+                        <input type="text"
+                               name="keterangan[]"
+                               class="form-control"
+                               value="{{ $item->keterangan }}"
+                               required>
+                    </td>
 
-                    <td><button type="button" class="btn btn-danger remove-row">Hapus</button></td>
+                    <td>
+                        <input type="text"
+                               class="form-control rupiah"
+                               placeholder="Rp 0"
+                               value="Rp {{ number_format($item->nominal,0,',','.') }}"
+                               required>
+                        <input type="hidden"
+                               name="nominal[]"
+                               value="{{ $item->nominal }}">
+                    </td>
+
+                    <td>
+                        @if($item->gambar)
+                            <div class="mb-1">
+                                <img src="{{ asset('storage/'.$item->gambar) }}"
+                                     alt="Gambar"
+                                     width="80"
+                                     class="img-thumbnail">
+                            </div>
+                        @endif
+                        <input type="file"
+                               name="gambar[]"
+                               class="form-control"
+                               accept="image/*">
+                        <small class="text-muted">Upload gambar (opsional)</small>
+                    </td>
+
+                    <td>
+                        <button type="button" class="btn btn-danger remove-row">
+                            Hapus
+                        </button>
+                    </td>
                 </tr>
                 @endforeach
             </tbody>
         </table>
 
-        <button type="button" class="btn btn-secondary mb-3" id="add_item">Tambah Item</button>
+        <button type="button"
+                class="btn btn-secondary mb-3"
+                id="add_item">
+            Tambah Item
+        </button>
         <br>
-        <button type="submit" class="btn btn-primary">Update</button>
+
+        <button type="submit" class="btn btn-primary">
+            Update
+        </button>
+         <a href="{{ route('pengeluaran_transport.index') }}"
+           class="btn btn-secondary">
+            Batal
+        </a>
     </form>
 </div>
 
 <script>
-document.getElementById('add_item').addEventListener('click', function(){
-    let table = document.getElementById('items_table').getElementsByTagName('tbody')[0];
-    let newRow = document.createElement('tr');
-    newRow.innerHTML = `
+// ================= RUPIAH =================
+function formatRupiah(angka) {
+    let number_string = angka.replace(/\D/g, ''),
+        sisa = number_string.length % 3,
+        rupiah = number_string.substr(0, sisa),
+        ribuan = number_string.substr(sisa).match(/\d{3}/g);
+
+    if (ribuan) {
+        let separator = sisa ? '.' : '';
+        rupiah += separator + ribuan.join('.');
+    }
+    return rupiah ? 'Rp ' + rupiah : '';
+}
+
+function bindRupiah(el) {
+    el.addEventListener('input', function () {
+        let raw = this.value.replace(/\D/g, '');
+        raw = raw.replace(/^0+/, '');
+
+        this.value = raw ? formatRupiah(raw) : '';
+        this.nextElementSibling.value = raw || 0;
+    });
+}
+
+document.querySelectorAll('.rupiah').forEach(bindRupiah);
+
+// ================= TAMBAH ROW =================
+document.getElementById('add_item').addEventListener('click', function () {
+    let tbody = document.querySelector('#items_table tbody');
+    let row = document.createElement('tr');
+
+    row.innerHTML = `
         <td><input type="text" name="keterangan[]" class="form-control" required></td>
-        <td><input type="number" name="nominal[]" class="form-control" required></td>
-        <td><input type="file" name="gambar[]" class="form-control" accept="image/*"></td>
-        <td><button type="button" class="btn btn-danger remove-row">Hapus</button></td>
+        <td>
+            <input type="text" class="form-control rupiah" placeholder="Rp 0" required>
+            <input type="hidden" name="nominal[]" value="0">
+        </td>
+        <td>
+            <input type="file" name="gambar[]" class="form-control" accept="image/*">
+        </td>
+        <td>
+            <button type="button" class="btn btn-danger remove-row">Hapus</button>
+        </td>
     `;
-    table.appendChild(newRow);
+
+    tbody.appendChild(row);
+    bindRupiah(row.querySelector('.rupiah'));
 });
 
-document.addEventListener('click', function(e){
-    if(e.target && e.target.classList.contains('remove-row')){
+// ================= HAPUS ROW =================
+document.addEventListener('click', function (e) {
+    if (e.target.classList.contains('remove-row')) {
         e.target.closest('tr').remove();
     }
 });

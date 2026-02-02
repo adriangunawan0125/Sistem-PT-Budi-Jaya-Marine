@@ -95,10 +95,6 @@
             Kembali
         </a>
 
-        <a href="{{ url('/admin-transport/mitra/'.$mitra->id.'/edit') }}"
-           class="btn btn-warning">
-            Edit
-        </a>
     </div>
 
 </div>
