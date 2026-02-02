@@ -83,6 +83,26 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
     Route::get('/laporan-invoice', [OwnerTransportController::class, 'laporanInvoice'])->name('invoice.rekap');   
     Route::get('/laporan-invoice/detail/{id}', [OwnerTransportController::class, 'detailInvoice'])->name('owner.invoice.show'); // ubah route name supaya unik
 
+
+   // tandai semua notifikasi dibaca
+Route::post('/owner/notifikasi/read-all', function () {
+    \App\Models\OwnerNotification::where('is_read', 0)->update([
+        'is_read' => 1
+    ]);
+    return response()->json(['status' => 'ok']);
+})->name('owner.notif.readall');
+
+// tandai satu notifikasi dibaca
+Route::post('/owner/notifikasi/read/{id}', function ($id) {
+    $notif = \App\Models\OwnerNotification::find($id);
+    if ($notif) {
+        $notif->is_read = 1;
+        $notif->save();
+    }
+    return response()->json(['status' => 'ok']);
+})->name('owner.notif.read');
+
+
 });
 
 // ADMIN TRANSPORT
@@ -118,58 +138,26 @@ Route::middleware(['auth', 'role:admin_transport'])->group(function () {
     Route::put('/invoice-item/{id}',[InvoiceItemController::class, 'update'])->name('invoice-item.update');
     Route::delete('/invoice-item/{id}',[InvoiceItemController::class, 'destroy'])->name('invoice-item.destroy');
     Route::resource('invoice', InvoiceController::class);
-    Route::get('/invoice/{invoice}/print', [InvoiceController::class, 'print'])
-    ->name('invoice.print');
-
+    Route::get('/invoice/{invoice}/print', [InvoiceController::class, 'print'])->name('invoice.print');
 
     //pengeluaran internal
-Route::get(
-    'pengeluaran_internal/laporan',
-    [PengeluaranInternalController::class, 'laporan']
-)->name('pengeluaran_internal.laporan');
-
-// halaman khusus print
-Route::get(
-    'pengeluaran_internal/pdf',
-    [PengeluaranInternalController::class, 'pdf']
-)->name('pengeluaran_internal.pdf');
-
-Route::resource(
-    'pengeluaran_internal',
-    PengeluaranInternalController::class
-)->except(['show']);
+    Route::get('pengeluaran_internal/laporan',[PengeluaranInternalController::class, 'laporan'])->name('pengeluaran_internal.laporan');
+    Route::get('pengeluaran_internal/pdf',[PengeluaranInternalController::class, 'pdf'])->name('pengeluaran_internal.pdf');
+    Route::resource('pengeluaran_internal',PengeluaranInternalController::class)->except(['show']);
 
 
-Route::get(
-    'pengeluaran_pajak/laporan',
-    [PengeluaranPajakController::class, 'laporan']
-)->name('pengeluaran_pajak.laporan');
+    Route::get('pengeluaran_pajak/laporan',[PengeluaranPajakController::class, 'laporan'])->name('pengeluaran_pajak.laporan');
 
-Route::get(
-    'pengeluaran_pajak/print',
-    [PengeluaranPajakController::class, 'print']
-)->name('pengeluaran_pajak.print');
+    Route::get('pengeluaran_pajak/print',[PengeluaranPajakController::class, 'print'])->name('pengeluaran_pajak.print');
 
-Route::resource(
-    'pengeluaran_pajak',
-    PengeluaranPajakController::class
-)->except(['show']);
+    Route::resource('pengeluaran_pajak',PengeluaranPajakController::class)->except(['show']);
 
     //Pengeluaran Transport
-   Route::get(
-    'pengeluaran_transport/print',
-    [PengeluaranTransportController::class, 'print']
-)->name('pengeluaran_transport.print');
+    Route::get('pengeluaran_transport/print',[PengeluaranTransportController::class, 'print'])->name('pengeluaran_transport.print');
 
-Route::get(
-    'pengeluaran_transport/laporan',
-    [PengeluaranTransportController::class, 'laporan']
-)->name('pengeluaran_transport.laporan');
+    Route::get('pengeluaran_transport/laporan',[PengeluaranTransportController::class, 'laporan'])->name('pengeluaran_transport.laporan');
 
-Route::resource(
-    'pengeluaran_transport',
-    PengeluaranTransportController::class
-)->except(['show']);
+    Route::resource('pengeluaran_transport',PengeluaranTransportController::class)->except(['show']);
 
     //Jaminan Mitra
     Route::resource(    'jaminan_mitra', JaminanMitraController::class);
@@ -180,21 +168,10 @@ Route::resource(
     Route::delete('/contact/{id}', [ContactMessageController::class, 'destroy'])->name('contact.destroy');
    
     //calon mitra
- Route::get('/calon-mitra', 
-        [AdminCalonMitraController::class, 'index']
-    )->name('admin.calon-mitra.index');
-
-    Route::get('/calon-mitra/{id}', 
-        [AdminCalonMitraController::class, 'show']
-    )->name('calonmitra.show');
-
-    Route::post('/calon-mitra/{id}/approve', 
-        [AdminCalonMitraController::class, 'approve']
-    );
-
-    Route::delete('/calon-mitra/{id}', 
-        [AdminCalonMitraController::class, 'destroy']
-    );
+    Route::get('/calon-mitra', [AdminCalonMitraController::class, 'index'])->name('admin.calon-mitra.index');
+    Route::get('/calon-mitra/{id}', [AdminCalonMitraController::class, 'show'])->name('calonmitra.show');
+    Route::post('/calon-mitra/{id}/approve', [AdminCalonMitraController::class, 'approve']);
+    Route::delete('/calon-mitra/{id}',        [AdminCalonMitraController::class, 'destroy']);
 
 Route::post('/admin/notifikasi/read-all', function () {
     \App\Models\AdminNotification::where('is_read', 0)->update([
@@ -215,19 +192,15 @@ Route::post('/admin/notifikasi/read-all', function () {
     Route::get('pemasukan/print-harian', [PemasukanController::class, 'printHarian'])
     ->name('pemasukan.print.harian');
 
-Route::get('pemasukan/print-bulanan', [PemasukanController::class, 'printBulanan'])
-    ->name('pemasukan.print.bulanan');
+Route::get('pemasukan/print-bulanan', [PemasukanController::class, 'printBulanan'])->name('pemasukan.print.bulanan');
 
 Route::resource('pemasukan', PemasukanController::class);
-
-
     
 });
-
 
 // ADMIN MARINE
 Route::middleware(['auth', 'role:admin_marine'])->group(function () {
     Route::get('/admin-marine', function () {
-        return view('admin_marine.dashboard');
+  return view('admin_marine.dashboard');
     })->name('admin.marine.dashboard');
 });

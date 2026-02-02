@@ -6,6 +6,8 @@ use App\Models\Pemasukan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\OwnerNotification;
+
 
 
 class PemasukanController extends Controller
@@ -33,29 +35,39 @@ class PemasukanController extends Controller
 
     /* ================= STORE ================= */
     public function store(Request $request)
-    {
-        $request->validate([
-            'tanggal'   => 'required|date',
-            'deskripsi' => 'required',
-            'nominal'   => 'required|numeric',
-            'gambar'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
-        ]);
+{
+    $request->validate([
+        'tanggal'   => 'required|date',
+        'deskripsi' => 'required',
+        'nominal'   => 'required|numeric',
+        'gambar'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+    ]);
 
-        $data = $request->only(['tanggal','deskripsi','nominal']);
+    $data = $request->only(['tanggal','deskripsi','nominal']);
 
-        if ($request->hasFile('gambar')) {
-            $file = $request->file('gambar');
-            $namaFile = time().'_'.$file->getClientOriginalName();
-            $file->storeAs('public/pemasukan', $namaFile);
+    if ($request->hasFile('gambar')) {
+        $file = $request->file('gambar');
+        $namaFile = time().'_'.$file->getClientOriginalName();
+        $file->storeAs('public/pemasukan', $namaFile);
 
-            $data['gambar'] = $namaFile; // SIMPAN NAMA FILE SAJA
-        }
-
-        Pemasukan::create($data);
-
-        return redirect()->route('pemasukan.index')
-            ->with('success', 'Pemasukan berhasil ditambahkan');
+        $data['gambar'] = $namaFile;
     }
+
+    // SIMPAN PEMASUKAN
+    $pemasukan = Pemasukan::create($data);
+
+    // 🔔 NOTIF KE OWNER
+    OwnerNotification::create([
+        'type'    => 'pemasukan',
+        'data_id' => $pemasukan->id,
+        'message' => 'Pemasukan baru ditambahkan sebesar Rp ' .
+                     number_format($pemasukan->nominal, 0, ',', '.'),
+        'is_read' => 0
+    ]);
+
+    return redirect()->route('pemasukan.index')
+        ->with('success', 'Pemasukan berhasil ditambahkan');
+}
 
     /* ================= EDIT ================= */
     public function edit($id)

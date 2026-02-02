@@ -1,9 +1,9 @@
+<!-- Topbar Full Fixed -->
 <nav class="navbar navbar-expand navbar-light bg-white topbar shadow"
      style="position: fixed; top:0; left:224px; right:0; z-index:1030;">
 
-    <!-- Sidebar Toggle -->
-    <button id="sidebarToggleTop"
-            class="btn btn-link d-md-none rounded-circle mr-3">
+    <!-- Sidebar Toggle (mobile) -->
+    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
         <i class="fa fa-bars"></i>
     </button>
 
@@ -25,41 +25,36 @@
     <!-- RIGHT -->
     <ul class="navbar-nav ml-auto align-items-center">
 
-        <!-- NOTIF -->
+        <!-- 🔔 NOTIF OWNER -->
         <li class="nav-item dropdown no-arrow mx-2">
             <a class="nav-link dropdown-toggle"
                href="#"
-               id="alertsDropdown"
+               id="ownerAlertsDropdown"
                role="button"
                data-toggle="dropdown">
                 <i class="fas fa-bell fa-fw"></i>
 
-                @if($adminNotifCount > 0)
+                @if($ownerNotifCount > 0)
                     <span class="badge badge-danger badge-counter">
-                        {{ $adminNotifCount }}
+                        {{ $ownerNotifCount }}
                     </span>
                 @endif
             </a>
 
-            <!-- DROPDOWN FIXED -->
             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                 aria-labelledby="alertsDropdown"
-                 style="width:360px; max-height:320px; overflow-y:auto; position:absolute; top:calc(100% + 5px); right:0; z-index:1055;">
+                 aria-labelledby="ownerAlertsDropdown"
+                 style="width:360px; max-height:320px; overflow-y:auto;">
 
-                <h6 class="dropdown-header">Notifikasi</h6>
+                <h6 class="dropdown-header">Notifikasi Owner</h6>
 
-                @forelse($adminNotifs as $notif)
-                    <a class="dropdown-item d-flex align-items-start text-truncate"
-                       title="{{ $notif->message }}"
-                       href="{{ $notif->type === 'unit'
-                            ? url('/admin-transport/unit/edit/'.$notif->data_id)
-                            : ($notif->type === 'contact'
-                                ? route('contact.show', $notif->data_id)
-                                : route('calonmitra.show', $notif->data_id)) }}">
+                @forelse($ownerNotifs as $notif)
+                    <a class="dropdown-item d-flex align-items-start owner-notif-item"
+                       href="{{ route('laporan-harian', $notif->data_id) }}"
+                       data-id="{{ $notif->id }}">
 
                         <div class="mr-3">
-                            <div class="icon-circle {{ $notif->type === 'unit' ? 'bg-danger' : 'bg-warning' }}">
-                                <i class="{{ $notif->type === 'unit' ? 'fas fa-exclamation-triangle' : 'fas fa-envelope' }} text-white"></i>
+                            <div class="icon-circle bg-success">
+                                <i class="fas fa-wallet text-white"></i>
                             </div>
                         </div>
 
@@ -80,16 +75,17 @@
             </div>
         </li>
 
+        <!-- Divider -->
         <div class="topbar-divider d-none d-sm-block"></div>
 
-        <!-- USER -->
+        <!-- User -->
         <li class="nav-item d-none d-lg-block mr-2">
             <span class="nav-link text-gray-600 small">
                 {{ auth()->user()->name }}
             </span>
         </li>
 
-        <!-- LOGOUT -->
+        <!-- Logout -->
         <li class="nav-item">
             <a href="#"
                class="btn btn-danger btn-sm"
@@ -99,8 +95,54 @@
                 Logout
             </a>
         </li>
+
     </ul>
 </nav>
 
-<!-- Biar konten nggak ketutup topbar -->
+<!-- Spacer -->
 <div style="height:70px;"></div>
+
+<!-- CSRF -->
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
+<!-- NOTIF SCRIPT -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+    // klik satu notifikasi
+    document.querySelectorAll('.owner-notif-item').forEach(item => {
+        item.addEventListener('click', function () {
+
+            const notifId = this.dataset.id;
+
+            fetch(`/owner/notifikasi/read/${notifId}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                }
+            });
+
+            const badge = document.querySelector('.badge-counter');
+            if (badge) badge.remove();
+        });
+    });
+
+    // klik lonceng → read all
+    document.getElementById('ownerAlertsDropdown')?.addEventListener('click', function () {
+        fetch(`/owner/notifikasi/read-all`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json'
+            }
+        });
+
+        const badge = document.querySelector('.badge-counter');
+        if (badge) badge.remove();
+    });
+
+});
+</script>
