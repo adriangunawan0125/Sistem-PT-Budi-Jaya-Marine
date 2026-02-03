@@ -277,6 +277,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     <img src="{{ asset('assets/galleryservice/service10.jpg') }}" class="thumb" onclick="changeMedia(11)">
                     <img src="{{ asset('assets/galleryservice/service11.jpg') }}" class="thumb" onclick="changeMedia(12)">
                     <img src="{{ asset('assets/galleryservice/service12.jpg') }}" class="thumb" onclick="changeMedia(13)">
+                    <img src="{{ asset('assets/galleryservice/service13.jpg') }}" class="thumb" onclick="changeMedia(14)">
+                    <img src="{{ asset('assets/galleryservice/service14.jpg') }}" class="thumb" onclick="changeMedia(15)">
+                    <img src="{{ asset('assets/galleryservice/service15.jpg') }}" class="thumb" onclick="changeMedia(16)">
+                    <img src="{{ asset('assets/galleryservice/service16.jpg') }}" class="thumb" onclick="changeMedia(17)">
+                    <img src="{{ asset('assets/galleryservice/service17.jpg') }}" class="thumb" onclick="changeMedia(18)">
+                    <img src="{{ asset('assets/galleryservice/service18.jpg') }}" class="thumb" onclick="changeMedia(19)">
+                    <img src="{{ asset('assets/galleryservice/service19.jpg') }}" class="thumb" onclick="changeMedia(20)">
+                    <img src="{{ asset('assets/galleryservice/service20.jpg') }}" class="thumb" onclick="changeMedia(21)">
+                    <img src="{{ asset('assets/galleryservice/service21.jpg') }}" class="thumb" onclick="changeMedia(22)">
                 </div>
 
             </div>
@@ -300,12 +309,22 @@ const media = [
     { type: 'image', src: "{{ asset('assets/galleryservice/service3.jpg') }}" },
     { type: 'image', src: "{{ asset('assets/galleryservice/service4.jpg') }}" },
     { type: 'image', src: "{{ asset('assets/galleryservice/service5.jpg') }}" },
-    
-    { type: 'image', src: "{{ asset('assets/galleryservice/service8.jpeg') }}" },
-   
+    { type: 'image', src: "{{ asset('assets/galleryservice/service6.jpg') }}" },
+    { type: 'image', src: "{{ asset('assets/galleryservice/service7.jpg') }}" },
+    { type: 'image', src: "{{ asset('assets/galleryservice/service8.jpg') }}" },
+    { type: 'image', src: "{{ asset('assets/galleryservice/service9.jpg') }}" },
     { type: 'image', src: "{{ asset('assets/galleryservice/service10.jpg') }}" },
     { type: 'image', src: "{{ asset('assets/galleryservice/service11.jpg') }}" },
     { type: 'image', src: "{{ asset('assets/galleryservice/service12.jpg') }}" },
+    { type: 'image', src: "{{ asset('assets/galleryservice/service13.jpg') }}" },
+    { type: 'image', src: "{{ asset('assets/galleryservice/service14.jpg') }}" },
+    { type: 'image', src: "{{ asset('assets/galleryservice/service15.jpg') }}" },
+    { type: 'image', src: "{{ asset('assets/galleryservice/service16.jpg') }}" },
+    { type: 'image', src: "{{ asset('assets/galleryservice/service17.jpg') }}" },
+    { type: 'image', src: "{{ asset('assets/galleryservice/service18.jpg') }}" },
+    { type: 'image', src: "{{ asset('assets/galleryservice/service19.jpg') }}" },
+    { type: 'image', src: "{{ asset('assets/galleryservice/service20.jpg') }}" },
+    { type: 'image', src: "{{ asset('assets/galleryservice/service21.jpg') }}" },
    
     
 ];

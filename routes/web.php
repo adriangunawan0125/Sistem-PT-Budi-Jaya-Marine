@@ -1,5 +1,7 @@
 <?php
 
+
+use App\Http\Controllers\AdminMarine\TimesheetController;
 use App\Http\Controllers\ContactMessageController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -19,12 +21,15 @@ use App\Http\Controllers\PengeluaranInternalController;
 use App\Http\Controllers\PengeluaranPajakController;
 use App\Http\Controllers\PengeluaranTransportController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\AdminMarine\CompanyController;
 use App\Http\Controllers\MitraTransportController;
 use App\Http\Controllers\CalonMitraController;
 use App\Http\Controllers\AdminTransport\CalonMitraController as AdminCalonMitraController;
 use App\Http\Controllers\PemasukanController;
 use App\Http\Controllers\owner_transport\OwnerTransportController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\AdminMarine\MarineInvoiceController;
+
 
 //PUBLIC 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -203,4 +208,11 @@ Route::middleware(['auth', 'role:admin_marine'])->group(function () {
     Route::get('/admin-marine', function () {
   return view('admin_marine.dashboard');
     })->name('admin.marine.dashboard');
+    
+    Route::resource('companies', CompanyController::class);
+
+    Route::resource('marine-invoices', MarineInvoiceController::class);
+    Route::get('/marine-invoices/{id}/print',[MarineInvoiceController::class, 'print'])->name('marine-invoices.print');
+
 });
+
