@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Mitra;
 
 class Pemasukan extends Model
 {
@@ -11,8 +12,17 @@ class Pemasukan extends Model
 
     protected $fillable = [
         'tanggal',
+        'mitra_id',
+        'kategori',
         'deskripsi',
         'nominal',
         'gambar'
     ];
+
+    /* ================= RELATION ================= */
+
+    public function mitra()
+    {
+        return $this->belongsTo(Mitra::class);
+    }
 }

@@ -206,102 +206,108 @@
           </div>
       </div>
   </div>
-  
-
-  {{-- CHART --}}
-  <div class="row mt-4">
-      {{-- CHART PEMASUKAN --}}
-      <div class="col-lg-6 mb-4">
-          <div class="card shadow">
-              <div class="card-header bg-white fw-semibold">
-                  Grafik Pemasukan Bulan Ini
-              </div>
-              <div class="card-body">
-                  <canvas id="pemasukanChart"></canvas>
-              </div>
-          </div>
-      </div>
-
-      {{-- CHART PENGELUARAN --}}
-      <div class="col-lg-6 mb-4">
-          <div class="card shadow">
-              <div class="card-header bg-white fw-semibold">
-                  Grafik Pengeluaran Bulan Ini
-              </div>
-              <div class="card-body">
-                  <canvas id="pengeluaranChart"></canvas>
-              </div>
-          </div>
-      </div>
-  </div>
-
-</div>
 
   {{-- STATUS LABA/RUGI --}}
-  <div class="row mt-4 justify-content-center">
-      <div class="col-xl-6 col-md-8 mb-4">
-          <div class="card dashboard-card {{ $totalPemasukanBulanan - $totalPengeluaranBulanan >= 0 ? 'bg-gradient-success' : 'bg-gradient-danger' }}">
-              <div class="card-body text-white d-flex justify-content-between align-items-center">
-                  <div>
-                      <div class="text-uppercase small font-weight-bold">Status Laba/Rugi Bulan Ini</div>
-                      @php
-                          $selisih = $totalPemasukanBulanan - $totalPengeluaranBulanan;
-                          $status = $selisih >= 0 ? 'Laba' : 'Rugi';
-                      @endphp
-                      <div class="h4 font-weight-bold mt-2">
-                          {{ $status }}: Rp {{ number_format(abs($selisih), 0, ',', '.') }}
-                      </div>
-                      <small>{{ \Carbon\Carbon::createFromDate($tahun, $bulan, 1)->translatedFormat('F Y') }}</small>
-                  </div>
-                  <div class="icon-circle">
-                      <i class="fas fa-chart-line"></i>
-                  </div>
-              </div>
-          </div>
-      </div>
-  </div>
+<div class="row mt-4 justify-content-center">
+    <div class="col-xl-6 col-md-8 mb-4">
+        <div class="card dashboard-card {{ $totalPemasukanBulanan - $totalPengeluaranBulanan >= 0 ? 'bg-gradient-success' : 'bg-gradient-danger' }}">
+            <div class="card-body text-white d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-uppercase small font-weight-bold">Status Laba/Rugi Bulan Ini</div>
+                    @php
+                        $selisih = $totalPemasukanBulanan - $totalPengeluaranBulanan;
+                        $status = $selisih >= 0 ? 'Laba' : 'Rugi';
+                    @endphp
+                    <div class="h4 font-weight-bold mt-2">
+                        {{ $status }}: Rp {{ number_format(abs($selisih), 0, ',', '.') }}
+                    </div>
+                    <small>{{ \Carbon\Carbon::createFromDate($tahun, $bulan, 1)->translatedFormat('F Y') }}</small>
+                </div>
+                <div class="icon-circle">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+  
+  {{-- CHART --}}
+<div class="row mt-4">
 
+    {{-- PEMASUKAN BULAN --}}
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-white fw-semibold">
+                Grafik Pemasukan Bulan Ini
+            </div>
+            <div class="card-body">
+                <canvas id="pemasukanBulananChart"></canvas>
+            </div>
+        </div>
+    </div>
 
-{{-- CHART SCRIPT --}}
+    {{-- PENGELUARAN BULAN --}}
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-white fw-semibold">
+                Grafik Pengeluaran Bulan Ini
+            </div>
+            <div class="card-body">
+                <canvas id="pengeluaranBulananChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    {{-- PEMASUKAN TAHUN --}}
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-white fw-semibold">
+                Grafik Pemasukan Tahun {{ $tahun }}
+            </div>
+            <div class="card-body">
+                <canvas id="pemasukanTahunanChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    {{-- PENGELUARAN TAHUN --}}
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-white fw-semibold">
+                Grafik Pengeluaran Tahun {{ $tahun }}
+            </div>
+            <div class="card-body">
+                <canvas id="pengeluaranTahunanChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+</div>
 <script>
-const pemasukanCtx = document.getElementById('pemasukanChart');
-new Chart(pemasukanCtx, {
+
+/* ================= BULANAN ================= */
+
+// PEMASUKAN BULANAN
+new Chart(document.getElementById('pemasukanBulananChart'), {
     type: 'bar',
     data: {
-        labels: ['Total Pemasukan'],
+        labels: ['Pemasukan'],
         datasets: [{
-            label: 'Pemasukan',
+            label: 'Rp',
             data: [{{ $totalPemasukanBulanan }}],
             backgroundColor: '#28a745'
         }]
     },
-    options: {
-        plugins: {
-            tooltip: {
-                callbacks: {
-                    label: function(ctx) {
-                        return 'Rp ' + new Intl.NumberFormat('id-ID').format(ctx.raw);
-                    }
-                }
-            }
-        },
-        scales: {
-            y: {
-                ticks: {
-                    callback: value => 'Rp ' + new Intl.NumberFormat('id-ID').format(value)
-                }
-            }
-        }
-    }
+    options: chartCurrencyOption()
 });
 
-const pengeluaranCtx = document.getElementById('pengeluaranChart');
-new Chart(pengeluaranCtx, {
+// PENGELUARAN BULANAN
+new Chart(document.getElementById('pengeluaranBulananChart'), {
     type: 'bar',
     data: {
-        labels: ['Internal', 'Pajak', 'Transport'],
+        labels: ['Internal','Pajak','Transport'],
         datasets: [{
-            label: 'Pengeluaran',
+            label: 'Rp',
             data: [
                 {{ $totalPengeluaranInternal }},
                 {{ $totalPengeluaranPajak }},
@@ -310,26 +316,69 @@ new Chart(pengeluaranCtx, {
             backgroundColor: '#dc3545'
         }]
     },
-    options: {
-        plugins: {
-            tooltip: {
-                callbacks: {
-                    label: function(ctx) {
+    options: chartCurrencyOption()
+});
+
+
+/* ================= TAHUNAN ================= */
+
+// PEMASUKAN TAHUNAN
+new Chart(document.getElementById('pemasukanTahunanChart'), {
+    type: 'line',
+    data: {
+        labels: {!! json_encode($labels) !!},
+        datasets: [{
+            label: 'Pemasukan',
+            data: {!! json_encode($pemasukanTahunan) !!},
+            borderColor: '#28a745',
+            backgroundColor: 'rgba(40,167,69,0.15)',
+            tension: 0.3,
+            fill: true
+        }]
+    },
+    options: chartCurrencyOption()
+});
+
+// PENGELUARAN TAHUNAN
+new Chart(document.getElementById('pengeluaranTahunanChart'), {
+    type: 'line',
+    data: {
+        labels: {!! json_encode($labels) !!},
+        datasets: [{
+            label: 'Pengeluaran',
+            data: {!! json_encode($pengeluaranTahunan) !!},
+            borderColor: '#dc3545',
+            backgroundColor: 'rgba(220,53,69,0.15)',
+            tension: 0.3,
+            fill: true
+        }]
+    },
+    options: chartCurrencyOption()
+});
+
+
+/* ================= FORMAT RUPIAH ================= */
+function chartCurrencyOption(){
+    return {
+        responsive:true,
+        plugins:{
+            tooltip:{
+                callbacks:{
+                    label:function(ctx){
                         return 'Rp ' + new Intl.NumberFormat('id-ID').format(ctx.raw);
                     }
                 }
             }
         },
-        scales: {
-            y: {
-                ticks: {
-                    callback: value => 'Rp ' + new Intl.NumberFormat('id-ID').format(value)
+        scales:{
+            y:{
+                ticks:{
+                    callback:(v)=>'Rp '+ new Intl.NumberFormat('id-ID').format(v)
                 }
             }
         }
     }
-});
+}
+
 </script>
-
-
-@endsection
+  @endsection

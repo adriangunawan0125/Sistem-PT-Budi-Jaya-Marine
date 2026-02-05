@@ -345,7 +345,6 @@ const media = [
     { type: 'image', src: "{{ asset('assets/galleryspareparts/sparepart28.jpeg') }}" },
     { type: 'image', src: "{{ asset('assets/galleryspareparts/sparepart29.jpeg') }}" },
     { type: 'image', src: "{{ asset('assets/galleryspareparts/sparepart30.jpeg') }}" },
-
     { type: 'image', src: "{{ asset('assets/galleryspareparts/sparepart31.jpeg') }}" },
     { type: 'image', src: "{{ asset('assets/galleryspareparts/sparepart32.jpeg') }}" }
 ];

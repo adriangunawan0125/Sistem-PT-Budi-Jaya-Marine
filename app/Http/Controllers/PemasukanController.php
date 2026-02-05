@@ -1,62 +1,94 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\Models\Pemasukan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\OwnerNotification;
-
+use App\Models\Mitra;
 
 
 class PemasukanController extends Controller
 {
     /* ================= INDEX ================= */
-  public function index(Request $request)
+public function index(Request $request)
 {
-    $tanggal = $request->tanggal ?? date('Y-m-d');
+    $tanggal  = $request->tanggal ?? date('Y-m-d');
+    $nama     = $request->nama;
+    $kategori = $request->kategori;
+    $tidakSetor = $request->tidak_setor;
 
-    $pemasukan = Pemasukan::whereDate('tanggal', $tanggal)
-        ->orderBy('tanggal', 'desc')
-        ->get();
+    $query = Pemasukan::with('mitra')
+        ->whereDate('tanggal', $tanggal);
 
-    $total = $pemasukan->sum('nominal');
+    /* ================= FILTER NAMA ================= */
+    if ($nama) {
+        $query->whereHas('mitra', function ($q) use ($nama) {
+            $q->where('nama_mitra', 'like', "%$nama%");
+        });
+    }
 
-    return view('admin_transport.pemasukan.index', compact('pemasukan', 'tanggal', 'total'));
+    /* ================= FILTER KATEGORI ================= */
+    if ($kategori) {
+        $query->where('kategori', $kategori);
+    }
+
+    /* ================= FILTER TIDAK SETOR ================= */
+if ($tidakSetor) {
+
+    $mitraTidakSetor = Mitra::whereDoesntHave('pemasukans', function($q) use ($tanggal){
+        $q->whereDate('tanggal', $tanggal);
+    })->orderBy('nama_mitra')->get();
+
+    return view('admin_transport.pemasukan.index', [
+        'pemasukan' => collect(),
+        'mitraKosong' => $mitraTidakSetor,
+        'tanggal' => $tanggal,
+        'total' => 0
+    ]);
 }
 
+    $pemasukan = $query->orderBy('tanggal','desc')->get();
+    $total = $pemasukan->sum('nominal');
+
+    return view('admin_transport.pemasukan.index', compact(
+        'pemasukan','tanggal','total'
+    ));
+}
 
     /* ================= CREATE ================= */
     public function create()
-    {
-        return view('admin_transport.pemasukan.create');
-    }
+{
+    $mitras = Mitra::aktif()->orderBy('nama_mitra')->get();
+    return view('admin_transport.pemasukan.create', compact('mitras'));
+}
+
 
     /* ================= STORE ================= */
     public function store(Request $request)
 {
     $request->validate([
         'tanggal'   => 'required|date',
+        'mitra_id'  => 'required|exists:mitras,id',
+        'kategori'  => 'required|in:setoran,cicilan,deposit',
         'deskripsi' => 'required',
         'nominal'   => 'required|numeric',
         'gambar'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
     ]);
 
-    $data = $request->only(['tanggal','deskripsi','nominal']);
+    $data = $request->only([
+        'tanggal','mitra_id','kategori','deskripsi','nominal'
+    ]);
 
     if ($request->hasFile('gambar')) {
         $file = $request->file('gambar');
         $namaFile = time().'_'.$file->getClientOriginalName();
         $file->storeAs('public/pemasukan', $namaFile);
-
         $data['gambar'] = $namaFile;
     }
 
-    // SIMPAN PEMASUKAN
     $pemasukan = Pemasukan::create($data);
 
-    // 🔔 NOTIF KE OWNER
     OwnerNotification::create([
         'type'    => 'pemasukan',
         'data_id' => $pemasukan->id,
@@ -69,47 +101,55 @@ class PemasukanController extends Controller
         ->with('success', 'Pemasukan berhasil ditambahkan');
 }
 
+
     /* ================= EDIT ================= */
-    public function edit($id)
-    {
-        $pemasukan = Pemasukan::findOrFail($id);
-        return view('admin_transport.pemasukan.edit', compact('pemasukan'));
-    }
+   public function edit($id)
+{
+    $pemasukan = Pemasukan::findOrFail($id);
+    $mitras = Mitra::aktif()->orderBy('nama_mitra')->get();
+
+    return view('admin_transport.pemasukan.edit',
+        compact('pemasukan','mitras'));
+}
 
     /* ================= UPDATE ================= */
-    public function update(Request $request, $id)
-    {
-        $request->validate([
-            'tanggal'   => 'required|date',
-            'deskripsi' => 'required',
-            'nominal'   => 'required|numeric',
-            'gambar'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-        ]);
+public function update(Request $request, $id)
+{
+    $pemasukan = Pemasukan::findOrFail($id);
 
-        $pemasukan = Pemasukan::findOrFail($id);
+    $request->validate([
+        'tanggal'   => 'required|date',
+        'kategori'  => 'required|in:setoran,cicilan,deposit',
+        'deskripsi' => 'required',
+        'nominal'   => 'required|numeric',
+        'gambar'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+    ]);
 
-        if ($request->hasFile('gambar')) {
-            // hapus gambar lama
-            if ($pemasukan->gambar) {
-                Storage::disk('public')->delete('pemasukan/'.$pemasukan->gambar);
-            }
-
-            $file = $request->file('gambar');
-            $namaFile = time().'_'.$file->getClientOriginalName();
-            $file->storeAs('public/pemasukan', $namaFile);
-
-            $pemasukan->gambar = $namaFile;
+    // upload gambar
+    if ($request->hasFile('gambar')) {
+        if ($pemasukan->gambar) {
+            Storage::disk('public')->delete('pemasukan/'.$pemasukan->gambar);
         }
 
-        $pemasukan->update([
-            'tanggal'   => $request->tanggal,
-            'deskripsi' => $request->deskripsi,
-            'nominal'   => $request->nominal,
-        ]);
+        $file = $request->file('gambar');
+        $namaFile = time().'_'.$file->getClientOriginalName();
+        $file->storeAs('public/pemasukan', $namaFile);
 
-        return redirect()->route('pemasukan.index')
-            ->with('success', 'Pemasukan berhasil diperbarui');
+        $pemasukan->gambar = $namaFile;
     }
+
+    $pemasukan->update([
+        'tanggal'   => $request->tanggal,
+        'kategori'  => $request->kategori,
+        'deskripsi' => $request->deskripsi,
+        'nominal'   => $request->nominal,
+        // mitra_id TIDAK DIUBAH
+    ]);
+
+    return redirect()->route('pemasukan.index')
+        ->with('success', 'Pemasukan berhasil diperbarui');
+}
+
 
     /* ================= DELETE ================= */
     public function destroy($id)
@@ -206,8 +246,5 @@ public function printBulanan(Request $request)
 
     return $pdf->stream('pemasukan-bulanan-'.$bulan.'.pdf');
 }
-
-
-
 
 }

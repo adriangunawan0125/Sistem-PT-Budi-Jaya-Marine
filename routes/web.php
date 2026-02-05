@@ -11,7 +11,7 @@ use App\Http\Controllers\InvoiceItemController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\AdminTransport\KelolaMitraController;
 use App\Http\Controllers\AdminTransport\AdminTransportController;
-use App\Http\Controllers\AdminTransport\CalonMitraTransportControllerMitraTransportController;
+use App\Http\Controllers\AdminTransport\CalonMitraTransportControlerMitraTransportController;
 use App\Http\Controllers\AdminTransport\KelolaUnitController;
 use App\Http\Controllers\AdminTransport\LaporanMitraController;
 use App\Http\Controllers\ExMitraController;
@@ -29,7 +29,9 @@ use App\Http\Controllers\PemasukanController;
 use App\Http\Controllers\owner_transport\OwnerTransportController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\AdminMarine\MarineInvoiceController;
-
+use App\Http\Controllers\PoMasukController;
+use App\Http\Controllers\PoSupplierController;
+use App\Http\Controllers\DeliveryOrderController;
 
 //PUBLIC 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -214,5 +216,52 @@ Route::middleware(['auth', 'role:admin_marine'])->group(function () {
     Route::resource('marine-invoices', MarineInvoiceController::class);
     Route::get('/marine-invoices/{id}/print',[MarineInvoiceController::class, 'print'])->name('marine-invoices.print');
 
+    
+    
+Route::get('/po-masuk', [PoMasukController::class, 'index'])->name('po-masuk.index');
+
+
+Route::get('/po-masuk', [PoMasukController::class, 'index'])->name('po-masuk.index');
+Route::get('/po-masuk/create', [PoMasukController::class, 'create'])->name('po-masuk.create');
+Route::post('/po-masuk', [PoMasukController::class, 'store'])->name('po-masuk.store');
+Route::get('/po-masuk/{id}', [PoMasukController::class, 'show'])->name('po-masuk.show');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | PO SUPPLIER (DARI PO MASUK)
+    |--------------------------------------------------------------------------
+    */
+Route::get('/po-supplier', [PoSupplierController::class, 'index'])->name('po-supplier.index');
+Route::get('/po-supplier/create/{poMasukId}', [PoSupplierController::class, 'create'])->name('po-supplier.create');
+Route::post('/po-supplier', [PoSupplierController::class, 'store'])->name('po-supplier.store');
+Route::get('/po-supplier/{id}', [PoSupplierController::class, 'show'])->name('po-supplier.show');
+
+// routes/web.php
+
+// list DO berdasarkan PO Masuk
+Route::get('/delivery-order/{poMasuk}', 
+    [DeliveryOrderController::class, 'index']
+)->name('delivery-order.index');
+
+// form create DO
+Route::get('/delivery-order/create/{poMasuk}', 
+    [DeliveryOrderController::class, 'create']
+)->name('delivery-order.create');
+
+// simpan DO
+Route::post('/delivery-order', 
+    [DeliveryOrderController::class, 'store']
+)->name('delivery-order.store');
+
+// detail DO
+Route::get('/delivery-order/show/{deliveryOrder}', 
+    [DeliveryOrderController::class, 'show']
+)->name('delivery-order.show');
+
+// ubah status DO -> delivered
+Route::put('/delivery-order/deliver/{deliveryOrder}', 
+    [DeliveryOrderController::class, 'deliver']
+)->name('delivery-order.deliver');
 });
 

@@ -29,6 +29,29 @@
         </div>
 
         <div class="mb-3">
+    <label class="form-label">Nama Mitra</label>
+    <select name="mitra_id" class="form-control" required>
+        <option value="">-- Pilih Mitra --</option>
+        @foreach($mitras as $mitra)
+            <option value="{{ $mitra->id }}"
+                {{ old('mitra_id') == $mitra->id ? 'selected' : '' }}>
+                {{ $mitra->nama_mitra }}
+            </option>
+        @endforeach
+    </select>
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Kategori</label>
+    <select name="kategori" class="form-control" required>
+        <option value="">-- Pilih Kategori --</option>
+        <option value="setoran">Setoran</option>
+        <option value="cicilan">Cicilan</option>
+        <option value="deposit">Deposit</option>
+    </select>
+</div>
+
+        <div class="mb-3">
             <label class="form-label">Deskripsi</label>
             <input type="text"
                    name="deskripsi"

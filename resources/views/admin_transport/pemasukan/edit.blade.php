@@ -4,7 +4,7 @@
 <div class="container">
     <h4 class="mb-4">Edit Pemasukan Transport</h4>
 
-    {{-- Alert error --}}
+    {{-- ERROR --}}
     @if ($errors->any())
         <div class="alert alert-danger">
             <ul class="mb-0">
@@ -21,17 +21,37 @@
         @csrf
         @method('PUT')
 
-        {{-- Tanggal --}}
+        {{-- MITRA (READ ONLY) --}}
+        <div class="mb-3">
+            <label class="form-label">Nama Mitra</label>
+            <input type="text"
+                   class="form-control"
+                   value="{{ $pemasukan->mitra->nama_mitra ?? '-' }}"
+                   disabled>
+        </div>
+
+        {{-- TANGGAL --}}
         <div class="mb-3">
             <label class="form-label">Tanggal</label>
             <input type="date"
                    name="tanggal"
                    class="form-control"
-                   value="{{ old('tanggal', $pemasukan->tanggal) }}"
+                   value="{{ old('tanggal', \Carbon\Carbon::parse($pemasukan->tanggal)->format('Y-m-d')) }}"
                    required>
         </div>
 
-        {{-- Deskripsi --}}
+        {{-- KATEGORI --}}
+        <div class="mb-3">
+            <label class="form-label">Kategori</label>
+            <select name="kategori" class="form-control" required>
+                <option value="">-- Pilih Kategori --</option>
+                <option value="setoran" {{ old('kategori', $pemasukan->kategori)=='setoran'?'selected':'' }}>Setoran</option>
+                <option value="cicilan" {{ old('kategori', $pemasukan->kategori)=='cicilan'?'selected':'' }}>Cicilan</option>
+                <option value="deposit" {{ old('kategori', $pemasukan->kategori)=='deposit'?'selected':'' }}>Deposit</option>
+            </select>
+        </div>
+
+        {{-- DESKRIPSI --}}
         <div class="mb-3">
             <label class="form-label">Deskripsi</label>
             <input type="text"
@@ -41,26 +61,33 @@
                    required>
         </div>
 
-        {{-- Nominal --}}
+        {{-- NOMINAL --}}
         <div class="mb-3">
             <label class="form-label">Nominal</label>
             <input type="number"
                    name="nominal"
                    class="form-control"
+                   min="0"
+                   step="1"
                    value="{{ old('nominal', $pemasukan->nominal) }}"
                    required>
         </div>
 
-        {{-- Gambar --}}
+        {{-- GAMBAR --}}
         <div class="mb-3">
-            <label class="form-label">Gambar (Opsional)</label>
+            <label class="form-label">Ganti Gambar (Opsional)</label>
             <input type="file"
                    name="gambar"
-                   class="form-control">
+                   class="form-control"
+                   accept="image/*"
+                   onchange="previewImage(event)">
 
-            {{-- Gambar saat ini --}}
+            {{-- Preview gambar baru --}}
+            <img id="preview" class="img-thumbnail mt-2" width="150" style="display:none;">
+
+            {{-- Gambar lama --}}
             @if ($pemasukan->gambar)
-                <div class="mt-2">
+                <div class="mt-3">
                     <p class="mb-1 text-muted">Gambar saat ini:</p>
                     <img src="{{ asset('storage/pemasukan/'.$pemasukan->gambar) }}"
                          width="150"
@@ -69,13 +96,25 @@
             @endif
         </div>
 
-        <button type="submit" class="btn btn-primary">
-            Update
-        </button>
+        <div class="mt-4">
+            <button type="submit" class="btn btn-primary">
+                Update
+            </button>
 
-        <a href="{{ route('pemasukan.index') }}" class="btn btn-secondary">
-            Batal
-        </a>
+            <a href="{{ route('pemasukan.index') }}" class="btn btn-secondary">
+                Batal
+            </a>
+        </div>
     </form>
 </div>
+
+{{-- Preview Script --}}
+<script>
+function previewImage(event) {
+    const preview = document.getElementById('preview');
+    preview.src = URL.createObjectURL(event.target.files[0]);
+    preview.style.display = 'block';
+}
+</script>
+
 @endsection

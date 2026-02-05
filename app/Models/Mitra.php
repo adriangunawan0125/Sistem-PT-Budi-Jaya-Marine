@@ -73,4 +73,10 @@ class Mitra extends Model
     {
         return $this->status === 'berakhir';
     }
+
+    public function pemasukans()
+{
+    return $this->hasMany(Pemasukan::class);
+}
+
 }
