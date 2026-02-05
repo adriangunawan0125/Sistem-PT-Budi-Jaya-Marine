@@ -197,74 +197,105 @@ public function detailInvoice($id)
     return view('owner_transport.detail_invoice', compact('invoice'));
 }
 
-public function dashboard(Request $request)
-{
-    // =========================
-    // BULAN & TAHUN AKTIF
-    // =========================
-    $bulan = (int) ($request->bulan ?? now()->month);
-    $tahun = (int) ($request->tahun ?? now()->year);
+ public function dashboard(Request $request)
+    {
+        // FILTER BULAN & TAHUN
+        $bulan = $request->bulan ?? now()->month;
+        $tahun = $request->tahun ?? now()->year;
 
-    // =========================
-    // MITRA
-    // =========================
-    $totalMitra = Mitra::count();
-    $mitraAktif = Mitra::aktif()->count();
-    $mitraBerakhir = Mitra::berakhir()->count();
+        // INVOICE BELUM LUNAS (PER BULAN)
+        $mitraBelumLunas = Invoice::where('status', 'belum_lunas')
+            ->distinct('mitra_id')
+            ->count('mitra_id');
 
-    // Mitra dengan invoice belum lunas (distinct mitra)
-    $mitraBelumLunas = Invoice::where('status', 'belum_lunas')
-        ->distinct('mitra_id')
-        ->count('mitra_id');
+        // MITRA TOTAL & STATUS
+        $totalMitra = Mitra::count();
+        $mitraAktif = Mitra::where('status', 'aktif')->count();
+        $mitraBerakhir = Mitra::where('status', 'berakhir')->count();
 
-    // =========================
-    // PEMASUKAN
-    // =========================
-    $totalPemasukanHarian = Pemasukan::whereDate('tanggal', now()->toDateString())
-        ->sum('nominal');
+        // PENGELUARAN (PER BULAN)
+        $totalPengeluaranInternal = PengeluaranInternal::whereMonth('tanggal', $bulan)
+            ->whereYear('tanggal', $tahun)
+            ->sum('nominal');
 
-    $totalPemasukanBulanan = Pemasukan::whereMonth('tanggal', $bulan)
-        ->whereYear('tanggal', $tahun)
-        ->sum('nominal');
+        $totalPengeluaranPajak = PengeluaranPajak::whereMonth('tanggal', $bulan)
+            ->whereYear('tanggal', $tahun)
+            ->sum('nominal');
 
-    // =========================
-    // PENGELUARAN
-    // =========================
-    $totalPengeluaranInternal = PengeluaranInternal::whereMonth('tanggal', $bulan)
-        ->whereYear('tanggal', $tahun)
-        ->sum('nominal');
+        $totalPengeluaranTransport = PengeluaranTransport::whereMonth('tanggal', $bulan)
+            ->whereYear('tanggal', $tahun)
+            ->sum('total_amount');
 
-    $totalPengeluaranTransport = PengeluaranTransport::whereMonth('tanggal', $bulan)
-        ->whereYear('tanggal', $tahun)
-        ->sum('total_amount');
+        // Total semua pengeluaran bulan ini
+        $totalPengeluaranBulanan = $totalPengeluaranInternal + $totalPengeluaranPajak + $totalPengeluaranTransport;
 
-    $totalPengeluaranPajak = PengeluaranPajak::whereMonth('tanggal', $bulan)
-        ->whereYear('tanggal', $tahun)
-        ->sum('nominal');
+        // PEMASUKAN
+        // Harian (hari ini)
+        $totalPemasukanHarian = Pemasukan::whereDate('tanggal', Carbon::today())
+            ->sum('nominal');
 
-    $totalPengeluaranBulanan =
-        $totalPengeluaranInternal +
-        $totalPengeluaranTransport +
-        $totalPengeluaranPajak;
+        // Bulanan (sesuai filter dashboard)
+        $totalPemasukanBulanan = Pemasukan::whereMonth('tanggal', $bulan)
+            ->whereYear('tanggal', $tahun)
+            ->sum('nominal');
 
-    // =========================
-    // KIRIM KE VIEW
-    // =========================
-    return view('owner_transport.dashboard', compact(
-        'bulan',
-        'tahun',
-        'totalMitra',
-        'mitraAktif',
-        'mitraBerakhir',
-        'mitraBelumLunas',
-        'totalPemasukanHarian',
-        'totalPemasukanBulanan',
-        'totalPengeluaranInternal',
-        'totalPengeluaranTransport',
-        'totalPengeluaranPajak',
-        'totalPengeluaranBulanan'
-    ));
-}
 
+        /* ======================================================
+           DATA CHART TAHUNAN (12 BULAN KE BELAKANG DALAM TAHUN)
+        ====================================================== */
+        $labels = [];
+        $pemasukanTahunan = [];
+        $pengeluaranTahunan = [];
+
+        for ($i = 1; $i <= 12; $i++) {
+
+            // label bulan (Jan, Feb, Mar...)
+            $labels[] = Carbon::create()->month($i)->translatedFormat('M');
+
+            // PEMASUKAN PER BULAN
+            $pemasukan = Pemasukan::whereMonth('tanggal', $i)
+                ->whereYear('tanggal', $tahun)
+                ->sum('nominal');
+
+            // PENGELUARAN PER BULAN
+            $internal = PengeluaranInternal::whereMonth('tanggal', $i)
+                ->whereYear('tanggal', $tahun)
+                ->sum('nominal');
+
+            $pajak = PengeluaranPajak::whereMonth('tanggal', $i)
+                ->whereYear('tanggal', $tahun)
+                ->sum('nominal');
+
+            $transport = PengeluaranTransport::whereMonth('tanggal', $i)
+                ->whereYear('tanggal', $tahun)
+                ->sum('total_amount');
+
+            $pengeluaran = $internal + $pajak + $transport;
+
+            $pemasukanTahunan[] = $pemasukan;
+            $pengeluaranTahunan[] = $pengeluaran;
+        }
+
+
+        return view('owner_transport.dashboard', compact(
+            'bulan',
+            'tahun',
+            'mitraBelumLunas',
+            'totalMitra',
+            'mitraAktif',
+            'mitraBerakhir',
+            'totalPengeluaranInternal',
+            'totalPengeluaranPajak',
+            'totalPengeluaranTransport',
+            'totalPengeluaranBulanan',
+            'totalPemasukanHarian',
+            'totalPemasukanBulanan',
+
+            // DATA CHART
+            'labels',
+            'pemasukanTahunan',
+            'pengeluaranTahunan'
+        ));
+    }
 
 }
