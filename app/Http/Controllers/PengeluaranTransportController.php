@@ -14,18 +14,29 @@ class PengeluaranTransportController extends Controller
 {
     // Daftar pengeluaran transport
     public function index(Request $request)
-    {
-        $bulan = $request->bulan ?? date('Y-m');
-        $transport = PengeluaranTransport::with('unit','items')
-            ->whereYear('tanggal', substr($bulan,0,4))
-            ->whereMonth('tanggal', substr($bulan,5,2))
-            ->orderBy('tanggal','asc')
-            ->get();
+{
+    $bulan  = $request->bulan ?? date('Y-m');
+    $search = $request->search;
 
-        $total_all = $transport->sum('total_amount');
+    $transport = PengeluaranTransport::with(['unit','items'])
+        ->whereYear('tanggal', substr($bulan, 0, 4))
+        ->whereMonth('tanggal', substr($bulan, 5, 2))
+        ->when($search, function ($query) use ($search) {
+            $query->whereHas('items', function ($q) use ($search) {
+                $q->where('keterangan', 'like', '%' . $search . '%');
+            });
+        })
+        ->orderBy('tanggal', 'asc')
+        ->get();
 
-        return view('admin_transport.pengeluaran_transport.index', compact('transport','total_all','bulan'));
-    }
+    $total_all = $transport->sum('total_amount');
+
+    return view(
+        'admin_transport.pengeluaran_transport.index',
+        compact('transport', 'bulan', 'total_all', 'search')
+    );
+}
+
 
     // Form tambah pengeluaran
     public function create()
@@ -97,52 +108,60 @@ class PengeluaranTransportController extends Controller
 
     // Update
     public function update(Request $request, PengeluaranTransport $pengeluaran_transport)
-    {
-        $request->validate([
-            'unit_id' => 'required|exists:units,id',
-            'tanggal' => 'required|date',
-            'keterangan.*' => 'required|string',
-            'nominal.*' => 'required|numeric',
-            'gambar.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-        ]);
-
-        $total = array_sum($request->nominal);
-
-        // Update header
-        $pengeluaran_transport->update([
-            'unit_id' => $request->unit_id,
-            'tanggal' => $request->tanggal,
-            'total_amount' => $total
-        ]);
-
-        // Hapus file lama tiap item
-        foreach($pengeluaran_transport->items as $item){
-            if($item->gambar){
-                Storage::disk('public')->delete($item->gambar);
-            }
-        }
-
-        // Hapus item lama
-        $pengeluaran_transport->items()->delete();
-
-        // Simpan item baru
-        foreach($request->keterangan as $i => $keterangan){
-            $data_item = [
-                'transport_id' => $pengeluaran_transport->id,
-                'keterangan' => $keterangan,
-                'nominal' => $request->nominal[$i],
-            ];
-
-            if(isset($request->gambar[$i])){
-                $data_item['gambar'] = $request->file('gambar')[$i]->store('pengeluaran_transport', 'public');
-            }
-
-            PengeluaranTransportItem::create($data_item);
-        }
-
-        return redirect()->route('pengeluaran_transport.index')
-                         ->with('success','Pengeluaran transport berhasil diupdate.');
+{
+    if (!$request->has('nominal') || !is_array($request->nominal)) {
+        return redirect()->back()
+            ->withInput()
+            ->withErrors(['item' => 'Minimal harus ada 1 item pengeluaran']);
     }
+
+    $request->validate([
+        'unit_id' => 'required|exists:units,id',
+        'tanggal' => 'required|date',
+        'keterangan.*' => 'required|string',
+        'nominal.*' => 'required|numeric|min:1',
+        'gambar.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+    ]);
+
+    $total = collect($request->nominal)->sum();
+
+    $pengeluaran_transport->update([
+        'unit_id' => $request->unit_id,
+        'tanggal' => $request->tanggal,
+        'total_amount' => $total
+    ]);
+
+    // hapus gambar lama
+    foreach ($pengeluaran_transport->items as $item) {
+        if ($item->gambar) {
+            Storage::disk('public')->delete($item->gambar);
+        }
+    }
+
+    // hapus item lama
+    $pengeluaran_transport->items()->delete();
+
+    // simpan item baru
+    foreach ($request->keterangan as $i => $keterangan) {
+        $data_item = [
+            'transport_id' => $pengeluaran_transport->id,
+            'keterangan' => $keterangan,
+            'nominal' => $request->nominal[$i],
+        ];
+
+        if (isset($request->gambar[$i])) {
+            $data_item['gambar'] =
+                $request->file('gambar')[$i]
+                    ->store('pengeluaran_transport', 'public');
+        }
+
+        PengeluaranTransportItem::create($data_item);
+    }
+
+    return redirect()->route('pengeluaran_transport.index')
+        ->with('success', 'Pengeluaran transport berhasil diupdate.');
+}
+
 
     // Hapus pengeluaran transport
     public function destroy(PengeluaranTransport $pengeluaran_transport)

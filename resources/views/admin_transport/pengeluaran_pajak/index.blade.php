@@ -9,10 +9,31 @@
     @endif
 
     <form method="GET" class="mb-3">
-        <input type="month" name="bulan" value="{{ $bulan }}" class="form-control w-auto d-inline">
-        <button type="submit" class="btn btn-primary">Filter</button>
-        <a href="{{ route('pengeluaran_pajak.create') }}" class="btn btn-success">Tambah Pajak</a>
-        <a href="{{ route('pengeluaran_pajak.laporan', ['bulan'=>$bulan]) }}" class="btn btn-info">Laporan Bulanan</a>
+        <input type="month"
+               name="bulan"
+               value="{{ $bulan }}"
+               class="form-control w-auto d-inline">
+
+        {{-- SEARCH DESKRIPSI --}}
+        <input style="margin-right: 10px" type="text"
+               name="search"
+               value="{{ $search ?? '' }}"
+               class="form-control w-auto d-inline"
+               placeholder="Cari deskripsi">
+
+        <button type="submit" class="btn btn-primary">
+            Filter
+        </button>
+
+        <a href="{{ route('pengeluaran_pajak.create') }}"
+           class="btn btn-success">
+            Tambah Pajak
+        </a>
+
+        <a href="{{ route('pengeluaran_pajak.laporan', ['bulan'=>$bulan]) }}"
+           class="btn btn-info">
+            Laporan Bulanan
+        </a>
     </form>
 
     <table class="table table-bordered">
@@ -34,27 +55,44 @@
                 <td>{{ $item->unit->nama_unit }}</td>
                 <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d-m-Y') }}</td>
                 <td>{{ $item->deskripsi }}</td>
-                <td>{{ number_format($item->nominal,0,',','.') }}</td>
+                <td>Rp {{ number_format($item->nominal,0,',','.') }}</td>
                 <td>
                     @if($item->gambar)
-                        <img src="{{ asset('storage/'.$item->gambar) }}" alt="Gambar" width="80" class="img-thumbnail">
+                        <img src="{{ asset('storage/'.$item->gambar) }}"
+                             alt="Gambar"
+                             width="80"
+                             class="img-thumbnail">
                     @else
                         -
                     @endif
                 </td>
                 <td>
-                    <a href="{{ route('pengeluaran_pajak.edit', $item->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                    <form action="{{ route('pengeluaran_pajak.destroy', $item->id) }}" method="POST" style="display:inline;">
+                    <a href="{{ route('pengeluaran_pajak.edit', $item->id) }}"
+                       class="btn btn-warning btn-sm">
+                        Edit
+                    </a>
+
+                    <form action="{{ route('pengeluaran_pajak.destroy', $item->id) }}"
+                          method="POST"
+                          style="display:inline;">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin hapus?')">Hapus</button>
+
+                        <button type="submit"
+                                class="btn btn-danger btn-sm"
+                                onclick="return confirm('Yakin ingin hapus?')">
+                            Hapus
+                        </button>
                     </form>
                 </td>
             </tr>
             @endforeach
+
             <tr>
                 <td colspan="4"><strong>Total</strong></td>
-                <td colspan="3"><strong>{{ number_format($total,0,',','.') }}</strong></td>
+                <td colspan="3">
+                    <strong>Rp {{ number_format($total,0,',','.') }}</strong>
+                </td>
             </tr>
         </tbody>
     </table>

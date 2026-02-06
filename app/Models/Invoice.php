@@ -11,7 +11,6 @@ class Invoice extends Model
 
     protected $fillable = [
         'mitra_id',
-        'tanggal',
         'status',
         'total'
     ];

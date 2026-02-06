@@ -167,6 +167,9 @@ Route::middleware(['auth', 'role:admin_transport'])->group(function () {
     Route::delete('/invoice-item/{id}',[InvoiceItemController::class, 'destroy'])->name('invoice-item.destroy');
     Route::resource('invoice', InvoiceController::class);
     Route::get('/invoice/{invoice}/print', [InvoiceController::class, 'print'])->name('invoice.print');
+    Route::get('/admin_transport/invoice/{invoice}/items',
+    [InvoiceController::class, 'items'])
+    ->name('invoice.items');
 
     //pengeluaran internal
     Route::get('pengeluaran_internal/laporan',[PengeluaranInternalController::class, 'laporan'])->name('pengeluaran_internal.laporan');

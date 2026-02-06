@@ -59,13 +59,41 @@
 
         <button type="button" class="btn btn-secondary mb-3" id="add_item">Tambah Item</button>
         <br>
-        <button type="submit" class="btn btn-primary">Simpan</button>
+   <button type="submit"
+        class="btn btn-primary"
+        onclick="return cekItem()">
+    Simpan
+</button>
+
          <a href="{{ route('pengeluaran_transport.index') }}"
            class="btn btn-secondary">
             Kembali
         </a>
     </form>
 </div>
+<script>
+function cekItem() {
+    let rows = document.querySelectorAll('#items_table tbody tr');
+    if (rows.length === 0) {
+        alert('Minimal harus ada 1 item pengeluaran');
+        return false;
+    }
+
+    let valid = true;
+    document.querySelectorAll('input[name="nominal[]"]').forEach(el => {
+        if (!el.value || el.value == 0) {
+            valid = false;
+        }
+    });
+
+    if (!valid) {
+        alert('Nominal tidak boleh kosong');
+        return false;
+    }
+
+    return true;
+}
+</script>
 
 <script>
 // ================= FORMAT RUPIAH =================

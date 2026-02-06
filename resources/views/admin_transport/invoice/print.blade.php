@@ -104,8 +104,9 @@
 
     <div class="col text-right">
         <div class="bold" style="font-size:40px;">INVOICE</div>
-        <div>Invoice #: {{ $invoiceNumber }}</div>
-        <div>Date: {{ \Carbon\Carbon::parse($invoice->tanggal)->format('d M Y') }}</div>
+        <div>Invoice No: {{ $invoiceNumber }}</div>
+
+        <div>Date: {{ \Carbon\Carbon::parse($invoice->created_at)->format('d M Y') }}</div>
         <div>Payment Terms: Transfer</div>
         <div>Due Date: <b>{{ now()->format('d M Y') }}</b></div>
     </div>
@@ -128,22 +129,26 @@
 <tr>
     <td class="text-center">{{ $i + 1 }}</td>
     <td>{{ $item->item }}</td>
+
     <td class="date">
-        {{ $item->tanggal
-            ? \Carbon\Carbon::parse($item->tanggal)->format('d M Y')
+        {{ $item->tanggal_tf
+            ? \Carbon\Carbon::parse($item->tanggal_tf)->format('d M Y')
             : '-' }}
     </td>
+
     <td class="money">
         <span class="cur">IDR</span>
-        <span class="val">{{ number_format($item->cicilan) }}</span>
+        <span class="val">{{ number_format((float)$item->cicilan,0,',','.') }}</span>
     </td>
+
     <td class="money">
         <span class="cur">IDR</span>
-        <span class="val">{{ number_format($item->tagihan) }}</span>
+        <span class="val">{{ number_format((float)$item->tagihan,0,',','.') }}</span>
     </td>
+
     <td class="money">
         <span class="cur">IDR</span>
-        <span class="val">{{ number_format($item->amount) }}</span>
+        <span class="val">{{ number_format((float)$item->amount,0,',','.') }}</span>
     </td>
 </tr>
 @endforeach
@@ -156,11 +161,10 @@
     <td width="85%">Balance Due</td>
     <td width="15%" class="money">
         <span class="cur">IDR</span>
-        <span class="val">{{ number_format($grandTotal) }}</span>
+        <span class="val">{{ number_format((float)$grandTotal,0,',','.') }}</span>
     </td>
 </tr>
 </table>
-
 
 {{-- ================= NOTES ================= --}}
 <table class="no-border mb-3">
@@ -179,26 +183,13 @@ maka unit akan ditarik ke pool.
 </tr>
 </table>
 
-{{-- ================= BUKTI (FIX LOGIC) ================= --}}
-@php
-    // ambil ITEM TERAKHIR (BUKAN item lain yang punya gambar)
-    $lastItem = $items->last();
-
-    $lastTransfer = ($lastItem && $lastItem->gambar_transfer)
-        ? $lastItem
-        : null;
-
-    $lastTrip = ($lastItem && $lastItem->gambar_trip)
-        ? $lastItem
-        : null;
-@endphp
-
+{{-- ================= BUKTI ================= --}}
 <table class="no-border" width="100%">
 <tr>
 <td width="50%" valign="top">
 <b>Bukti Transfer Terakhir</b><br><br>
-@if($lastTransfer)
-<img src="{{ public_path('storage/'.$lastTransfer->gambar_transfer) }}" class="img-proof">
+@if($lastItem && $lastItem->gambar_transfer)
+<img src="{{ public_path('storage/'.$lastItem->gambar_transfer) }}" class="img-proof">
 @else
 <i>Tidak ada bukti transfer</i>
 @endif
@@ -206,8 +197,8 @@ maka unit akan ditarik ke pool.
 
 <td width="50%" valign="top" class="text-right">
 <b>Bukti Perjalanan Terakhir</b><br><br>
-@if($lastTrip)
-<img src="{{ public_path('storage/'.$lastTrip->gambar_trip) }}" class="img-proof">
+@if($lastItem && $lastItem->gambar_trip)
+<img src="{{ public_path('storage/'.$lastItem->gambar_trip) }}" class="img-proof">
 @else
 <i>Tidak ada bukti perjalanan</i>
 @endif

@@ -10,10 +10,31 @@
 
     {{-- Filter Bulan & Tombol --}}
     <form method="GET" class="mb-3">
-        <input type="month" name="bulan" value="{{ $bulan }}" class="form-control w-auto d-inline">
-        <button type="submit" class="btn btn-primary">Filter</button>
-        <a href="{{ route('pengeluaran_transport.create') }}" class="btn btn-success">Tambah Pengeluaran</a>
-        <a href="{{ route('pengeluaran_transport.laporan',['bulan'=>$bulan]) }}" class="btn btn-info">Laporan Bulanan</a>
+        <input type="month"
+               name="bulan"
+               value="{{ $bulan }}"
+               class="form-control w-auto d-inline">
+
+        {{-- SEARCH DESKRIPSI --}}
+        <input type="text"
+               name="search"
+               value="{{ $search ?? '' }}"
+               class="form-control w-auto d-inline"
+               placeholder="Cari keterangan">
+
+        <button type="submit" class="btn btn-primary">
+            Filter
+        </button>
+
+        <a href="{{ route('pengeluaran_transport.create') }}"
+           class="btn btn-success">
+            Tambah Pengeluaran
+        </a>
+
+        <a href="{{ route('pengeluaran_transport.laporan',['bulan'=>$bulan]) }}"
+           class="btn btn-info">
+            Laporan Bulanan
+        </a>
     </form>
 
     {{-- Tabel Pengeluaran --}}
@@ -37,15 +58,28 @@
                             <td rowspan="{{ $t->items->count() }}">{{ $t->unit->nama_unit }}</td>
                             <td rowspan="{{ $t->items->count() }}">{{ \Carbon\Carbon::parse($t->tanggal)->format('d-m-Y') }}</td>
                         @endif
+
                         <td>{{ $item->keterangan }}</td>
                         <td>Rp {{ number_format($item->nominal,0,',','.') }}</td>
+
                         @if($itemIndex == 0)
                             <td rowspan="{{ $t->items->count() }}">
-                                <a href="{{ route('pengeluaran_transport.edit', $t->id) }}" class="btn btn-warning btn-sm mb-1">Edit</a>
-                                <form action="{{ route('pengeluaran_transport.destroy', $t->id) }}" method="POST" style="display:inline;">
+                                <a href="{{ route('pengeluaran_transport.edit', $t->id) }}"
+                                   class="btn btn-warning btn-sm mb-1">
+                                    Edit
+                                </a>
+
+                                <form action="{{ route('pengeluaran_transport.destroy', $t->id) }}"
+                                      method="POST"
+                                      style="display:inline;">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin hapus?')">Hapus</button>
+
+                                    <button type="submit"
+                                            class="btn btn-danger btn-sm"
+                                            onclick="return confirm('Yakin ingin hapus?')">
+                                        Hapus
+                                    </button>
                                 </form>
                             </td>
                         @endif
@@ -54,22 +88,29 @@
 
                 {{-- Total per unit --}}
                 <tr>
-                    <td colspan="3"><strong>Total {{ $t->unit->nama_unit }}</strong></td>
-                    <td colspan="2"><strong>Rp {{ number_format($t->total_amount,0,',','.') }}</strong></td>
+                    <td colspan="3">
+                        <strong>Total {{ $t->unit->nama_unit }}</strong>
+                    </td>
+                    <td colspan="2">
+                        <strong>Rp {{ number_format($t->total_amount,0,',','.') }}</strong>
+                    </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="6" class="text-center">Belum ada data pengeluaran transport</td>
+                    <td colspan="6" class="text-center">
+                        Belum ada data pengeluaran transport
+                    </td>
                 </tr>
             @endforelse
 
             {{-- Total Keseluruhan --}}
             <tr>
                 <td colspan="4"><strong>Total Keseluruhan</strong></td>
-                <td colspan="2"><strong>Rp {{ number_format($total_all,0,',','.') }}</strong></td>
+                <td colspan="2">
+                    <strong>Rp {{ number_format($total_all,0,',','.') }}</strong>
+                </td>
             </tr>
         </tbody>
     </table>
 </div>
 @endsection
-`

@@ -10,20 +10,28 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class PengeluaranPajakController extends Controller
 {
-    public function index(Request $request)
-    {
-        $bulan = $request->bulan ?? date('Y-m');
+  public function index(Request $request)
+{
+    $bulan  = $request->bulan ?? date('Y-m');
+    $search = $request->search;
 
-        $pajak = PengeluaranPajak::with('unit')
-            ->whereYear('tanggal', substr($bulan,0,4))
-            ->whereMonth('tanggal', substr($bulan,5,2))
-            ->orderBy('tanggal','asc')
-            ->get();
+    $pajak = PengeluaranPajak::with('unit')
+        ->whereYear('tanggal', substr($bulan, 0, 4))
+        ->whereMonth('tanggal', substr($bulan, 5, 2))
+        ->when($search, function ($query) use ($search) {
+            $query->where('deskripsi', 'like', '%' . $search . '%');
+        })
+        ->orderBy('tanggal', 'asc')
+        ->get();
 
-        $total = $pajak->sum('nominal');
+    $total = $pajak->sum('nominal');
 
-        return view('admin_transport.pengeluaran_pajak.index', compact('pajak','total','bulan'));
-    }
+    return view(
+        'admin_transport.pengeluaran_pajak.index',
+        compact('pajak', 'total', 'bulan', 'search')
+    );
+}
+
 
     public function create()
     {
@@ -83,16 +91,18 @@ class PengeluaranPajakController extends Controller
         return redirect()->route('pengeluaran_pajak.index')->with('success','Pengeluaran pajak berhasil diupdate.');
     }
 
-    public function destroy(PengeluaranPajak $pengeluaranPajak)
-    {
-        // hapus gambar jika ada
-        if($pengeluaranPajak->gambar){
-            Storage::disk('public')->delete($pengeluaranPajak->gambar);
-        }
-
-        $pengeluaranPajak->delete();
-        return redirect()->route('pengeluaran_pajak.index')->with('success','Pengeluaran pajak berhasil dihapus.');
+   public function destroy(PengeluaranPajak $pengeluaranPajak)
+{
+    if ($pengeluaranPajak->gambar) {
+        Storage::disk('public')->delete($pengeluaranPajak->gambar);
     }
+
+    $pengeluaranPajak->delete();
+
+    return redirect()->back()
+        ->with('success', 'Pengeluaran pajak berhasil dihapus.');
+}
+
 
     public function laporan(Request $request)
     {
@@ -108,8 +118,6 @@ class PengeluaranPajakController extends Controller
 
         return view('admin_transport.pengeluaran_pajak.laporan', compact('pajak', 'total', 'bulan'));
     }
-
-
 
 public function print(Request $request)
 {

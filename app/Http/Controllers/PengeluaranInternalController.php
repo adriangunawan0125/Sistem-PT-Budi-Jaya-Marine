@@ -9,18 +9,26 @@ class PengeluaranInternalController extends Controller
 {
     // Menampilkan daftar pengeluaran
     public function index(Request $request)
-    {
-        $bulan = $request->bulan ?? date('Y-m'); // default bulan ini
+{
+    $bulan  = $request->bulan ?? date('Y-m'); // default bulan ini
+    $search = $request->search; // keyword deskripsi
 
-        $pengeluaran = PengeluaranInternal::whereYear('tanggal', substr($bulan, 0, 4))
-                        ->whereMonth('tanggal', substr($bulan, 5, 2))
-                        ->orderBy('tanggal', 'asc')
-                        ->get();
+    $pengeluaran = PengeluaranInternal::whereYear('tanggal', substr($bulan, 0, 4))
+        ->whereMonth('tanggal', substr($bulan, 5, 2))
+        ->when($search, function ($query) use ($search) {
+            $query->where('deskripsi', 'like', '%' . $search . '%');
+        })
+        ->orderBy('tanggal', 'asc')
+        ->get();
 
-        $total = $pengeluaran->sum('nominal');
+    $total = $pengeluaran->sum('nominal');
 
-        return view('admin_transport.pengeluaran_internal.index', compact('pengeluaran', 'total', 'bulan'));
-    }
+    return view(
+        'admin_transport.pengeluaran_internal.index',
+        compact('pengeluaran', 'total', 'bulan', 'search')
+    );
+}
+
 
     // Form tambah pengeluaran
     public function create()
@@ -84,8 +92,7 @@ class PengeluaranInternalController extends Controller
 }
 
 
-    // Hapus pengeluaran
-    public function destroy(PengeluaranInternal $pengeluaranInternal)
+    public function destroy(Request $request, PengeluaranInternal $pengeluaranInternal)
 {
     if ($pengeluaranInternal->gambar) {
         \Storage::disk('public')->delete($pengeluaranInternal->gambar);
@@ -93,9 +100,12 @@ class PengeluaranInternalController extends Controller
 
     $pengeluaranInternal->delete();
 
-    return redirect()->route('pengeluaran_internal.index')
-                     ->with('success', 'Pengeluaran berhasil dihapus.');
+    return redirect()->route('pengeluaran_internal.index', [
+        'bulan' => $request->bulan,
+        'search' => $request->search
+    ])->with('success', 'Pengeluaran berhasil dihapus.');
 }
+
 
 public function laporan(Request $request)
     {

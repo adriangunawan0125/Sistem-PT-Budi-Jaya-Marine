@@ -14,6 +14,13 @@
                value="{{ $bulan }}"
                class="form-control w-auto d-inline">
 
+        {{-- SEARCH DESKRIPSI (NAMBAL, STYLE SAMA) --}}
+        <input type="text"
+               name="search"
+               value="{{ $search ?? '' }}"
+               class="form-control w-auto d-inline"
+               placeholder="Cari deskripsi">
+
         <button type="submit" class="btn btn-primary">
             Filter
         </button>
@@ -65,18 +72,22 @@
                         Edit
                     </a>
 
-                    <form action="{{ route('pengeluaran_internal.destroy', $item->id) }}"
-                          method="POST"
-                          style="display:inline;">
-                        @csrf
-                        @method('DELETE')
+                   <form action="{{ route('pengeluaran_internal.destroy', $item->id) }}"
+      method="POST"
+      style="display:inline;">
+    @csrf
+    @method('DELETE')
 
-                        <button type="submit"
-                                class="btn btn-danger btn-sm"
-                                onclick="return confirm('Yakin ingin hapus?')">
-                            Hapus
-                        </button>
-                    </form>
+    <input type="hidden" name="bulan" value="{{ $bulan }}">
+    <input type="hidden" name="search" value="{{ $search ?? '' }}">
+
+    <button type="submit"
+            class="btn btn-danger btn-sm"
+            onclick="return confirm('Yakin ingin hapus?')">
+        Hapus
+    </button>
+</form>
+
                 </td>
             </tr>
             @endforeach
@@ -97,4 +108,3 @@
     </table>
 </div>
 @endsection
-33

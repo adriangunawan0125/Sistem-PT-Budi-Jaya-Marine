@@ -26,7 +26,6 @@
                 <th>Amount</th>
                 <th>Bukti TF</th>
                 <th>Bukti Trip</th>
-                <th width="150">Aksi</th>
             </tr>
         </thead>
 
@@ -70,23 +69,6 @@
                             @endif
                         </td>
 
-                        <td class="text-center">
-                            <a href="{{ route('invoice-item.edit', $item->id) }}"
-                               class="btn btn-sm btn-warning mb-1">
-                                Edit
-                            </a>
-
-                            <form action="{{ route('invoice-item.destroy', $item->id) }}"
-                                  method="POST"
-                                  class="d-inline"
-                                  onsubmit="return confirm('Hapus item ini?')">
-                                @csrf
-                                @method('DELETE')
-                                <button class="btn btn-sm btn-danger">
-                                    Hapus
-                                </button>
-                            </form>
-                        </td>
                     </tr>
 
                     @php $grandTotal += $item->amount; @endphp

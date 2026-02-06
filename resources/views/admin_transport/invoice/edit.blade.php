@@ -10,6 +10,25 @@
         @csrf
         @method('PUT')
 
+        {{-- NO INVOICE --}}
+        <div class="mb-3">
+            <label>No Invoice</label>
+            <input type="text"
+                   name="no_invoices"
+                   class="form-control"
+                   value="{{ $item->no_invoices }}">
+        </div>
+
+        {{-- TANGGAL INVOICE --}}
+        <div class="mb-3">
+            <label>Tanggal Invoice</label>
+            <input type="date"
+                   name="tanggal_invoices"
+                   class="form-control"
+                   value="{{ $item->tanggal_invoices ? \Carbon\Carbon::parse($item->tanggal_invoices)->format('Y-m-d') : '' }}">
+        </div>
+
+        {{-- ITEM --}}
         <div class="mb-3">
             <label>Item</label>
             <input type="text"
@@ -19,13 +38,13 @@
                    required>
         </div>
 
-        {{-- TANGGAL --}}
+        {{-- TANGGAL TF --}}
         <div class="mb-3">
-            <label>Tanggal</label>
+            <label>Tanggal TF</label>
             <input type="date"
-                   name="tanggal"
+                   name="tanggal_tf"
                    class="form-control"
-                   value="{{ $item->tanggal }}">
+                   value="{{ $item->tanggal_tf ? \Carbon\Carbon::parse($item->tanggal_tf)->format('Y-m-d') : '' }}">
         </div>
 
         {{-- CICILAN --}}
@@ -52,19 +71,6 @@
                    value="{{ $item->tagihan }}">
         </div>
 
-        {{-- GAMBAR TRIP --}}
-        <div class="mb-3">
-            <label>Gambar Trip</label><br>
-            @if($item->gambar_trip)
-                <img src="{{ asset('storage/'.$item->gambar_trip) }}"
-                     width="120"
-                     class="mb-2 d-block">
-            @endif
-            <input type="file"
-                   name="gambar_trip"
-                   class="form-control">
-        </div>
-
         {{-- GAMBAR TRANSFER --}}
         <div class="mb-3">
             <label>Gambar Transfer</label><br>
@@ -78,23 +84,29 @@
                    class="form-control">
         </div>
 
+        {{-- GAMBAR TRIP --}}
+        <div class="mb-3">
+            <label>Gambar Trip</label><br>
+            @if($item->gambar_trip)
+                <img src="{{ asset('storage/'.$item->gambar_trip) }}"
+                     width="120"
+                     class="mb-2 d-block">
+            @endif
+            <input type="file"
+                   name="gambar_trip"
+                   class="form-control">
+        </div>
+
         {{-- TOMBOL --}}
         <div class="d-flex mt-4">
-           
-
-            <button class="btn btn-primary mr-1">
-                Simpan
-            </button>
-             <a href="{{ route('invoice.show', $item->invoice->mitra_id) }}"
-               class="btn btn-secondary mr-2">
-                Batal
-            </a>
+            <button class="btn btn-primary mr-1">Simpan</button>
+            <a href="{{ route('invoice.show', $item->invoice->mitra_id) }}"
+               class="btn btn-secondary mr-2">Batal</a>
         </div>
 
     </form>
 </div>
 
-{{-- ================= JS RUPIAH ================= --}}
 <script>
 function formatRupiah(angka) {
     let number_string = angka.replace(/\D/g, ''),
