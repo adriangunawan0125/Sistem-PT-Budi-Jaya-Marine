@@ -18,37 +18,71 @@ class OwnerTransportController extends Controller
   // Laporan Harian
 public function laporanHarian(Request $request)
 {
-    // kalau tidak pilih tanggal → default HARI INI
-    $tanggal = $request->tanggal ?? now()->toDateString();
+    $tanggal     = $request->tanggal ?? date('Y-m-d');
+    $nama        = $request->nama;
+    $kategori    = $request->kategori;
+    $tidakSetor  = $request->tidak_setor;
 
-    $pemasukan = Pemasukan::whereDate('tanggal', $tanggal)
-        ->orderBy('tanggal', 'desc')
-        ->get();
+    $query = Pemasukan::with('mitra')
+        ->whereDate('tanggal', $tanggal);
 
+    /* ================= FILTER NAMA ================= */
+    if ($nama) {
+        $query->whereHas('mitra', function ($q) use ($nama) {
+            $q->where('nama_mitra', 'like', "%$nama%");
+        });
+    }
+
+    /* ================= FILTER KATEGORI ================= */
+    if ($kategori) {
+        $query->where('kategori', $kategori);
+    }
+
+    /* ================= TIDAK SETOR ================= */
+    if ($tidakSetor) {
+
+        $mitraTidakSetor = Mitra::whereDoesntHave('pemasukans', function ($q) use ($tanggal) {
+            $q->whereDate('tanggal', $tanggal);
+        })->orderBy('nama_mitra')->get();
+
+        return view('owner_transport.laporan_pemasukan_harian', [
+            'pemasukan'   => collect(),
+            'mitraKosong' => $mitraTidakSetor,
+            'tanggal'     => $tanggal,
+            'total'       => 0
+        ]);
+    }
+
+    $pemasukan = $query->orderBy('tanggal', 'desc')->get();
     $total = $pemasukan->sum('nominal');
 
     return view(
         'owner_transport.laporan_pemasukan_harian',
-        compact('pemasukan', 'total', 'tanggal')
+        compact('pemasukan', 'tanggal', 'total')
     );
 }
 
+   // Laporan Bulanan
+public function laporanBulanan(Request $request)
+{
+    // default bulan sekarang (YYYY-MM)
+    $bulan = $request->bulan ?? date('Y-m');
 
-    // Laporan Bulanan
-    public function laporanBulanan(Request $request)
-    {
-        $query = Pemasukan::query();
+    $pemasukan = Pemasukan::with('mitra')
+        ->whereYear('tanggal', substr($bulan, 0, 4))
+        ->whereMonth('tanggal', substr($bulan, 5, 2))
+        ->orderBy('tanggal', 'asc')
+        ->get();
 
-        if ($request->filled('bulan') && $request->filled('tahun')) {
-            $query->whereMonth('tanggal', $request->bulan)
-                ->whereYear('tanggal', $request->tahun);
-        }
+    $total = $pemasukan->sum('nominal');
 
-        $pemasukan = $query->orderBy('tanggal', 'desc')->get();
-        $total = $pemasukan->sum('nominal');
+    return view('owner_transport.laporan_pemasukan_bulanan', compact(
+        'pemasukan',
+        'total',
+        'bulan'
+    ));
+}
 
-        return view('owner_transport.laporan_pemasukan_bulanan', compact('pemasukan', 'total'));
-    }
 
 public function laporanPengeluaranInternal(Request $request)
 {
@@ -190,12 +224,17 @@ public function laporanInvoice(Request $request)
 }
 
 
-public function detailInvoice($id)
+public function detailInvoice($mitraId)
 {
-    $invoice = Invoice::with('mitra', 'items')->findOrFail($id);
+    $mitra = Mitra::findOrFail($mitraId);
 
-    return view('owner_transport.detail_invoice', compact('invoice'));
+    $invoices = Invoice::with('items')
+        ->where('mitra_id', $mitraId)
+        ->get();
+
+    return view('owner_transport.detail_invoice', compact('mitra', 'invoices'));
 }
+
 
  public function dashboard(Request $request)
     {

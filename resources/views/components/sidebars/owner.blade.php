@@ -125,6 +125,23 @@
         </div>
     </li>
 
+    
+    <!-- INVOICE -->
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse"
+           data-target="#collapseInvoice">
+            <i class="fas fa-fw fa-file-invoice"></i>
+            <span>Laporan Invoice</span>
+        </a>
+        <div id="collapseInvoice" class="collapse" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="{{ route('invoice.rekap') }}">
+                    <i class="fas fa-file-invoice-dollar mr-2"></i> Invoice Mitra
+                </a>
+            </div>
+        </div>
+    </li>
+
     <!-- MITRA -->
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse"
@@ -144,21 +161,6 @@
         </div>
     </li>
 
-    <!-- INVOICE -->
-    <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse"
-           data-target="#collapseInvoice">
-            <i class="fas fa-fw fa-file-invoice"></i>
-            <span>Laporan Invoice</span>
-        </a>
-        <div id="collapseInvoice" class="collapse" data-parent="#accordionSidebar">
-            <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="{{ route('invoice.rekap') }}">
-                    <i class="fas fa-file-invoice-dollar mr-2"></i> Invoice Mitra
-                </a>
-            </div>
-        </div>
-    </li>
 
     <hr class="sidebar-divider d-none d-md-block">
 

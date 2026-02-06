@@ -9,10 +9,24 @@
     @endif
 
     <form method="GET" class="mb-3">
-        <input type="month" name="bulan" value="{{ $bulan }}" class="form-control w-auto d-inline">
-        <button type="submit" class="btn btn-primary">Filter</button>
-        <a href="{{ route('pengeluaran_internal.create') }}" class="btn btn-success">Tambah Pengeluaran</a>
-        <a href="{{ route('pengeluaran_internal.laporan', ['bulan'=>$bulan]) }}" class="btn btn-info">Laporan Bulanan</a>
+        <input type="month"
+               name="bulan"
+               value="{{ $bulan }}"
+               class="form-control w-auto d-inline">
+
+        <button type="submit" class="btn btn-primary">
+            Filter
+        </button>
+
+        <a href="{{ route('pengeluaran_internal.create') }}"
+           class="btn btn-success">
+            Tambah Pengeluaran
+        </a>
+
+        <a href="{{ route('pengeluaran_internal.laporan', ['bulan'=>$bulan]) }}"
+           class="btn btn-info">
+            Laporan Bulanan
+        </a>
     </form>
 
     <table class="table table-bordered">
@@ -32,21 +46,36 @@
                 <td>{{ $index + 1 }}</td>
                 <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d-m-Y') }}</td>
                 <td>{{ $item->deskripsi }}</td>
-                <td>{{ number_format($item->nominal, 0, ',', '.') }}</td>
+                <td>
+                    Rp {{ number_format($item->nominal, 0, ',', '.') }}
+                </td>
                 <td>
                     @if($item->gambar)
-                        <img src="{{ asset('storage/'.$item->gambar) }}" alt="Gambar" width="80" class="img-thumbnail">
+                        <img src="{{ asset('storage/'.$item->gambar) }}"
+                             alt="Gambar"
+                             width="80"
+                             class="img-thumbnail">
                     @else
                         -
                     @endif
                 </td>
                 <td>
-                    <a href="{{ route('pengeluaran_internal.edit', $item->id) }}" class="btn btn-warning btn-sm mb-1">Edit</a>
-                    <form action="{{ route('pengeluaran_internal.destroy', $item->id) }}" method="POST" style="display:inline;">
+                    <a href="{{ route('pengeluaran_internal.edit', $item->id) }}"
+                       class="btn btn-warning btn-sm mb-1">
+                        Edit
+                    </a>
+
+                    <form action="{{ route('pengeluaran_internal.destroy', $item->id) }}"
+                          method="POST"
+                          style="display:inline;">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-danger btn-sm"
-                            onclick="return confirm('Yakin ingin hapus?')">Hapus</button>
+
+                        <button type="submit"
+                                class="btn btn-danger btn-sm"
+                                onclick="return confirm('Yakin ingin hapus?')">
+                            Hapus
+                        </button>
                     </form>
                 </td>
             </tr>
@@ -54,11 +83,18 @@
 
             @if($pengeluaran->count())
             <tr>
-                <td colspan="3" class="text-end"><strong>Total</strong></td>
-                <td colspan="3"><strong>{{ number_format($total, 0, ',', '.') }}</strong></td>
+                <td colspan="3" class="text-end">
+                    <strong>Total</strong>
+                </td>
+                <td colspan="3">
+                    <strong>
+                        Rp {{ number_format($total, 0, ',', '.') }}
+                    </strong>
+                </td>
             </tr>
             @endif
         </tbody>
     </table>
 </div>
 @endsection
+33

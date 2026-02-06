@@ -65,10 +65,11 @@
 </td>
 
                     <td>
-                        <a href="{{ route('owner.invoice.show', $row->id) }}"
-                           class="btn btn-info btn-sm">
-                            Detail
-                        </a>
+         <a href="{{ route('invoiceowner.show', $row->id) }}"
+   class="btn btn-info btn-sm">
+    Detail
+</a>
+
                     </td>
                 </tr>
                 @empty

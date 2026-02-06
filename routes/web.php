@@ -63,6 +63,8 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
 
     // Laporan pemasukan Harian
     Route::get('/laporan-pemasukan-harian', [OwnerTransportController::class, 'laporanHarian'])->name('laporan-harian');
+    // OWNER - INVOICE DETAIL (AMAN, GA NABRAK)
+
     
     // Laporan pemasukan Bulanan
     Route::get('/laporan-pemasukan-bulanan', [OwnerTransportController::class, 'laporanBulanan'])->name('laporan-bulanan');
@@ -86,9 +88,28 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
     // Detail Mitra
     Route::get('/laporan-mitra/{id}', [OwnerTransportController::class, 'detailMitra']) ->name('mitra.detail');
 
-    // Laporan Invoice
-    Route::get('/laporan-invoice', [OwnerTransportController::class, 'laporanInvoice'])->name('invoice.rekap');   
-    Route::get('/laporan-invoice/detail/{id}', [OwnerTransportController::class, 'detailInvoice'])->name('owner.invoice.show'); // ubah route name supaya unik
+
+// ===============================
+// LAPORAN INVOICE
+// ===============================
+
+// Rekap / List invoice
+// ===============================
+// LAPORAN INVOICE (OWNER)
+// ===============================
+
+// Rekap invoice (LIST)
+Route::get('/laporan-invoice', 
+    [OwnerTransportController::class, 'laporanInvoice']
+)->name('invoice.rekap');
+
+// Detail invoice (HARUS PALING BAWAH)
+Route::get('/laporan-invoice/mitra/{mitra}',
+    [OwnerTransportController::class, 'detailInvoice']
+)->whereNumber('mitra')
+ ->name('invoiceowner.show');
+
+
 
 
    // tandai semua notifikasi dibaca

@@ -3,106 +3,90 @@
 @section('content')
 <div class="container">
 
-    <h3 class="mb-4">Laporan Pemasukan Bulanan</h3>
+    <h4 class="mb-3">
+        Laporan Pemasukan Bulan
+        {{ \Carbon\Carbon::parse($bulan.'-01')->translatedFormat('F Y') }}
+    </h4>
 
-  
-    {{-- FILTER BULAN & TAHUN --}}
-    <form method="GET" class="mb-4">
-        <div class="row g-2">
-            <div class="col-md-3">
-                <select name="bulan" class="form-control">
-                    @for($m = 1; $m <= 12; $m++)
-                        <option value="{{ $m }}"
-                            {{ request('bulan', date('n')) == $m ? 'selected' : '' }}>
-                            {{ DateTime::createFromFormat('!m', $m)->format('F') }}
-                        </option>
-                    @endfor
-                </select>
-            </div>
-
-            <div class="col-md-2">
-                <input type="number"
-                       name="tahun"
-                       class="form-control"
-                       value="{{ request('tahun', date('Y')) }}"
-                       placeholder="Tahun">
-            </div>
-
-            <div class="col-md-2">
-                <button class="btn btn-primary">
-                    Filter
-                </button>
-            </div>
-        </div>
-    </form>
-  {{-- INFO TOTAL --}}
-    <div class="alert alert-info mb-4">
+    {{-- INFO TOTAL --}}
+    <div class="alert alert-info mb-3">
         Total Pemasukan:
         <strong>Rp {{ number_format($total, 0, ',', '.') }}</strong>
     </div>
+
+    {{-- FILTER --}}
+    <form method="GET" class="mb-3">
+
+        <input type="month"
+               name="bulan"
+               value="{{ $bulan }}"
+               class="form-control d-inline-block me-2 mb-2"
+               style="width:200px">
+
+        <button type="submit" class="btn btn-primary me-2 mb-2">
+            Tampilkan
+        </button>
+
+        <a href="{{ route('pemasukan.index') }}"
+           class="btn btn-secondary me-2 mb-2">
+            Kembali
+        </a>
+
+    </form>
+
     {{-- TABLE --}}
-    <div class="card shadow-sm">
-        <div class="card-body p-0">
-            <div class="table-responsive">
+    <table class="table table-bordered align-middle">
+        <thead class="table-light text-center">
+            <tr>
+                <th width="50">No</th>
+                <th>Tanggal</th>
+                <th>Mitra</th>
+                <th>Kategori</th>
+                <th>Deskripsi</th>
+                <th>Nominal</th>
+            </tr>
+        </thead>
 
-                <table class="table table-bordered align-middle mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th width="50">No</th>
-                            <th>Tanggal</th>
-                            <th>Deskripsi</th>
-                            <th width="100" class="text-center">Bukti</th>
-                            <th>Nominal</th>
-                        </tr>
-                    </thead>
+        <tbody>
+            @forelse($pemasukan as $item)
+            <tr>
+                <td class="text-center">{{ $loop->iteration }}</td>
 
-                    <tbody>
-                        @forelse($pemasukan as $index => $item)
-                        <tr>
-                            <td>{{ $index + 1 }}</td>
-                            <td>
-                                {{ \Carbon\Carbon::parse($item->tanggal)->format('d-m-Y') }}
-                            </td>
-                            <td>{{ $item->deskripsi }}</td>
-                            <td class="text-center">
-                                @if($item->gambar)
-                                    {{-- PENTING: PATH SUDAH BENAR --}}
-                                    <img src="{{ asset('storage/pemasukan/'.$item->gambar) }}"
-                                         width="60"
-                                         class="rounded">
-                                @else
-                                    -
-                                @endif
-                            </td>
-                            <td>
-                                Rp {{ number_format($item->nominal, 0, ',', '.') }}
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="5" class="text-center text-muted py-4">
-                                Data tidak ditemukan
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
+                <td class="text-center">
+                    {{ \Carbon\Carbon::parse($item->tanggal)->format('d-m-Y') }}
+                </td>
 
-                    <tfoot class="table-light">
-                        <tr>
-                            <th colspan="4" class="text-end">
-                                Total
-                            </th>
-                            <th>
-                                Rp {{ number_format($total, 0, ',', '.') }}
-                            </th>
-                        </tr>
-                    </tfoot>
+                <td>
+                    {{ $item->mitra->nama_mitra ?? '-' }}
+                </td>
 
-                </table>
+                <td class="text-center">
+                    {{ ucfirst($item->kategori) }}
+                </td>
 
-            </div>
-        </div>
-    </div>
+                <td>
+                    {{ $item->deskripsi }}
+                </td>
+
+                <td>
+                    <b>Rp {{ number_format($item->nominal, 0, ',', '.') }}</b>
+                </td>
+            </tr>
+            @empty
+            <tr>
+                <td colspan="6" class="text-center">
+                    Data pemasukan tidak ditemukan
+                </td>
+            </tr>
+            @endforelse
+
+            <tr>
+                <th colspan="5" class="text-end">TOTAL</th>
+                <th>Rp {{ number_format($total,0,',','.') }}</th>
+            </tr>
+
+        </tbody>
+    </table>
 
 </div>
 @endsection

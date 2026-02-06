@@ -108,7 +108,7 @@
                 </ul>
 
                 <div class="footer-social mt-3">
-                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.instagram.com/pt.bjm_?igsh=MWlsODFicXVzaHY5bw=="><i class="fab fa-instagram"></i></a>
                     <a href="#"><i class="fab fa-facebook-f"></i></a>
 
                     <!-- EMAIL (GANTI LINKEDIN) -->

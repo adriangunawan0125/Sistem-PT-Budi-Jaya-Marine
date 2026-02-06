@@ -13,18 +13,23 @@ class PemasukanController extends Controller
     /* ================= INDEX ================= */
 public function index(Request $request)
 {
-    $tanggal  = $request->tanggal ?? date('Y-m-d');
-    $nama     = $request->nama;
-    $kategori = $request->kategori;
-    $tidakSetor = $request->tidak_setor;
+    $tanggal     = $request->tanggal ?? date('Y-m-d');
+    $nama        = $request->nama;
+    $kategori    = $request->kategori;
+    $tidakSetor  = $request->tidak_setor;
 
+    /* ================= QUERY UTAMA ================= */
     $query = Pemasukan::with('mitra')
-        ->whereDate('tanggal', $tanggal);
+        ->whereDate('tanggal', $tanggal)
+        ->whereHas('mitra', function ($q) {
+            // 🔒 hanya mitra AKTIF
+            $q->where('status', 'aktif');
+        });
 
     /* ================= FILTER NAMA ================= */
     if ($nama) {
         $query->whereHas('mitra', function ($q) use ($nama) {
-            $q->where('nama_mitra', 'like', "%$nama%");
+            $q->where('nama_mitra', 'like', "%{$nama}%");
         });
     }
 
@@ -34,27 +39,34 @@ public function index(Request $request)
     }
 
     /* ================= FILTER TIDAK SETOR ================= */
-if ($tidakSetor) {
+    if ($tidakSetor) {
 
-    $mitraTidakSetor = Mitra::whereDoesntHave('pemasukans', function($q) use ($tanggal){
-        $q->whereDate('tanggal', $tanggal);
-    })->orderBy('nama_mitra')->get();
+        $mitraTidakSetor = Mitra::where('status', 'aktif') // ⛔ exclude berakhir
+            ->whereDoesntHave('pemasukans', function ($q) use ($tanggal) {
+                $q->whereDate('tanggal', $tanggal);
+            })
+            ->orderBy('nama_mitra')
+            ->get();
 
-    return view('admin_transport.pemasukan.index', [
-        'pemasukan' => collect(),
-        'mitraKosong' => $mitraTidakSetor,
-        'tanggal' => $tanggal,
-        'total' => 0
-    ]);
-}
+        return view('admin_transport.pemasukan.index', [
+            'pemasukan'   => collect(),
+            'mitraKosong' => $mitraTidakSetor,
+            'tanggal'     => $tanggal,
+            'total'       => 0
+        ]);
+    }
 
-    $pemasukan = $query->orderBy('tanggal','desc')->get();
-    $total = $pemasukan->sum('nominal');
+    /* ================= DATA NORMAL ================= */
+    $pemasukan = $query->orderBy('tanggal', 'desc')->get();
+    $total     = $pemasukan->sum('nominal');
 
     return view('admin_transport.pemasukan.index', compact(
-        'pemasukan','tanggal','total'
+        'pemasukan',
+        'tanggal',
+        'total'
     ));
 }
+
 
     /* ================= CREATE ================= */
     public function create()

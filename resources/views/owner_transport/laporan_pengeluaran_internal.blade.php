@@ -57,7 +57,7 @@
                     <td>{{ $index + 1 }}</td>
                     <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d-m-Y') }}</td>
                     <td>{{ $item->deskripsi }}</td>
-                    <td>{{ number_format($item->nominal, 0, ',', '.') }}</td>
+                    <td>Rp {{ number_format($item->nominal, 0, ',', '.') }}</td>
                     <td>
                         @if($item->gambar)
                             <img
@@ -87,7 +87,7 @@
                     </td>
                     <td colspan="3">
                         <strong>
-                            {{ number_format($total, 0, ',', '.') }}
+                            Rp {{ number_format($total, 0, ',', '.') }}
                         </strong>
                     </td>
                 </tr>
