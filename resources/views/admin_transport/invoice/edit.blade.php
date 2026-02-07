@@ -2,131 +2,231 @@
 
 @section('content')
 <div class="container">
-    <h4>Edit Item Invoice</h4>
+    <h4>Edit Invoice</h4>
 
-    <form method="POST"
-          action="{{ route('invoice-item.update', $item->id) }}"
-          enctype="multipart/form-data">
+    @if(session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
+
+    <form action="{{ route('invoice.update', $items->first()->invoice_id) }}"
+          method="POST"
+          enctype="multipart/form-data"
+          onsubmit="return cekItem()">
         @csrf
         @method('PUT')
 
-        {{-- NO INVOICE --}}
+        {{-- MITRA --}}
+        <input type="hidden" name="mitra_id" value="{{ $mitra->id }}">
         <div class="mb-3">
-            <label>No Invoice</label>
+            <label>Mitra</label>
             <input type="text"
-                   name="no_invoices"
                    class="form-control"
-                   value="{{ $item->no_invoices }}">
+                   value="{{ $mitra->nama_mitra }}"
+                   readonly>
         </div>
 
-        {{-- TANGGAL INVOICE --}}
-        <div class="mb-3">
-            <label>Tanggal Invoice</label>
-            <input type="date"
-                   name="tanggal_invoices"
-                   class="form-control"
-                   value="{{ $item->tanggal_invoices ? \Carbon\Carbon::parse($item->tanggal_invoices)->format('Y-m-d') : '' }}">
+        <hr>
+
+        <h5>Item Invoice</h5>
+
+        <div class="table-responsive">
+            <table class="table table-bordered" id="items">
+                <thead class="table-light">
+                    <tr>
+                        <th style="min-width:180px;">No Invoice</th>
+                        <th style="min-width:140px;">Tanggal Invoice</th>
+                        <th style="min-width:220px;">Item</th>
+                        <th style="min-width:140px;">Tanggal TF</th>
+                        <th style="min-width:140px;">Cicilan</th>
+                        <th style="min-width:140px;">Tagihan</th>
+                        <th style="min-width:140px;">Bukti Transfer</th>
+                        <th style="min-width:140px;">Bukti Perjalanan</th>
+                        <th style="width:60px;"></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                @foreach($items as $i => $item)
+                    <tr>
+                        <td>
+                            <input type="hidden"
+                                   name="items[{{ $i }}][id]"
+                                   value="{{ $item->id }}">
+
+                            <input type="text"
+                                   name="items[{{ $i }}][no_invoices]"
+                                   class="form-control"
+                                   value="{{ $item->no_invoices }}">
+                        </td>
+
+                        <td>
+                            <input type="date"
+                                   name="items[{{ $i }}][tanggal_invoices]"
+                                   class="form-control"
+                                   value="{{ $item->tanggal_invoices
+                                       ? \Carbon\Carbon::parse($item->tanggal_invoices)->format('Y-m-d')
+                                       : '' }}">
+                        </td>
+
+                        <td>
+                            <input name="items[{{ $i }}][item]"
+                                   class="form-control"
+                                   value="{{ $item->item }}"
+                                   required>
+                        </td>
+
+                        <td>
+                            <input type="date"
+                                   name="items[{{ $i }}][tanggal_tf]"
+                                   class="form-control"
+                                   value="{{ $item->tanggal_tf
+                                       ? \Carbon\Carbon::parse($item->tanggal_tf)->format('Y-m-d')
+                                       : '' }}">
+                        </td>
+
+                        <td>
+                            <input type="text"
+                                   class="form-control rupiah"
+                                   data-hidden="items[{{ $i }}][cicilan]"
+                                   value="Rp {{ number_format($item->cicilan,0,',','.') }}">
+                            <input type="hidden"
+                                   name="items[{{ $i }}][cicilan]"
+                                   value="{{ $item->cicilan }}">
+                        </td>
+
+                        <td>
+                            <input type="text"
+                                   class="form-control rupiah"
+                                   data-hidden="items[{{ $i }}][tagihan]"
+                                   value="Rp {{ number_format($item->tagihan,0,',','.') }}">
+                            <input type="hidden"
+                                   name="items[{{ $i }}][tagihan]"
+                                   value="{{ $item->tagihan }}">
+                        </td>
+
+                        <td>
+                            @if($item->gambar_transfer)
+                                <img src="{{ asset('storage/'.$item->gambar_transfer) }}"
+                                     width="60" class="d-block mb-1">
+                            @endif
+                            <input type="file"
+                                   name="items[{{ $i }}][gambar_transfer]"
+                                   class="form-control"
+                                   accept="image/*">
+                        </td>
+
+                        <td>
+                            @if($item->gambar_trip)
+                                <img src="{{ asset('storage/'.$item->gambar_trip) }}"
+                                     width="60" class="d-block mb-1">
+                            @endif
+                            <input type="file"
+                                   name="items[{{ $i }}][gambar_trip]"
+                                   class="form-control"
+                                   accept="image/*">
+                        </td>
+
+                        <td class="text-center">
+                            <button type="button"
+                                    class="btn btn-danger btn-sm"
+                                    onclick="this.closest('tr').remove()">
+                                hapus
+                            </button>
+                        </td>
+                    </tr>
+                @endforeach
+                </tbody>
+            </table>
         </div>
 
-        {{-- ITEM --}}
-        <div class="mb-3">
-            <label>Item</label>
-            <input type="text"
-                   name="item"
-                   class="form-control"
-                   value="{{ $item->item }}"
-                   required>
-        </div>
+        <button type="button"
+                class="btn btn-sm btn-secondary mt-3 mb-3"
+                onclick="addItem()">+ Item</button>
 
-        {{-- TANGGAL TF --}}
-        <div class="mb-3">
-            <label>Tanggal TF</label>
-            <input type="date"
-                   name="tanggal_tf"
-                   class="form-control"
-                   value="{{ $item->tanggal_tf ? \Carbon\Carbon::parse($item->tanggal_tf)->format('Y-m-d') : '' }}">
-        </div>
+        <hr>
 
-        {{-- CICILAN --}}
-        <div class="mb-3">
-            <label>Cicilan</label>
-            <input type="text"
-                   class="form-control rupiah"
-                   data-hidden="cicilan"
-                   value="Rp {{ number_format($item->cicilan, 0, ',', '.') }}">
-            <input type="hidden"
-                   name="cicilan"
-                   value="{{ $item->cicilan }}">
-        </div>
-
-        {{-- TAGIHAN --}}
-        <div class="mb-3">
-            <label>Tagihan</label>
-            <input type="text"
-                   class="form-control rupiah"
-                   data-hidden="tagihan"
-                   value="Rp {{ number_format($item->tagihan, 0, ',', '.') }}">
-            <input type="hidden"
-                   name="tagihan"
-                   value="{{ $item->tagihan }}">
-        </div>
-
-        {{-- GAMBAR TRANSFER --}}
-        <div class="mb-3">
-            <label>Gambar Transfer</label><br>
-            @if($item->gambar_transfer)
-                <img src="{{ asset('storage/'.$item->gambar_transfer) }}"
-                     width="120"
-                     class="mb-2 d-block">
-            @endif
-            <input type="file"
-                   name="gambar_transfer"
-                   class="form-control">
-        </div>
-
-        {{-- GAMBAR TRIP --}}
-        <div class="mb-3">
-            <label>Gambar Trip</label><br>
-            @if($item->gambar_trip)
-                <img src="{{ asset('storage/'.$item->gambar_trip) }}"
-                     width="120"
-                     class="mb-2 d-block">
-            @endif
-            <input type="file"
-                   name="gambar_trip"
-                   class="form-control">
-        </div>
-
-        {{-- TOMBOL --}}
-        <div class="d-flex mt-4">
-            <button class="btn btn-primary mr-1">Simpan</button>
-            <a href="{{ route('invoice.show', $item->invoice->mitra_id) }}"
-               class="btn btn-secondary mr-2">Batal</a>
-        </div>
-
+        <button class="btn btn-primary">Update</button>
+        <a href="{{ route('invoice.show', $mitra->id) }}"
+           class="btn btn-secondary">Batal</a>
     </form>
 </div>
 
 <script>
-function formatRupiah(angka) {
-    let number_string = angka.replace(/\D/g, ''),
-        sisa = number_string.length % 3,
-        rupiah = number_string.substr(0, sisa),
-        ribuan = number_string.substr(sisa).match(/\d{3}/g);
+let i = {{ $items->count() }};
 
-    if (ribuan) {
-        let separator = sisa ? '.' : '';
-        rupiah += separator + ribuan.join('.');
-    }
-    return rupiah ? 'Rp ' + rupiah : '';
+/* ===== UTIL ===== */
+function bulanRomawi(b){
+    return ['','I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'][b];
+}
+function pad3(n){
+    return String(n).replace(/\D/g,'').padStart(3,'0');
 }
 
-document.querySelectorAll('.rupiah').forEach(el => {
-    el.addEventListener('input', function () {
-        let raw = this.value.replace(/\D/g, '').replace(/^0+/, '');
-        this.value = raw ? formatRupiah(raw) : '';
-        document.querySelector(`input[name="${this.dataset.hidden}"]`).value = raw || 0;
+/* ===== RUPIAH ===== */
+function formatRupiah(a){
+    let s = a.replace(/\D/g,'');
+    return s ? 'Rp ' + s.replace(/\B(?=(\d{3})+(?!\d))/g,'.') : '';
+}
+function bindRupiah(el){
+    el.addEventListener('input',function(){
+        let raw = this.value.replace(/\D/g,'');
+        this.value = formatRupiah(raw);
+        this.parentElement.querySelector(
+            `input[name="${this.dataset.hidden}"]`
+        ).value = raw || 0;
     });
-});
+}
+document.querySelectorAll('.rupiah').forEach(bindRupiah);
+
+/* ===== ADD ITEM ===== */
+function addItem(){
+    let row = `
+    <tr>
+        <td><input name="items[${i}][no_invoices]" class="form-control"></td>
+        <td><input type="date" name="items[${i}][tanggal_invoices]" class="form-control"></td>
+        <td><input name="items[${i}][item]" class="form-control" required></td>
+        <td><input type="date" name="items[${i}][tanggal_tf]" class="form-control"></td>
+        <td>
+            <input class="form-control rupiah" data-hidden="items[${i}][cicilan]">
+            <input type="hidden" name="items[${i}][cicilan]" value="0">
+        </td>
+        <td>
+            <input class="form-control rupiah" data-hidden="items[${i}][tagihan]">
+            <input type="hidden" name="items[${i}][tagihan]" value="0">
+        </td>
+        <td></td>
+        <td></td>
+        <td class="text-center">
+            <button type="button"
+                    class="btn btn-danger btn-sm"
+                    onclick="this.closest('tr').remove()">hapus</button>
+        </td>
+    </tr>`;
+    document.querySelector('#items tbody').insertAdjacentHTML('beforeend',row);
+    document.querySelectorAll('.rupiah').forEach(bindRupiah);
+    i++;
+}
+
+/* ===== SUBMIT (FIX DOBEL INVOICE) ===== */
+function cekItem(){
+    for(let row of document.querySelectorAll('#items tbody tr')){
+        let no = row.querySelector('input[name*="[no_invoices]"]');
+        let tgl = row.querySelector('input[name*="[tanggal_invoices]"]');
+
+        if(!no.value || !tgl.value){
+            alert('No Invoice dan Tanggal Invoice wajib diisi');
+            return false;
+        }
+
+        let d = new Date(tgl.value);
+
+        // 🔥 AMBIL NOMOR DEPAN SAJA (ANTI DOBEL)
+        let raw = no.value.split('/')[0];
+
+        no.value =
+            `${pad3(raw)}/BJM/${bulanRomawi(d.getMonth()+1)}/${d.getFullYear()}`;
+    }
+    return true;
+}
 </script>
 @endsection

@@ -24,8 +24,7 @@
         </div>
 
         <div class="d-flex"><div style="width:170px"><b>Total</b></div><div>: Rp {{ number_format($invoice->total,0,',','.') }}</div></div>
-        <div class="d-flex"><div style="width:170px"><b>Dibuat</b></div><div>: {{ $invoice->created_at->format('d M Y') }}</div></div>
-
+       
     </div>
 
 
@@ -34,7 +33,7 @@
 
         <hr class="my-4">
 
-        <h5 class="mb-3">Item {{ $i+1 }}</h5>
+        <h5 class="mb-3">Item </h5>
 
         <div class="d-flex mb-1"><div style="width:170px"><b>No Invoice</b></div><div>: {{ $item->no_invoices ?? '-' }}</div></div>
 

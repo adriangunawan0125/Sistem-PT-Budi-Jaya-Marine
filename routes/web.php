@@ -161,15 +161,58 @@ Route::middleware(['auth', 'role:admin_transport'])->group(function () {
         Route::delete('/mitra/{mitra}',[KelolaMitraController::class, 'destroy']); 
      });
 
-    //Invoice
-    Route::get('/invoice-item/{id}/edit', [InvoiceItemController::class, 'edit'])->name('invoice-item.edit');
-    Route::put('/invoice-item/{id}',[InvoiceItemController::class, 'update'])->name('invoice-item.update');
-    Route::delete('/invoice-item/{id}',[InvoiceItemController::class, 'destroy'])->name('invoice-item.destroy');
-    Route::resource('invoice', InvoiceController::class);
-    Route::get('/invoice/{invoice}/print', [InvoiceController::class, 'print'])->name('invoice.print');
-    Route::get('/admin_transport/invoice/{invoice}/items',
-    [InvoiceController::class, 'items'])
+    //Invoice// ================================
+// INVOICE
+// ================================
+
+// list invoice per mitra
+Route::get('/invoice', [InvoiceController::class, 'index'])
+    ->name('invoice.index');
+
+// form create
+Route::get('/invoice/create', [InvoiceController::class, 'create'])
+    ->name('invoice.create');
+
+// simpan invoice + items
+Route::post('/invoice', [InvoiceController::class, 'store'])
+    ->name('invoice.store');
+
+// detail invoice (per mitra)
+Route::get('/invoice/{mitra}', [InvoiceController::class, 'show'])
+    ->name('invoice.show');
+
+// ================================
+// EDIT INVOICE (SEMUA ITEM SEKALIGUS)
+// ================================
+Route::get('/invoice/{invoice}/edit', [InvoiceController::class, 'edit'])
+    ->name('invoice.edit');
+
+Route::put('/invoice/{invoice}', [InvoiceController::class, 'update'])
+    ->name('invoice.update');
+
+// ================================
+// HAPUS INVOICE
+// ================================
+Route::delete('/invoice/{invoice}', [InvoiceController::class, 'destroy'])
+    ->name('invoice.destroy');
+
+// ================================
+// STATUS
+// ================================
+Route::post('/invoice/{invoice}/lunas', [InvoiceController::class, 'markLunas'])
+    ->name('invoice.lunas');
+
+// ================================
+// PRINT
+// ================================
+Route::get('/invoice/{invoice}/print', [InvoiceController::class, 'print'])
+    ->name('invoice.print');
+
+// detail 1 invoice (items)
+Route::get('/invoice/{invoice}/items', [InvoiceController::class, 'items'])
     ->name('invoice.items');
+
+
 
     //pengeluaran internal
     Route::get('pengeluaran_internal/laporan',[PengeluaranInternalController::class, 'laporan'])->name('pengeluaran_internal.laporan');
