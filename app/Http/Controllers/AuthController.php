@@ -19,7 +19,6 @@ class AuthController extends Controller
 
             $user = Auth::user();
 
-            // redirect berdasarkan role
             if ($user->role === 'owner') {
                 return redirect('/owner');
             }

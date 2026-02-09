@@ -62,6 +62,12 @@
         </div>
     </form>
 
+    {{-- TOTAL INFO (DITAMBAHKAN) --}}
+    <div class="alert alert-info mb-4">
+        Total Pemasukan:
+        <strong>Rp {{ number_format($total,0,',','.') }}</strong>
+    </div>
+
     {{-- MITRA TIDAK SETOR --}}
     @if(isset($mitraKosong))
     <div class="card border-danger mb-3">
@@ -90,6 +96,7 @@
                 <th>Kategori</th>
                 <th>Deskripsi</th>
                 <th>Nominal</th>
+                <th>Aksi</th>
             </tr>
         </thead>
 
@@ -102,6 +109,12 @@
                 <td class="text-center">{{ ucfirst($item->kategori) }}</td>
                 <td>{{ $item->deskripsi }}</td>
                 <td><b>Rp {{ number_format($item->nominal,0,',','.') }}</b></td>
+                <td class="text-center">
+                    <a href="{{ route('pemasukan.detail', $item->id) }}"
+                       class="btn btn-sm btn-info">
+                        Detail
+                    </a>
+                </td>
             </tr>
             @empty
             <tr>

@@ -4,6 +4,18 @@
 <div class="container">
     <h4 class="mb-3">Laporan Ex Mitra</h4>
 
+    {{-- SEARCH --}}
+    <form method="GET" class="mb-3">
+        <div class="input-group" style="max-width:400px">
+            <input type="text"
+                   name="search"
+                   value="{{ request('search') }}"
+                   class="form-control"
+                   placeholder="Cari nama / no hp / alamat">
+            <button class="btn btn-primary">Cari</button>
+        </div>
+    </form>
+
     <div class="alert alert-info">
         Total Ex Mitra: <strong>{{ $total }}</strong>
     </div>
@@ -24,7 +36,7 @@
             <tbody>
                 @forelse($mitras as $no => $mitra)
                 <tr>
-                    <td>{{ $no + 1 }}</td>
+                    <td>{{ $mitras->firstItem() + $no }}</td>
                     <td>{{ $mitra->nama_mitra }}</td>
                     <td>{{ $mitra->alamat }}</td>
                     <td>{{ $mitra->no_hp }}</td>
@@ -45,6 +57,11 @@
         </table>
     </div>
 
-    <a href="{{ url()->previous() }}" class="btn btn-secondary">Kembali</a>
+    {{-- PAGINATION --}}
+    <div class="mb-3">
+        {{ $mitras->links() }}
+    </div>
+
+    <a href="{{ route('mitra.aktif') }}" class="btn btn-secondary">Kembali</a>
 </div>
 @endsection

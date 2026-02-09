@@ -38,7 +38,7 @@
                 <th width="5%">No</th>
                 <th>Keterangan</th>
                 <th width="20%">Nominal</th>
-                <th width="15%">Bukti</th>
+                <th width="15%">Detail</th>
             </tr>
         </thead>
         <tbody>
@@ -47,20 +47,13 @@
                     <td>{{ $index + 1 }}</td>
                     <td>{{ $item->keterangan }}</td>
                     <td>
-                        {{ number_format($item->nominal, 0, ',', '.') }}
+                        Rp {{ number_format($item->nominal, 0, ',', '.') }}
                     </td>
                     <td>
-                        @if($item->gambar)
-                            <a href="{{ asset('storage/'.$item->gambar) }}" target="_blank">
-                                <img
-                                    src="{{ asset('storage/'.$item->gambar) }}"
-                                    width="60"
-                                    class="img-thumbnail"
-                                >
-                            </a>
-                        @else
-                            -
-                        @endif
+                        <a href="{{ route('pengeluaran_transport.item_detail', $item->id) }}"
+                           class="btn btn-sm btn-info">
+                           Detail
+                        </a>
                     </td>
                 </tr>
             @empty
@@ -75,7 +68,7 @@
             <tr>
                 <th colspan="2" class="text-end">Total</th>
                 <th colspan="2">
-                    {{ number_format(
+                    Rp {{ number_format(
                         $pengeluaran->items->sum('nominal'),
                         0,
                         ',',
@@ -87,9 +80,8 @@
     </table>
 
     <a href="{{ route('pengeluaran_transport.rekap') }}" class="btn btn-secondary">
-    Kembali
-</a>
-
+        Kembali
+    </a>
 
 </div>
 @endsection

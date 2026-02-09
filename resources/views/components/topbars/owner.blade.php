@@ -25,7 +25,7 @@
     <!-- RIGHT -->
     <ul class="navbar-nav ml-auto align-items-center">
 
-        <!-- 🔔 NOTIF OWNER -->
+        <!-- NOTIF OWNER -->
         <li class="nav-item dropdown no-arrow mx-2">
             <a class="nav-link dropdown-toggle"
                href="#"

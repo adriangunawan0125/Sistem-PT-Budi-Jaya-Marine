@@ -3,13 +3,37 @@
 @section('content')
 <div class="container">
 
-    <h4>Laporan Pengeluaran Pajak Mobil - Bulan {{ \Carbon\Carbon::parse($bulan.'-01')->translatedFormat('F Y') }}</h4>
+    <h4 class="mb-5">
+        Laporan Pengeluaran Pajak Mobil - 
+        {{ \Carbon\Carbon::parse($bulan.'-01')->translatedFormat('F Y') }}
+    </h4>
 
-    {{-- FILTER BULAN --}}
+    {{-- FILTER --}}
     <form method="GET" class="mb-3">
-        <input type="month" name="bulan" value="{{ $bulan }}" class="form-control w-auto d-inline">
-        <button type="submit" class="btn btn-primary">Tampilkan</button>
-        <a href="{{ route('pengeluaran_pajak.rekap') }}" class="btn btn-secondary">Kembali</a>
+
+        <div class="d-flex flex-wrap align-items-end">
+
+            {{-- BULAN --}}
+            <div class="me-3 mb-2" style="margin-right: 10px;">
+                <label class="form-label mb-1">Bulan</label>
+                <input type="month"
+                       name="bulan"
+                       value="{{ $bulan }}"
+                       class="form-control"
+                       style="width:170px">
+            </div>
+
+            {{-- BUTTON --}}
+            <div class="mb-2">
+                <button class="btn btn-primary">Tampilkan</button>
+
+                <a href="{{ route('pengeluaran_pajak.rekap') }}"
+                   class="btn btn-secondary">
+                    Kembali
+                </a>
+            </div>
+
+        </div>
     </form>
 
     {{-- INFO TOTAL --}}
@@ -17,48 +41,54 @@
         Total Pengeluaran Pajak:
         <strong>Rp {{ number_format($total_all, 0, ',', '.') }}</strong>
     </div>
-    
-    <table class="table table-bordered">
-        <thead>
+
+    {{-- TABLE --}}
+    <table class="table table-bordered align-middle">
+        <thead class="table-light text-center">
             <tr>
                 <th>No</th>
                 <th>Unit</th>
                 <th>Tanggal</th>
                 <th>Deskripsi</th>
                 <th>Nominal</th>
-                <th>Bukti</th>
+                <th>Aksi</th>
             </tr>
         </thead>
+
         <tbody>
-            @forelse($pengeluaran as $index => $item)
+            @forelse($pengeluaran as $item)
                 <tr>
-                    <td>{{ $index + 1 }}</td>
+                    <td class="text-center">{{ $loop->iteration }}</td>
                     <td>{{ $item->unit->nama_unit ?? '-' }}</td>
-                    <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d-m-Y') }}</td>
+                    <td class="text-center">
+                        {{ \Carbon\Carbon::parse($item->tanggal)->format('d-m-Y') }}
+                    </td>
                     <td>{{ $item->deskripsi }}</td>
-                    <td>Rp {{ number_format($item->nominal,0,',','.') }}</td>
-                    <td>
-                        @if($item->gambar)
-                            <a href="{{ asset('storage/'.$item->gambar) }}" target="_blank">
-                                <img src="{{ asset('storage/'.$item->gambar) }}" width="60" class="img-thumbnail">
-                            </a>
-                        @else
-                            -
-                        @endif
+                    <td><b>Rp {{ number_format($item->nominal,0,',','.') }}</b></td>
+                    <td class="text-center">
+                        <a href="{{ route('pengeluaran_pajak.detail', $item->id) }}"
+                           class="btn btn-sm btn-info">
+                            Detail
+                        </a>
                     </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="6" class="text-center text-muted">Tidak ada data pengeluaran pajak</td>
+                    <td colspan="6" class="text-center text-muted">
+                        Tidak ada data pengeluaran pajak
+                    </td>
                 </tr>
             @endforelse
+
+            @if($pengeluaran->count())
             <tr>
-                <td colspan="4"><strong>Total Keseluruhan</strong></td>
-                <td colspan="2"><strong>Rp {{ number_format($total_all,0,',','.') }}</strong></td>
+                <th colspan="4" class="text-end">TOTAL</th>
+                <th>Rp {{ number_format($total_all,0,',','.') }}</th>
+                <th></th>
             </tr>
+            @endif
         </tbody>
     </table>
 
-    <button onclick="window.print()" class="btn btn-success">Cetak Laporan</button>
 </div>
 @endsection

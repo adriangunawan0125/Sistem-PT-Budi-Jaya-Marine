@@ -15,4 +15,11 @@ class PengeluaranTransportItem extends Model
     {
         return $this->belongsTo(PengeluaranTransport::class, 'transport_id');
     }
+    public function pengeluaran()
+    {
+        return $this->belongsTo(
+            PengeluaranTransport::class,
+            'transport_id'   // foreign key di tabel item
+        );
+    }
 }

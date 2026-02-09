@@ -46,6 +46,5 @@
         </tbody>
     </table>
 
-    <button onclick="window.print()" class="btn btn-success">Cetak Laporan</button>
 </div>
 @endsection

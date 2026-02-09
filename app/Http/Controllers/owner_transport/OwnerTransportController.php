@@ -8,6 +8,7 @@ use App\Models\Pemasukan;
 use App\Models\PengeluaranInternal;
 use Carbon\Carbon;
 use App\Models\PengeluaranTransport;
+use App\Models\PengeluaranTransportItem;
 use App\Models\PengeluaranPajak;
 use App\Models\Mitra;
 use App\Models\Invoice;
@@ -26,19 +27,19 @@ public function laporanHarian(Request $request)
     $query = Pemasukan::with('mitra')
         ->whereDate('tanggal', $tanggal);
 
-    /* ================= FILTER NAMA ================= */
+    // FILTER NAMA 
     if ($nama) {
         $query->whereHas('mitra', function ($q) use ($nama) {
             $q->where('nama_mitra', 'like', "%$nama%");
         });
     }
 
-    /* ================= FILTER KATEGORI ================= */
+    //FILTER KATEGORI 
     if ($kategori) {
         $query->where('kategori', $kategori);
     }
 
-    /* ================= TIDAK SETOR ================= */
+    // TIDAK SETOR 
     if ($tidakSetor) {
 
         $mitraTidakSetor = Mitra::whereDoesntHave('pemasukans', function ($q) use ($tanggal) {
@@ -65,7 +66,6 @@ public function laporanHarian(Request $request)
    // Laporan Bulanan
 public function laporanBulanan(Request $request)
 {
-    // default bulan sekarang (YYYY-MM)
     $bulan = $request->bulan ?? date('Y-m');
 
     $pemasukan = Pemasukan::with('mitra')
@@ -83,10 +83,16 @@ public function laporanBulanan(Request $request)
     ));
 }
 
+public function detail(Pemasukan $pemasukan)
+{
+    $pemasukan->load('mitra');
+
+    return view('owner_transport.detail_pemasukan', compact('pemasukan'));
+}
+
 
 public function laporanPengeluaranInternal(Request $request)
 {
-    // default bulan sekarang (YYYY-MM)
     $bulan = $request->bulan ?? now()->format('Y-m');
 
     $pengeluaran = PengeluaranInternal::whereMonth(
@@ -107,9 +113,19 @@ public function laporanPengeluaranInternal(Request $request)
         compact('pengeluaran', 'total', 'bulan')
     );
 }
+
+public function detailPengeluaranInternal($id)
+{
+    $pengeluaran = PengeluaranInternal::findOrFail($id);
+
+    return view(
+        'owner_transport.detail_pengeluaraninternal',
+        compact('pengeluaran')
+    );
+}
+
 public function rekapPengeluaranTransport(Request $request)
 {
-    // default bulan sekarang
     $bulan = $request->bulan ?? now()->format('Y-m');
 
     $pengeluaran = PengeluaranTransport::with(['unit', 'items'])
@@ -125,6 +141,7 @@ public function rekapPengeluaranTransport(Request $request)
         compact('pengeluaran', 'total', 'bulan')
     );
 }
+
 public function detailPengeluaranTransport($id)
 {
     $pengeluaran = PengeluaranTransport::with([
@@ -146,10 +163,23 @@ public function detailPengeluaranTransport($id)
     );
 }
 
+public function detailItemPengeluaranTransport($id)
+{
+    $item = PengeluaranTransportItem::with([
+        'pengeluaran.unit'
+    ])->findOrFail($id);
+
+    return view(
+        'owner_transport.detailitem_pengeluarantransport',
+        compact('item')
+    );
+}
+
+
 // Laporan Pengeluaran Pajak Mobil
 public function rekapPengeluaranPajak(Request $request)
 {
-    // default bulan sekarang
+   
     $bulan = $request->bulan ?? now()->format('Y-m');
 
     $pengeluaran = PengeluaranPajak::with('unit')
@@ -166,24 +196,65 @@ public function rekapPengeluaranPajak(Request $request)
     );
 }
 
+public function detailPengeluaranPajak($id)
+{
+    $pengeluaran = PengeluaranPajak::with('unit')
+        ->findOrFail($id);
+
+    return view(
+        'owner_transport.detail_pengeluaranpajak',
+        compact('pengeluaran')
+    );
+}
+
 
 // Laporan Mitra Aktif
-    public function laporanMitraAktif()
-    {
-        $mitras = Mitra::aktif()->with('unit')->orderBy('nama_mitra')->get();
-        $total = $mitras->count();
+ public function laporanMitraAktif(Request $request)
+{
+    $query = Mitra::aktif()->with('unit');
 
-        return view('owner_transport.laporan_mitra_aktif', compact('mitras', 'total'));
+    if ($request->search) {
+        $query->where(function ($q) use ($request) {
+            $q->where('nama_mitra', 'like', '%' . $request->search . '%')
+              ->orWhere('alamat', 'like', '%' . $request->search . '%')
+              ->orWhere('no_hp', 'like', '%' . $request->search . '%');
+        });
     }
+
+    $mitras = $query->orderBy('nama_mitra')
+                    ->paginate(10)
+                    ->withQueryString();
+
+    $total = $mitras->total(); 
+
+    return view('owner_transport.laporan_mitra_aktif', compact('mitras', 'total'));
+}
+
 
     // Laporan Ex Mitra
-    public function laporanExMitra()
-    {
-        $mitras = Mitra::berakhir()->with('unit')->orderBy('nama_mitra')->get();
-        $total = $mitras->count();
+   public function laporanExMitra(Request $request)
+{
+    $search = $request->search;
 
-        return view('owner_transport.laporan_ex_mitra', compact('mitras', 'total'));
-    }
+    $query = Mitra::berakhir()
+        ->with('unit')
+        ->when($search, function ($q) use ($search) {
+            $q->where('nama_mitra', 'like', "%{$search}%")
+              ->orWhere('no_hp', 'like', "%{$search}%")
+              ->orWhere('alamat', 'like', "%{$search}%");
+        })
+        ->orderBy('nama_mitra');
+
+    $mitras = $query->paginate(10)->withQueryString();
+
+    $total = (clone $query)->count();
+
+    return view(
+        'owner_transport.laporan_ex_mitra',
+        compact('mitras', 'total', 'search')
+    );
+}
+
 
     // Detail Mitra
     public function detailMitra($id)
@@ -201,12 +272,12 @@ public function laporanInvoice(Request $request)
             mitras.id,
             mitras.nama_mitra,
             COALESCE(SUM(invoices.total), 0) as total_amount,
-            MAX(invoice_items.tanggal) as tanggal_tf_terakhir
+            MAX(invoice_items.tanggal_tf) as tanggal_tf_terakhir
         ')
         ->rightJoin('mitras', 'mitras.id', '=', 'invoices.mitra_id')
         ->leftJoin('invoice_items', function ($join) {
             $join->on('invoice_items.invoice_id', '=', 'invoices.id')
-                 ->whereNotNull('invoice_items.tanggal');
+                 ->whereNotNull('invoice_items.tanggal_tf');
         })
         ->when($search, function ($q) use ($search) {
             $q->where('mitras.nama_mitra', 'like', "%{$search}%");
@@ -223,7 +294,6 @@ public function laporanInvoice(Request $request)
     );
 }
 
-
 public function detailInvoice($mitraId)
 {
     $mitra = Mitra::findOrFail($mitraId);
@@ -234,7 +304,6 @@ public function detailInvoice($mitraId)
 
     return view('owner_transport.detail_invoice', compact('mitra', 'invoices'));
 }
-
 
  public function dashboard(Request $request)
     {
@@ -278,17 +347,12 @@ public function detailInvoice($mitraId)
             ->whereYear('tanggal', $tahun)
             ->sum('nominal');
 
-
-        /* ======================================================
-           DATA CHART TAHUNAN (12 BULAN KE BELAKANG DALAM TAHUN)
-        ====================================================== */
         $labels = [];
         $pemasukanTahunan = [];
         $pengeluaranTahunan = [];
 
         for ($i = 1; $i <= 12; $i++) {
 
-            // label bulan (Jan, Feb, Mar...)
             $labels[] = Carbon::create()->month($i)->translatedFormat('M');
 
             // PEMASUKAN PER BULAN
@@ -314,7 +378,6 @@ public function detailInvoice($mitraId)
             $pemasukanTahunan[] = $pemasukan;
             $pengeluaranTahunan[] = $pengeluaran;
         }
-
 
         return view('owner_transport.dashboard', compact(
             'bulan',

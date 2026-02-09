@@ -151,13 +151,13 @@
             <div class="col-md-6 text-center text-md-start">
                 © 2026 Budi Jaya Marine. All Rights Reserved.
             </div>
-
+{{--
             <div class="col-md-6 mt-3 text-center text-md-end">
                 <a href="/login" class="btn btn-sm btn-primary rounded-pill px-3">
                     Login Admin
                 </a>
             </div>
-
+--}}
         </div>
     </div>
 </div>

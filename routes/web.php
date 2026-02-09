@@ -70,14 +70,28 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
     Route::get('/laporan-pemasukan-bulanan', [OwnerTransportController::class, 'laporanBulanan'])->name('laporan-bulanan');
 
     Route::get('/laporan-pengeluaran-internal', [OwnerTransportController::class, 'laporanPengeluaranInternal'])->name('owner_transport.laporan_pengeluaran');
+    Route::get('pengeluaran-internal/{id}',[OwnerTransportController::class, 'detailPengeluaranInternal'])->name('pengeluaran_internal.detail');
 
-    Route::get('/laporan-pengeluaran-transport',[OwnerTransportController::class, 'rekapPengeluaranTransport'])->name('pengeluaran_transport.rekap');
 
-    Route::get('/laporan-pengeluaran-transport/laporan',[OwnerTransportController::class, 'laporanPengeluaranTransport'])->name('owner_transport.laporan_pengeluaran_transport');
+   Route::get('/laporan-pengeluaran-transport',
+    [OwnerTransportController::class, 'rekapPengeluaranTransport']
+)->name('pengeluaran_transport.rekap');
 
-    Route::get( '/laporan-pengeluaran-transport/{id}', [OwnerTransportController::class, 'detailPengeluaranTransport'])->name('pengeluaran_transport.show');
+Route::get('/laporan-pengeluaran-transport/laporan',
+    [OwnerTransportController::class, 'laporanPengeluaranTransport']
+)->name('owner_transport.laporan_pengeluaran_transport');
+
+Route::get('/laporan-pengeluaran-transport/{id}',
+    [OwnerTransportController::class, 'detailPengeluaranTransport']
+)->name('pengeluaran_transport.show');
+
+// TAMBAHAN DETAIL ITEM (HARUS PALING BAWAH)
+Route::get('/laporan-pengeluaran-transport/item/{id}',
+    [OwnerTransportController::class, 'detailItemPengeluaranTransport']
+)->name('pengeluaran_transport.item_detail');
 
     Route::get('/laporan-pengeluaran-pajak', [OwnerTransportController::class, 'rekapPengeluaranPajak'])->name('pengeluaran_pajak.rekap');
+    Route::get('/pengeluaran-pajak/{id}',[OwnerTransportController::class, 'detailPengeluaranPajak'])->name('pengeluaran_pajak.detail');
 
     // Laporan Mitra Aktif
     Route::get('/laporan-mitra-aktif', [OwnerTransportController::class, 'laporanMitraAktif'])->name('mitra.aktif');
@@ -88,15 +102,10 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
     // Detail Mitra
     Route::get('/laporan-mitra/{id}', [OwnerTransportController::class, 'detailMitra']) ->name('mitra.detail');
 
-
-// ===============================
 // LAPORAN INVOICE
-// ===============================
 
 // Rekap / List invoice
-// ===============================
 // LAPORAN INVOICE (OWNER)
-// ===============================
 
 // Rekap invoice (LIST)
 Route::get('/laporan-invoice', 
@@ -109,8 +118,9 @@ Route::get('/laporan-invoice/mitra/{mitra}',
 )->whereNumber('mitra')
  ->name('invoiceowner.show');
 
-
-
+Route::get('/pemasukan/{pemasukan}/detail', 
+    [OwnerTransportController::class, 'detail']
+)->name('pemasukan.detail');
 
    // tandai semua notifikasi dibaca
 Route::post('/owner/notifikasi/read-all', function () {
@@ -206,8 +216,9 @@ Route::get('/invoice-item/{item}', [InvoiceController::class, 'showItem'])
     Route::get('pengeluaran_internal/laporan',[PengeluaranInternalController::class, 'laporan'])->name('pengeluaran_internal.laporan');
     Route::get('pengeluaran_internal/pdf',[PengeluaranInternalController::class, 'pdf'])->name('pengeluaran_internal.pdf');
     Route::resource('pengeluaran_internal',PengeluaranInternalController::class)->except(['show']);
+    
 
-
+    //Pengeluaran Pajak
     Route::get('pengeluaran_pajak/laporan',[PengeluaranPajakController::class, 'laporan'])->name('pengeluaran_pajak.laporan');
 
     Route::get('pengeluaran_pajak/print',[PengeluaranPajakController::class, 'print'])->name('pengeluaran_pajak.print');

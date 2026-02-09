@@ -57,7 +57,7 @@
                 <a href="{{ route('pemasukan.index') }}" class="btn btn-secondary">Reset</a>
                 <a href="{{ route('pemasukan.create') }}" class="btn btn-success">Tambah</a>
                 <a href="{{ route('pemasukan.laporan.harian', ['tanggal'=>request('tanggal')]) }}"
-                   class="btn btn-info text-white">Laporan</a>
+                   class="btn btn-info text-white">Laporan Harian</a>
             </div>
 
         </div>

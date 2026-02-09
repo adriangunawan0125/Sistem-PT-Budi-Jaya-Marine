@@ -132,7 +132,7 @@
 
       {{-- PENGELUARAN TRANSPORT --}}
       <div class="col-xl-3 col-md-6 mb-4">
-          <div class="card dashboard-card bg-gradient-success">
+          <div class="card dashboard-card bg-gradient-danger">
               <div class="card-body text-white d-flex justify-content-between align-items-center">
                   <div>
                       <div class="text-uppercase small font-weight-bold">Pengeluaran Transport</div>
@@ -146,7 +146,7 @@
 
        {{-- PENGELUARAN PAJAK --}}
       <div class="col-xl-3 col-md-6 mb-4">
-          <div class="card dashboard-card bg-gradient-info">
+          <div class="card dashboard-card bg-gradient-warning">
               <div class="card-body text-white d-flex justify-content-between align-items-center">
                   <div>
                       <div class="text-uppercase small font-weight-bold">Pengeluaran Pajak Mobil</div>
@@ -174,50 +174,39 @@
 
   </div>
 
-  {{-- PEMASUKAN HARIAN & BULANAN DI TENGAH --}}
-  <div class="row justify-content-center">
-     
+ {{-- RINGKASAN BULANAN --}}
+<div class="row mt-4">
 
-      {{-- PEMASUKAN BULANAN --}}
-      <div class="col-xl-3 col-md-6 mb-4">
-          <div class="card dashboard-card bg-gradient-primary">
-              <div class="card-body text-white d-flex justify-content-between align-items-center">
-                  <div>
-                      <div class="text-uppercase small font-weight-bold">Pemasukan Bulanan</div>
-                      <div class="h4 font-weight-bold mt-2">Rp {{ number_format($totalPemasukanBulanan, 0, ',', '.') }}</div>
-                      <small>{{ \Carbon\Carbon::createFromDate($tahun, $bulan, 1)->translatedFormat('F Y') }}</small>
-                  </div>
-                  <div class="icon-circle"><i class="fas fa-calendar-alt"></i></div>
-              </div>
-          </div>
-      </div>
-       
-      {{-- TOTAL PENGELUARAN BULAN INI --}}
-      <div class="col-xl-3 col-md-6 mb-4">
-          <div class="card dashboard-card bg-gradient-secondary">
-              <div class="card-body text-white d-flex justify-content-between align-items-center">
-                  <div>
-                      <div class="text-uppercase small font-weight-bold">Pengeluaran Bulanan</div>
-                      <div class="h4 font-weight-bold mt-2">Rp {{ number_format($totalPengeluaranBulanan, 0, ',', '.') }}</div>
-                      <small>{{ \Carbon\Carbon::createFromDate($tahun, $bulan, 1)->translatedFormat('F Y') }}</small>
-                  </div>
-                  <div class="icon-circle"><i class="fas fa-money-bill-wave"></i></div>
-              </div>
-          </div>
-      </div>
-  </div>
+    {{-- PENGELUARAN (KIRI) --}}
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card dashboard-card bg-gradient-info">
+            <div class="card-body text-white d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-uppercase small font-weight-bold">Pengeluaran Bulanan</div>
+                    <div class="h4 font-weight-bold mt-2">
+                        Rp {{ number_format($totalPengeluaranBulanan, 0, ',', '.') }}
+                    </div>
+                    <small>{{ \Carbon\Carbon::createFromDate($tahun, $bulan, 1)->translatedFormat('F Y') }}</small>
+                </div>
+                <div class="icon-circle">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
+            </div>
+        </div>
+    </div>
 
-  {{-- STATUS LABA/RUGI --}}
-<div class="row mt-4 justify-content-center">
-    <div class="col-xl-6 col-md-8 mb-4">
-        <div class="card dashboard-card {{ $totalPemasukanBulanan - $totalPengeluaranBulanan >= 0 ? 'bg-gradient-success' : 'bg-gradient-danger' }}">
+
+    {{-- STATUS LABA/RUGI (TENGAH) --}}
+    <div class="col-xl-4 col-md-6 mb-4">
+        @php
+            $selisih = $totalPemasukanBulanan - $totalPengeluaranBulanan;
+            $status = $selisih >= 0 ? 'Laba' : 'Rugi';
+        @endphp
+
+        <div class="card dashboard-card {{ $selisih >= 0 ? 'bg-gradient-success' : 'bg-gradient-danger' }}">
             <div class="card-body text-white d-flex justify-content-between align-items-center">
                 <div>
                     <div class="text-uppercase small font-weight-bold">Status Laba/Rugi Bulan Ini</div>
-                    @php
-                        $selisih = $totalPemasukanBulanan - $totalPengeluaranBulanan;
-                        $status = $selisih >= 0 ? 'Laba' : 'Rugi';
-                    @endphp
                     <div class="h4 font-weight-bold mt-2">
                         {{ $status }}: Rp {{ number_format(abs($selisih), 0, ',', '.') }}
                     </div>
@@ -229,7 +218,28 @@
             </div>
         </div>
     </div>
+
+
+    {{-- PEMASUKAN (KANAN) --}}
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card dashboard-card bg-gradient-info">
+            <div class="card-body text-white d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-uppercase small font-weight-bold">Pemasukan Bulanan</div>
+                    <div class="h4 font-weight-bold mt-2">
+                        Rp {{ number_format($totalPemasukanBulanan, 0, ',', '.') }}
+                    </div>
+                    <small>{{ \Carbon\Carbon::createFromDate($tahun, $bulan, 1)->translatedFormat('F Y') }}</small>
+                </div>
+                <div class="icon-circle">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
+
   
   {{-- CHART --}}
 <div class="row mt-4">
