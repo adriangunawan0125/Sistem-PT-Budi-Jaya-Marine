@@ -4,6 +4,21 @@
 
 @section('content')
 
+<style>
+    /* CENTER SPINNER DI MODAL */
+#loadingModal .modal-content{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    height:180px;
+}
+
+#loadingModal .spinner-border{
+    display:block;
+    margin:0 auto 15px auto;
+}
+</style>
 <!-- ===== HEADER / HERO ===== -->
 <section class="text-white"
     style="
@@ -55,12 +70,6 @@
                     <div class="card-body p-5">
 
                         {{-- ALERT --}}
-                        @if (session('success'))
-                            <div class="alert alert-success">
-                                {{ session('success') }}
-                            </div>
-                        @endif
-
                         @if ($errors->any())
                             <div class="alert alert-danger">
                                 <ul class="mb-0">
@@ -73,7 +82,8 @@
 
                         <form method="POST"
                               action="{{ route('mitra.store') }}"
-                              enctype="multipart/form-data">
+                              enctype="multipart/form-data"
+                              id="formMitra">
                             @csrf
 
                             <!-- NAMA -->
@@ -154,5 +164,52 @@
         </div>
     </div>
 </section>
+
+
+<!-- ================= LOADING MODAL ================= -->
+<div class="modal fade" id="loadingModal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-center p-4">
+            <div class="spinner-border text-primary mb-3" style="width:3rem;height:3rem;"></div>
+            <h5 class="mb-0">Mengirim pendaftaran...</h5>
+        </div>
+    </div>
+</div>
+
+<!-- ================= SUCCESS MODAL ================= -->
+<div class="modal fade" id="successModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-center p-4">
+            <div class="text-success mb-2" style="font-size:55px;">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h5 class="mb-2">Pendaftaran Berhasil</h5>
+            <div>{{ session('success') }}</div>
+            <button class="btn btn-primary mt-3" data-bs-dismiss="modal">OK</button>
+        </div>
+    </div>
+</div>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    // tampilkan loading saat submit
+    const form = document.getElementById("formMitra");
+    if(form){
+        form.addEventListener("submit", function(){
+            let modal = new bootstrap.Modal(document.getElementById('loadingModal'));
+            modal.show();
+        });
+    }
+
+    // tampilkan success setelah redirect
+    @if(session('success'))
+        let successModal = new bootstrap.Modal(document.getElementById('successModal'));
+        successModal.show();
+    @endif
+
+});
+</script>
 
 @endsection
