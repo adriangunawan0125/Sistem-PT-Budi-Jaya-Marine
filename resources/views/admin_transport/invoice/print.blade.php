@@ -105,8 +105,7 @@
     <div class="col text-right">
         <div class="bold" style="font-size:40px;">INVOICE</div>
         <div>Invoice No: {{ $invoiceNumber }}</div>
-
-        <div>Date: {{ \Carbon\Carbon::parse($invoice->created_at)->format('d M Y') }}</div>
+        <div>Date: <b> {{ $invoiceDate->format('d M Y') }} </b></div>
         <div>Payment Terms: Transfer</div>
         <div>Due Date: <b>{{ now()->format('d M Y') }}</b></div>
     </div>

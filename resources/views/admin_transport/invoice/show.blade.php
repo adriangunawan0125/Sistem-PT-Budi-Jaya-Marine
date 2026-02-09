@@ -9,10 +9,9 @@
     <p><b>Unit:</b> {{ $mitra->unit->nama_unit ?? '-' }}</p>
 
     @php
-        // ambil 1 invoice yg punya item (buat edit & print)
-        $editableInvoice = $invoices->first(function ($inv) {
-            return $inv->items->isNotEmpty();
-        });
+        $editableInvoice = $invoice && $invoice->items->isNotEmpty()
+            ? $invoice
+            : null;
     @endphp
 
     {{-- ACTION BUTTONS --}}
@@ -35,7 +34,7 @@
         @endif
     </div>
 
-    @if ($invoices->isEmpty())
+    @if (!$invoice || $invoice->items->isEmpty())
         <div class="alert alert-info">
             Mitra ini belum memiliki invoice.
         </div>
@@ -66,6 +65,7 @@
         }
     </style>
 
+    @if ($invoice && $invoice->items->isNotEmpty())
     <div class="table-responsive">
         <table class="table table-bordered table-sm invoice-table">
             <thead class="table-light text-center">
@@ -87,49 +87,45 @@
                     $grandTotal = 0;
                 @endphp
 
-                @foreach ($invoices as $inv)
-                    @foreach ($inv->items as $item)
-                        <tr>
-                            <td class="text-center">{{ $no++ }}</td>
+                @foreach ($invoice->items as $item)
+                    <tr>
+                        <td class="text-center">{{ $no++ }}</td>
 
-                            <td class="text-center nowrap">
-                                {{ $item->no_invoices ?? '-' }}
-                            </td>
+                        <td class="text-center nowrap">
+                            {{ $item->no_invoices ?? '-' }}
+                        </td>
 
-                            <td class="item-cell">
-                                {{ $item->item }}
-                            </td>
+                        <td class="item-cell">
+                            {{ $item->item }}
+                        </td>
 
-                            <td class="text-center nowrap">
-                                {{ $item->tanggal_tf
-                                    ? \Carbon\Carbon::parse($item->tanggal_tf)->format('d-m-Y')
-                                    : '-' }}
-                            </td>
+                        <td class="text-center nowrap">
+                            {{ $item->tanggal_tf
+                                ? \Carbon\Carbon::parse($item->tanggal_tf)->format('d-m-Y')
+                                : '-' }}
+                        </td>
 
-                            <td class="text-end nowrap">
-                                {{ $item->cicilan_rp }}
-                            </td>
+                        <td class="text-end nowrap">
+                            {{ $item->cicilan_rp }}
+                        </td>
 
-                            <td class="text-end nowrap">
-                                {{ $item->tagihan_rp }}
-                            </td>
+                        <td class="text-end nowrap">
+                            {{ $item->tagihan_rp }}
+                        </td>
 
-                            <td class="text-end nowrap fw-bold">
-                                {{ $item->amount_rp }}
-                            </td>
+                        <td class="text-end nowrap fw-bold">
+                            {{ $item->amount_rp }}
+                        </td>
 
-                            {{-- AKSI --}}
-                            <td class="text-center nowrap">
-                               <a href="{{ route('invoice.items', $inv->id) }}"
-   class="btn btn-info btn-sm">
-    Detail
-</a>
+                        <td class="text-center nowrap">
+                            <a href="{{ route('invoice-item.show', $item->id) }}"
+                               class="btn btn-info btn-sm">
+                                Detail
+                            </a>
+                        </td>
+                    </tr>
 
-                            </td>
-                        </tr>
-
-                        @php $grandTotal += $item->amount; @endphp
-                    @endforeach
+                    @php $grandTotal += $item->amount; @endphp
                 @endforeach
 
                 <tr class="table">
@@ -142,6 +138,7 @@
             </tbody>
         </table>
     </div>
+    @endif
 
     <a href="{{ route('invoice.index') }}" class="btn btn-secondary mt-3">
         Kembali

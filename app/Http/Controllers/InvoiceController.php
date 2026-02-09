@@ -7,40 +7,46 @@ use App\Models\InvoiceItem;
 use App\Models\Mitra;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class InvoiceController extends Controller
 {
-    // LIST INVOICE
+    /**
+     * LIST MITRA + TOTAL TAGIHAN
+     */
     public function index(Request $request)
-    {
-        $query = Mitra::with(['invoices.items']);
+{
+    $query = Mitra::with(['invoice.items']);
 
-        if ($request->filled('search')) {
-            $query->where('nama_mitra', 'like', '%' . $request->search . '%');
-        }
-
-        $mitras = $query->paginate(10)->withQueryString();
-
-        $data = $mitras->getCollection()->map(function ($mitra) {
-            $totalAmount = $mitra->invoices->sum(function ($invoice) {
-                return $invoice->items->sum('amount');
-            });
-
-            return (object)[
-                'mitra' => $mitra,
-                'total_amount' => $totalAmount,
-                'total_amount_rp' => 'Rp ' . number_format($totalAmount, 0, ',', '.')
-            ];
-        });
-
-        $mitras->setCollection($data);
-
-        return view('admin_transport.invoice.index', ['data' => $mitras]);
+    if ($request->filled('search')) {
+        $query->where('nama_mitra', 'like', '%' . $request->search . '%');
     }
 
-    // FORM TAMBAH INVOICE
+    $mitras = $query->paginate(10)->withQueryString();
+
+    $data = $mitras->getCollection()->map(function ($mitra) {
+
+        $total = $mitra->invoice?->items?->sum('amount') ?? 0;
+
+        return (object)[
+            'mitra'        => $mitra,
+            'total_amount' => $total,
+            'total_rp'     => 'Rp ' . number_format($total, 0, ',', '.'),
+        ];
+    });
+
+    $mitras->setCollection($data);
+
+    return view('admin_transport.invoice.index', [
+        'data' => $mitras
+    ]);
+}
+
+
+    /**
+     * FORM TAMBAH ITEM
+     */
     public function create(Request $request)
     {
         if ($request->filled('mitra_id')) {
@@ -52,18 +58,13 @@ class InvoiceController extends Controller
         return view('admin_transport.invoice.create', compact('mitras'));
     }
 
-    public function items($id)
-    {
-        $invoice = Invoice::with(['mitra','items'])->findOrFail($id);
-        return view('admin_transport.invoice.items', compact('invoice'));
-    }
-
-    // SIMPAN INVOICE BARU
+    /**
+     * SIMPAN ITEM (AUTO CREATE INVOICE)
+     */
     public function store(Request $request)
     {
         $request->validate([
-            'mitra_id' => 'nullable|exists:mitras,id',
-            'ex_mitra_id' => 'nullable|exists:ex_mitras,id',
+            'mitra_id' => 'required|exists:mitras,id',
             'items.*.item' => 'required|string|max:255',
             'items.*.no_invoices' => 'nullable|string|max:100',
             'items.*.tanggal_invoices' => 'nullable|date',
@@ -74,168 +75,125 @@ class InvoiceController extends Controller
             'items.*.gambar_transfer' => 'nullable|image|max:2048',
         ]);
 
-        $invoice = Invoice::create([
-            'mitra_id' => $request->mitra_id,
-            'ex_mitra_id' => $request->ex_mitra_id,
-            'status' => 'belum_lunas',
-            'total' => 0
-        ]);
+        DB::transaction(function () use ($request) {
 
-        $total = 0;
+            // 1️⃣ AMBIL / BUAT INVOICE SEKALI
+            $invoice = Invoice::firstOrCreate(
+                ['mitra_id' => $request->mitra_id],
+                ['status' => 'belum_lunas', 'total' => 0]
+            );
 
-        foreach ($request->items as $item) {
+            foreach ($request->items as $row) {
 
-            $cicilan = $item['cicilan'] ?? 0;
-            $tagihan = $item['tagihan'] ?? 0;
-            $amount  = $tagihan - $cicilan;
+                $cicilan = $row['cicilan'] ?? 0;
+                $tagihan = $row['tagihan'] ?? 0;
+                $amount  = $tagihan - $cicilan;
 
-            $gambarTrip = isset($item['gambar_trip'])
-                ? $item['gambar_trip']->store('invoice/items','public')
-                : null;
+                $gambarTrip = !empty($row['gambar_trip'])
+                    ? $row['gambar_trip']->store('invoice/items', 'public')
+                    : null;
 
-            $gambarTransfer = isset($item['gambar_transfer'])
-                ? $item['gambar_transfer']->store('invoice/items','public')
-                : null;
+                $gambarTransfer = !empty($row['gambar_transfer'])
+                    ? $row['gambar_transfer']->store('invoice/items', 'public')
+                    : null;
 
-            InvoiceItem::create([
-                'invoice_id'       => $invoice->id,
-                'no_invoices'      => $item['no_invoices'] ?? null,
-                'tanggal_invoices' => $item['tanggal_invoices'] ?? null,
-                'tanggal_tf'       => $item['tanggal_tf'] ?? null,
-                'item'             => $item['item'],
-                'cicilan'          => $cicilan,
-                'tagihan'          => $tagihan,
-                'amount'           => $amount,
-                'gambar_trip'      => $gambarTrip,
-                'gambar_transfer'  => $gambarTransfer
+                InvoiceItem::create([
+                    'invoice_id'       => $invoice->id,
+                    'no_invoices'      => $row['no_invoices'] ?? null,
+                    'tanggal_invoices' => $row['tanggal_invoices'] ?? null,
+                    'tanggal_tf'       => $row['tanggal_tf'] ?? null,
+                    'item'             => $row['item'],
+                    'cicilan'          => $cicilan,
+                    'tagihan'          => $tagihan,
+                    'amount'           => $amount,
+                    'gambar_trip'      => $gambarTrip,
+                    'gambar_transfer'  => $gambarTransfer,
+                ]);
+            }
+
+            // 2️⃣ UPDATE TOTAL INVOICE
+            $total = $invoice->items()->sum('amount');
+
+            $invoice->update([
+                'total'  => $total,
+                'status' => $total <= 0 ? 'lunas' : 'belum_lunas'
             ]);
-
-            $total += $amount;
-        }
-
-        $invoice->update(['total' => $total]);
+        });
 
         return redirect()
-            ->route('invoice.show', $invoice->mitra_id ?? $invoice->ex_mitra_id)
-            ->with('success', 'Invoice berhasil dibuat');
+            ->route('invoice.show', $request->mitra_id)
+            ->with('success', 'Item invoice berhasil ditambahkan');
     }
 
-    // DETAIL INVOICE (PER MITRA)
+    /**
+     * DETAIL INVOICE (PER MITRA)
+     */
     public function show($mitra_id)
     {
-        $mitra = Mitra::with(['unit', 'invoices.items'])
+        $mitra = Mitra::with(['unit', 'invoice.items'])
             ->findOrFail($mitra_id);
 
-        $invoices = $mitra->invoices->map(function($inv){
-            $inv->total_rp = 'Rp ' . number_format($inv->total, 0, ',', '.');
+        $invoice = $mitra->invoice;
 
-            foreach ($inv->items as $item) {
+        if ($invoice) {
+            $invoice->total_rp = 'Rp ' . number_format($invoice->total, 0, ',', '.');
+
+            foreach ($invoice->items as $item) {
                 $item->tagihan_rp = 'Rp ' . number_format($item->tagihan, 0, ',', '.');
                 $item->cicilan_rp = 'Rp ' . number_format($item->cicilan, 0, ',', '.');
                 $item->amount_rp  = 'Rp ' . number_format($item->amount, 0, ',', '.');
             }
-
-            return $inv;
-        });
-
-        return view('admin_transport.invoice.show', compact('mitra', 'invoices'));
-    }
-
-    // HAPUS INVOICE
-    public function destroy($id)
-    {
-        $invoice = Invoice::findOrFail($id);
-
-        foreach ($invoice->items as $item) {
-            if ($item->gambar_trip) {
-                Storage::disk('public')->delete($item->gambar_trip);
-            }
-            if ($item->gambar_transfer) {
-                Storage::disk('public')->delete($item->gambar_transfer);
-            }
-            $item->delete();
         }
 
-        $invoice->delete();
-
-        return back()->with('success','Invoice dihapus');
+        return view('admin_transport.invoice.show', compact('mitra', 'invoice'));
     }
 
-    // TANDAI LUNAS
-    public function markLunas($id)
-    {
-        Invoice::where('id', $id)
-            ->update(['status' => 'lunas']);
-
-        return back()->with('success','Invoice ditandai lunas');
-    }
-
-    // =========================
-    // ✅ EDIT PER MITRA (FIX)
-    // =========================
+     //EDIT SEMUA ITEM
     public function edit(Invoice $invoice)
     {
-        $mitra = Mitra::with([
-            'unit',
-            'invoices.items'
-        ])->findOrFail($invoice->mitra_id);
-
-        // SEMUA ITEM DARI SEMUA INVOICE MILIK MITRA
-        $items = $mitra->invoices->flatMap->items;
-
-        return view('admin_transport.invoice.edit', compact(
-            'mitra',
-            'items'
-        ));
+        $invoice->load(['mitra.unit', 'items']);
+        return view('admin_transport.invoice.edit', compact('invoice'));
     }
 
-    // =========================
-    // UPDATE SEMUA ITEM MITRA
-    // =========================
-  public function update(Request $request, Invoice $invoice)
+    // UPDATE ITEM
+    public function update(Request $request, Invoice $invoice)
 {
     DB::transaction(function () use ($request, $invoice) {
 
-        $mitra = Mitra::with('invoices.items')
-            ->findOrFail($invoice->mitra_id);
+        // ID ITEM DI DATABASE
+        $existingIds = $invoice->items()->pluck('id')->toArray();
 
-        // =========================
-        // 1️⃣ AMBIL SEMUA ITEM ID DI DB (MITRA)
-        // =========================
-        $dbItemIds = $mitra->invoices
-            ->flatMap->items
-            ->pluck('id')
-            ->toArray();
-
-        // =========================
-        // 2️⃣ AMBIL ITEM ID DARI FORM
-        // =========================
-        $formItemIds = collect($request->items)
+        // ID ITEM DARI FORM
+        $formIds = collect($request->items)
             ->pluck('id')
             ->filter()
-            ->map(fn($id) => (int)$id)
             ->toArray();
 
         // =========================
-        // 3️⃣ ITEM YANG DIHAPUS (ADA DI DB, TAPI GA ADA DI FORM)
+        // HAPUS ITEM YANG DIHAPUS DI FORM
         // =========================
-        $deletedIds = array_diff($dbItemIds, $formItemIds);
+        $deleted = array_diff($existingIds, $formIds);
 
-        foreach ($deletedIds as $id) {
+        foreach ($deleted as $id) {
             $item = InvoiceItem::find($id);
             if ($item) {
-                if ($item->gambar_trip) {
-                    Storage::disk('public')->delete($item->gambar_trip);
+
+                // FIX: JANGAN DELETE NULL
+                $files = array_filter([
+                    $item->gambar_trip,
+                    $item->gambar_transfer
+                ]);
+
+                if (!empty($files)) {
+                    Storage::disk('public')->delete($files);
                 }
-                if ($item->gambar_transfer) {
-                    Storage::disk('public')->delete($item->gambar_transfer);
-                }
+
                 $item->delete();
             }
         }
 
         // =========================
-        // 4️⃣ UPDATE / CREATE ITEM
+        // UPDATE & TAMBAH ITEM
         // =========================
         foreach ($request->items as $row) {
 
@@ -243,7 +201,7 @@ class InvoiceController extends Controller
             $tagihan = $row['tagihan'] ?? 0;
             $amount  = $tagihan - $cicilan;
 
-            // UPDATE
+            // ================= UPDATE ITEM =================
             if (!empty($row['id'])) {
 
                 $item = InvoiceItem::findOrFail($row['id']);
@@ -253,7 +211,7 @@ class InvoiceController extends Controller
                         Storage::disk('public')->delete($item->gambar_trip);
                     }
                     $item->gambar_trip = $row['gambar_trip']
-                        ->store('invoice/items','public');
+                        ->store('invoice/items', 'public');
                 }
 
                 if (!empty($row['gambar_transfer'])) {
@@ -261,7 +219,7 @@ class InvoiceController extends Controller
                         Storage::disk('public')->delete($item->gambar_transfer);
                     }
                     $item->gambar_transfer = $row['gambar_transfer']
-                        ->store('invoice/items','public');
+                        ->store('invoice/items', 'public');
                 }
 
                 $item->update([
@@ -275,7 +233,7 @@ class InvoiceController extends Controller
                 ]);
 
             }
-            // CREATE
+            // ================= TAMBAH ITEM =================
             else {
 
                 InvoiceItem::create([
@@ -288,57 +246,86 @@ class InvoiceController extends Controller
                     'tagihan'          => $tagihan,
                     'amount'           => $amount,
                     'gambar_trip'      => !empty($row['gambar_trip'])
-                        ? $row['gambar_trip']->store('invoice/items','public')
+                        ? $row['gambar_trip']->store('invoice/items', 'public')
                         : null,
                     'gambar_transfer'  => !empty($row['gambar_transfer'])
-                        ? $row['gambar_transfer']->store('invoice/items','public')
+                        ? $row['gambar_transfer']->store('invoice/items', 'public')
                         : null,
                 ]);
             }
         }
 
         // =========================
-        // 5️⃣ UPDATE TOTAL INVOICE
+        // UPDATE TOTAL & STATUS INVOICE
         // =========================
-        foreach ($mitra->invoices as $inv) {
-            $total = $inv->items()->sum('amount');
-            $inv->update([
-                'total'  => $total,
-                'status' => $total <= 0 ? 'lunas' : 'belum_lunas'
-            ]);
-        }
+        $total = $invoice->items()->sum('amount');
+
+        $invoice->update([
+            'total'  => $total,
+            'status' => $total <= 0 ? 'lunas' : 'belum_lunas'
+        ]);
     });
 
     return redirect()
         ->route('invoice.show', $invoice->mitra_id)
-        ->with('success','Invoice berhasil diperbarui');
+        ->with('success', 'Invoice berhasil diperbarui');
 }
 
 
-    // PRINT PDF
-    public function print($id)
+    /**
+     * HAPUS INVOICE + ITEM
+     */
+    public function destroy(Invoice $invoice)
     {
-        $invoice = Invoice::with(['mitra','mitra.unit'])->findOrFail($id);
+        foreach ($invoice->items as $item) {
+            Storage::disk('public')->delete([$item->gambar_trip, $item->gambar_transfer]);
+            $item->delete();
+        }
 
-        $invoices = Invoice::with('items')
-            ->where('mitra_id', $invoice->mitra_id)
-            ->get();
+        $invoice->delete();
 
-        $items = $invoices->flatMap->items;
-
-        $lastItem = $items->sortByDesc('created_at')->first();
-        $invoiceNumber = $lastItem->no_invoices ?? '-';
-
-        $grandTotal = (float) $items->sum('amount');
-
-        $pdf = Pdf::loadView('admin_transport.invoice.print', [
-            'invoice'       => $invoice,
-            'items'         => $items,
-            'invoiceNumber' => $invoiceNumber,
-            'grandTotal'    => $grandTotal,
-            'lastItem'      => $lastItem
-        ])->setPaper('A4', 'portrait');
-
-        return $pdf->stream('invoice-'.$invoice->id.'.pdf');
+        return back()->with('success', 'Invoice dihapus');
     }
+
+    public function showItem($id)
+{
+    $item = InvoiceItem::with([
+        'invoice.mitra',
+    ])->findOrFail($id);
+
+    return view('admin_transport.invoice.items', compact('item'));
+}
+
+     //PRINT PDF   
+  public function print(Invoice $invoice)
+{
+    $invoice->load(['mitra.unit', 'items']);
+
+    // ITEM TERAKHIR BERDASARKAN TANGGAL INVOICE
+    $lastItem = $invoice->items
+        ->whereNotNull('tanggal_invoices')
+        ->sortByDesc('tanggal_invoices')
+        ->first();
+
+    $invoiceNumber = $lastItem?->no_invoices ?? '-';
+
+    // DATE INVOICE AMBIL DARI TANGGAL_INVOICES TERAKHIR
+    $invoiceDate = $lastItem && $lastItem->tanggal_invoices
+        ? \Carbon\Carbon::parse($lastItem->tanggal_invoices)
+        : \Carbon\Carbon::parse($invoice->created_at);
+
+    $grandTotal = $invoice->items->sum('amount');
+
+    $pdf = Pdf::loadView('admin_transport.invoice.print', [
+        'invoice'       => $invoice,
+        'items'         => $invoice->items,
+        'lastItem'      => $lastItem,
+        'invoiceNumber' => $invoiceNumber,
+        'invoiceDate'   => $invoiceDate, // ⬅️ INI PENTING
+        'grandTotal'    => $grandTotal,
+    ])->setPaper('A4', 'portrait');
+
+    return $pdf->stream('invoice-' . $invoice->id . '.pdf');
+}
+
 }

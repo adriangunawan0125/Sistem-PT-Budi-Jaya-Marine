@@ -3,105 +3,120 @@
 @section('content')
 <div class="container-fluid">
 
-    <h4 class="mb-4">Detail Item Invoice</h4>
+    <h4 class="mb-4">Invoice</h4>
 
-    {{-- INFO INVOICE --}}
+    {{-- INFO MITRA --}}
     <div class="mb-4">
 
-        <div class="d-flex"><div style="width:170px"><b>Mitra</b></div><div>: {{ $invoice->mitra->nama_mitra ?? '-' }}</div></div>
-
-        @if($invoice->exMitra)
-        <div class="d-flex"><div style="width:170px"><b>Ex Mitra</b></div><div>: {{ $invoice->exMitra->nama_mitra }}</div></div>
-        @endif
-
-        <div class="d-flex">
-            <div style="width:170px"><b>Status</b></div>
-            <div>:
-                <span class="badge text-light bg-{{ $invoice->status == 'lunas' ? 'success' : 'danger' }}">
-                    {{ strtoupper($invoice->status) }}
-                </span>
-            </div>
+        <div class="d-flex mb-1">
+            <div style="width:170px"><b>Mitra</b></div>
+            <div>: {{ $item->invoice->mitra->nama_mitra ?? '-' }}</div>
         </div>
-
-        <div class="d-flex"><div style="width:170px"><b>Total</b></div><div>: Rp {{ number_format($invoice->total,0,',','.') }}</div></div>
-       
     </div>
 
+    <hr class="my-4">
 
-    {{-- LIST ITEM --}}
-    @forelse($invoice->items as $i => $item)
+    {{-- DETAIL ITEM --}}
+    <h5 class="mb-3">Detail Item</h5>
 
-        <hr class="my-4">
+    {{-- STATUS ITEM --}}
+    <div class="d-flex mb-2">
+        <div style="width:170px"><b>Status Item</b></div>
+        <div>:
+            @php
+                $statusItem = $item->tanggal_tf ? 'lunas' : 'belum';
+            @endphp
 
-        <h5 class="mb-3">Item </h5>
-
-        <div class="d-flex mb-1"><div style="width:170px"><b>No Invoice</b></div><div>: {{ $item->no_invoices ?? '-' }}</div></div>
-
-        <div class="d-flex mb-1">
-            <div style="width:170px"><b>Tanggal Invoice</b></div>
-            <div>: {{ $item->tanggal_invoices ? \Carbon\Carbon::parse($item->tanggal_invoices)->format('d-m-Y') : '-' }}</div>
+            <span class="badge text-light bg-{{ $statusItem == 'lunas' ? 'success' : 'warning' }}">
+                {{ strtoupper($statusItem) }}
+            </span>
         </div>
+    </div>
 
-        <div class="d-flex mb-1"><div style="width:170px"><b>Item</b></div><div>: {{ $item->item }}</div></div>
+    <div class="d-flex mb-1">
+        <div style="width:170px"><b>No Invoice</b></div>
+        <div>: {{ $item->no_invoices ?? '-' }}</div>
+    </div>
 
-        <div class="d-flex mb-1">
-            <div style="width:170px"><b>Tanggal TF</b></div>
-            <div>: {{ $item->tanggal_tf ? \Carbon\Carbon::parse($item->tanggal_tf)->format('d-m-Y') : '-' }}</div>
+    <div class="d-flex mb-1">
+        <div style="width:170px"><b>Tanggal Invoice</b></div>
+        <div>:
+            {{ $item->tanggal_invoices
+                ? \Carbon\Carbon::parse($item->tanggal_invoices)->format('d-m-Y')
+                : '-' }}
         </div>
+    </div>
 
-        <div class="d-flex mb-1"><div style="width:170px"><b>Cicilan</b></div><div>: Rp {{ number_format($item->cicilan,0,',','.') }}</div></div>
-        <div class="d-flex mb-1"><div style="width:170px"><b>Tagihan</b></div><div>: Rp {{ number_format($item->tagihan,0,',','.') }}</div></div>
+    <div class="d-flex mb-1">
+        <div style="width:170px"><b>Item</b></div>
+        <div>: {{ $item->item }}</div>
+    </div>
 
-        <div class="d-flex mb-3">
-            <div style="width:170px"><b>Amount</b></div>
-            <div>: <span class="text-success fw-bold">Rp {{ number_format($item->amount,0,',','.') }}</span></div>
+    <div class="d-flex mb-1">
+        <div style="width:170px"><b>Tanggal TF</b></div>
+        <div>:
+            {{ $item->tanggal_tf
+                ? \Carbon\Carbon::parse($item->tanggal_tf)->format('d-m-Y')
+                : '-' }}
         </div>
+    </div>
 
+    <div class="d-flex mb-1">
+        <div style="width:170px"><b>Cicilan</b></div>
+        <div>: Rp {{ number_format($item->cicilan,0,',','.') }}</div>
+    </div>
 
-        {{-- GAMBAR TRANSFER --}}
-        <div class="mb-4">
-            <b>Bukti Transfer</b><br>
+    <div class="d-flex mb-1">
+        <div style="width:170px"><b>Tagihan</b></div>
+        <div>: Rp {{ number_format($item->tagihan,0,',','.') }}</div>
+    </div>
 
-            @if($item->gambar_transfer)
-                <img src="{{ asset('storage/'.$item->gambar_transfer) }}"
-                     class="img-fluid border mt-2 preview-image"
-                     style="cursor:pointer; max-height:320px; object-fit:contain;"
-                     data-bs-toggle="modal"
-                     data-bs-target="#imageModal"
-                     onclick="showImage(this.src)">
-            @else
-                <div class="text-muted">Tidak ada gambar</div>
-            @endif
+    <div class="d-flex mb-3">
+        <div style="width:170px"><b>Sisa Tagihan</b></div>
+        <div>:
+            <span class="fw-bold {{ $item->amount <= 0 ? 'text-success' : 'text-danger' }}">
+                Rp {{ number_format($item->amount,0,',','.') }}
+            </span>
         </div>
+    </div>
 
+    {{-- BUKTI TRANSFER --}}
+    <div class="mb-4">
+        <b>Bukti Transfer</b><br>
 
-        {{-- GAMBAR TRIP --}}
-        <div class="mb-3">
-            <b>Bukti Trip</b><br>
+        @if($item->gambar_transfer)
+            <img src="{{ asset('storage/'.$item->gambar_transfer) }}"
+                 class="img-fluid border mt-2"
+                 style="cursor:pointer; max-height:320px; object-fit:contain;"
+                 data-bs-toggle="modal"
+                 data-bs-target="#imageModal"
+                 onclick="showImage(this.src)">
+        @else
+            <div class="text-muted">Tidak ada gambar</div>
+        @endif
+    </div>
 
-            @if($item->gambar_trip)
-                <img src="{{ asset('storage/'.$item->gambar_trip) }}"
-                     class="img-fluid border mt-2 preview-image"
-                     style="cursor:pointer; max-height:320px; object-fit:contain;"
-                     data-bs-toggle="modal"
-                     data-bs-target="#imageModal"
-                     onclick="showImage(this.src)">
-            @else
-                <div class="text-muted">Tidak ada gambar</div>
-            @endif
-        </div>
+    {{-- BUKTI TRIP --}}
+    <div class="mb-3">
+        <b>Bukti Trip</b><br>
 
-    @empty
-        <div class="alert alert-info">Tidak ada item</div>
-    @endforelse
+        @if($item->gambar_trip)
+            <img src="{{ asset('storage/'.$item->gambar_trip) }}"
+                 class="img-fluid border mt-2"
+                 style="cursor:pointer; max-height:320px; object-fit:contain;"
+                 data-bs-toggle="modal"
+                 data-bs-target="#imageModal"
+                 onclick="showImage(this.src)">
+        @else
+            <div class="text-muted">Tidak ada gambar</div>
+        @endif
+    </div>
 
-
-   <a href="{{ route('invoice.show', $invoice->mitra_id) }}" class="btn btn-secondary mt-3">Kembali</a>
-
+    <a href="{{ route('invoice.show', $item->invoice->mitra_id) }}" class="btn btn-secondary mt-3">
+        Kembali
+    </a>
 
 </div>
-
-
 
 {{-- MODAL FULLSCREEN --}}
 <div class="modal fade" id="imageModal" tabindex="-1">
@@ -125,5 +140,4 @@ function showImage(src){
     document.getElementById('modalImage').src = src;
 }
 </script>
-
 @endsection

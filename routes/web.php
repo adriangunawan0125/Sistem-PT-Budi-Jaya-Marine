@@ -161,10 +161,7 @@ Route::middleware(['auth', 'role:admin_transport'])->group(function () {
         Route::delete('/mitra/{mitra}',[KelolaMitraController::class, 'destroy']); 
      });
 
-    //Invoice// ================================
 // INVOICE
-// ================================
-
 // list invoice per mitra
 Route::get('/invoice', [InvoiceController::class, 'index'])
     ->name('invoice.index');
@@ -181,36 +178,27 @@ Route::post('/invoice', [InvoiceController::class, 'store'])
 Route::get('/invoice/{mitra}', [InvoiceController::class, 'show'])
     ->name('invoice.show');
 
-// ================================
 // EDIT INVOICE (SEMUA ITEM SEKALIGUS)
-// ================================
 Route::get('/invoice/{invoice}/edit', [InvoiceController::class, 'edit'])
     ->name('invoice.edit');
 
 Route::put('/invoice/{invoice}', [InvoiceController::class, 'update'])
     ->name('invoice.update');
 
-// ================================
 // HAPUS INVOICE
-// ================================
 Route::delete('/invoice/{invoice}', [InvoiceController::class, 'destroy'])
     ->name('invoice.destroy');
 
-// ================================
 // STATUS
-// ================================
 Route::post('/invoice/{invoice}/lunas', [InvoiceController::class, 'markLunas'])
     ->name('invoice.lunas');
 
-// ================================
 // PRINT
-// ================================
 Route::get('/invoice/{invoice}/print', [InvoiceController::class, 'print'])
     ->name('invoice.print');
 
-// detail 1 invoice (items)
-Route::get('/invoice/{invoice}/items', [InvoiceController::class, 'items'])
-    ->name('invoice.items');
+Route::get('/invoice-item/{item}', [InvoiceController::class, 'showItem'])
+    ->name('invoice-item.show');
 
 
 

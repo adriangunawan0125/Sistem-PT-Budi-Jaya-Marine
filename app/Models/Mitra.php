@@ -36,10 +36,11 @@ class Mitra extends Model
         return $this->belongsTo(Unit::class);
     }
 
-    public function invoices()
-    {
-        return $this->hasMany(Invoice::class);
-    }
+   public function invoice()
+{
+    return $this->hasOne(Invoice::class);
+}
+
 
     public function jaminan()
     {

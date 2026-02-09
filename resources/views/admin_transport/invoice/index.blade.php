@@ -4,9 +4,11 @@
 <div class="container">
     <h4>Data Invoice</h4>
 
+        
     <a href="{{ route('invoice.create') }}" class="btn btn-primary mb-3">
         + Invoice Baru
-    </a>
+    </a>  
+
 
     {{-- SEARCH --}}
     <form method="GET" class="row g-2 mb-3">
