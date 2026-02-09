@@ -196,28 +196,95 @@
     </div>
 
 
-    {{-- STATUS LABA/RUGI (TENGAH) --}}
-    <div class="col-xl-4 col-md-6 mb-4">
-        @php
-            $selisih = $totalPemasukanBulanan - $totalPengeluaranBulanan;
-            $status = $selisih >= 0 ? 'Laba' : 'Rugi';
-        @endphp
+{{-- STATUS LABA/RUGI (TENGAH) --}}
+<div class="col-xl-4 col-md-6 mb-4">
+    @php
+        $selisih = $totalPemasukanBulanan - $totalPengeluaranBulanan;
 
-        <div class="card dashboard-card {{ $selisih >= 0 ? 'bg-gradient-success' : 'bg-gradient-danger' }}">
-            <div class="card-body text-white d-flex justify-content-between align-items-center">
-                <div>
-                    <div class="text-uppercase small font-weight-bold">Status Laba/Rugi Bulan Ini</div>
-                    <div class="h4 font-weight-bold mt-2">
-                        {{ $status }}: Rp {{ number_format(abs($selisih), 0, ',', '.') }}
-                    </div>
-                    <small>{{ \Carbon\Carbon::createFromDate($tahun, $bulan, 1)->translatedFormat('F Y') }}</small>
+        if($totalPemasukanBulanan > 0){
+            $persen = ($selisih / $totalPemasukanBulanan) * 100;
+        } else {
+            $persen = 0;
+        }
+
+        $status = $selisih >= 0 ? 'Laba' : 'Rugi';
+    @endphp
+
+    <style>
+        .dashboard-card{
+            height:140px;
+        }
+
+        .dashboard-card .card-body{
+            height:100%;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:12px;
+        }
+
+        /* area teks fleksibel */
+        .dashboard-card .info{
+            flex:1;
+            min-width:0;
+        }
+
+        /* nominal boleh turun baris */
+        .dashboard-card .value{
+            font-size:20px;
+            font-weight:700;
+            line-height:1.25;
+            word-break:break-word;
+        }
+
+        .dashboard-card .percent{
+            font-size:12px;
+            font-weight:600;
+            opacity:.85;
+        }
+
+        /* icon tidak boleh mengecil */
+        .icon-circle{
+            width:55px;
+            height:55px;
+            min-width:55px;
+            border-radius:50%;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            background:rgba(255,255,255,.2);
+            font-size:22px;
+            flex-shrink:0;
+        }
+    </style>
+
+    <div class="card dashboard-card {{ $selisih >= 0 ? 'bg-gradient-success' : 'bg-gradient-danger' }}">
+        <div class="card-body text-white">
+
+            <div class="info">
+                <div class="text-uppercase small font-weight-bold">
+                    Status Laba/Rugi Bulan Ini
                 </div>
-                <div class="icon-circle">
-                    <i class="fas fa-chart-line"></i>
+
+                <div class="value mt-1">
+                    {{ $status }}: Rp {{ number_format(abs($selisih), 0, ',', '.') }}
+                    <span class="percent">
+                        ({{ number_format(abs($persen),2) }}%)
+                    </span>
                 </div>
+
+                <small>
+                    {{ \Carbon\Carbon::createFromDate($tahun, $bulan, 1)->translatedFormat('F Y') }}
+                </small>
             </div>
+
+            <div class="icon-circle">
+                <i class="fas fa-chart-line"></i>
+            </div>
+
         </div>
     </div>
+</div>
 
 
     {{-- PEMASUKAN (KANAN) --}}
