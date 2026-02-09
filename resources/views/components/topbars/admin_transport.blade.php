@@ -17,7 +17,7 @@
                    id="topbarQuickMenuInput"
                    autocomplete="off">
             <div class="input-group-append">
-                <button class="btn btn-primary" type="button" id="topbarQuickMenuBtn">
+                <button class="btn btn-primary" style="margin-left:5px" type="button" id="topbarQuickMenuBtn">
                     <i class="fas fa-search fa-sm"></i>
                 </button>
             </div>
@@ -182,14 +182,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ================== Topbar Quick Menu Live Search ==================
     const menuMap = {
-        'Dashboard': '/dashboard',
-        'Invoice': '/invoices',
-        'Mitra': '/mitras',
-        'Pengeluaran': '/pengeluaran',
-        'User': '/users',
-        'Unit': '/units',
-        'Calon Mitra': '/calonmitra',
-        'Contact': '/contact'
+        'Dashboard': '/admin-transport',
+        'Invoice': '/invoice',
+        'Mitra': '/admin-transport/mitra',
+        'Ex Mitra': '/admin-transport/mitra/berakhir',
+        'Pengeluaran Internal': '/pengeluaran_internal',
+        'Pengeluaran Transport': '/pengeluaran_transport',
+        'Pengeluaran Pajak': '/pengeluaran_pajak',
+        'Daftar Unit': '/admin-transport/unit',
+        'Calon Mitra': '/calon-mitra',
+        'Jaminan Mitra': '/jaminan-mitra',
+        'Pesan': '/contact'
     };
 
     const searchInput = document.getElementById('topbarQuickMenuInput');
