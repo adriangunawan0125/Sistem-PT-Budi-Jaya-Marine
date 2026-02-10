@@ -11,7 +11,7 @@
     <form action="{{ route('invoice.store') }}"
           method="POST"
           enctype="multipart/form-data"
-          onsubmit="return cekItem()">
+          onsubmit="return submitWithLoading()">
         @csrf
 
         {{-- MITRA --}}
@@ -45,105 +45,70 @@
                 <thead class="table-light">
                 <tr>
                     <th style="min-width:180px;">No Invoice</th>
-                    <th style="min-width:140px;">Tanggal Invoice</th>
-                    <th style="min-width:220px;">Item</th>
-                    <th style="min-width:140px;">Tanggal TF</th>
-                    <th style="min-width:140px;">Cicilan</th>
-                    <th style="min-width:140px;">Tagihan</th>
-                    <th style="min-width:140px;">Bukti Transfer</th>
-                    <th style="min-width:140px;">Bukti Perjalanan</th>
-                    <th style="width:60px;"></th>
+<th style="min-width:140px;">Tanggal Invoice</th>
+<th style="min-width:220px;">Item</th>
+<th style="min-width:140px;">Tanggal TF</th>
+<th style="min-width:140px;">Cicilan</th>
+<th style="min-width:140px;">Tagihan</th>
+<th style="min-width:140px;">Bukti Transfer</th>
+<th style="min-width:140px;">Bukti Perjalanan</th>
+<th style="width:60px;"></th>
+
                 </tr>
                 </thead>
 
                 <tbody>
                 <tr>
+                    <td><input name="items[0][no_invoices]" class="form-control"></td>
+                    <td><input type="date" name="items[0][tanggal_invoices]" class="form-control"></td>
+                    <td><input name="items[0][item]" class="form-control" required></td>
+                    <td><input type="date" name="items[0][tanggal_tf]" class="form-control"></td>
                     <td>
-                        <input type="text"
-                               name="items[0][no_invoices]"
-                               class="form-control">
+                        <input class="form-control rupiah" data-hidden="items[0][cicilan]" placeholder="Rp 0">
+                        <input type="hidden" name="items[0][cicilan]" value="0">
                     </td>
-
                     <td>
-                        <input type="date"
-                               name="items[0][tanggal_invoices]"
-                               class="form-control">
+                        <input class="form-control rupiah" data-hidden="items[0][tagihan]" placeholder="Rp 0">
+                        <input type="hidden" name="items[0][tagihan]" value="0">
                     </td>
-
-                    <td>
-                        <input name="items[0][item]"
-                               class="form-control"
-                               required>
-                    </td>
-
-                    <td>
-                        <input type="date"
-                               name="items[0][tanggal_tf]"
-                               class="form-control">
-                    </td>
-
-                    <td>
-                        <input type="text"
-                               class="form-control rupiah"
-                               data-hidden="items[0][cicilan]"
-                               placeholder="Rp 0">
-                        <input type="hidden"
-                               name="items[0][cicilan]"
-                               value="0">
-                    </td>
-
-                    <td>
-                        <input type="text"
-                               class="form-control rupiah"
-                               data-hidden="items[0][tagihan]"
-                               placeholder="Rp 0">
-                        <input type="hidden"
-                               name="items[0][tagihan]"
-                               value="0">
-                    </td>
-
-                    <td>
-                        <input type="file"
-                               name="items[0][gambar_transfer]"
-                               class="form-control"
-                               accept="image/*">
-                    </td>
-
-                    <td>
-                        <input type="file"
-                               name="items[0][gambar_trip]"
-                               class="form-control"
-                               accept="image/*">
-                    </td>
-
+                    <td><input type="file" name="items[0][gambar_transfer]" class="form-control"></td>
+                    <td><input type="file" name="items[0][gambar_trip]" class="form-control"></td>
                     <td></td>
                 </tr>
                 </tbody>
             </table>
         </div>
 
-        <button type="button"
-                class="btn btn-sm btn-secondary mt-3 mb-3"
-                onclick="addItem()">+ Item</button>
+        <button type="button" class="btn btn-sm btn-secondary mt-3 mb-3" onclick="addItem()">+ Item</button>
 
         <hr>
 
         <button class="btn btn-primary">Simpan</button>
 
         @if(isset($mitra))
-            <a href="{{ route('invoice.show', $mitra->id) }}"
-               class="btn btn-secondary">Batal</a>
+            <a href="{{ route('invoice.show', $mitra->id) }}" class="btn btn-secondary">Batal</a>
         @else
-            <a href="{{ route('invoice.index') }}"
-               class="btn btn-secondary">Batal</a>
+            <a href="{{ route('invoice.index') }}" class="btn btn-secondary">Batal</a>
         @endif
     </form>
+</div>
+
+{{-- ================= MODAL LOADING (BARU) ================= --}}
+<div class="modal fade" id="loadingModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-body text-center py-4">
+                <div class="spinner-border text-primary mb-3" style="width:3rem;height:3rem;"></div>
+                <div class="fw-semibold">Menyimpan data...</div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
 let i = 1;
 
-/* ===== UTIL (SAMA DENGAN EDIT) ===== */
+/* ===== UTIL ===== */
 function bulanRomawi(b){
     return ['','I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'][b];
 }
@@ -186,8 +151,7 @@ function addItem(){
         <td></td>
         <td></td>
         <td class="text-center">
-            <button type="button"
-                    class="btn btn-danger btn-sm"
+            <button type="button" class="btn btn-danger btn-sm"
                     onclick="this.closest('tr').remove()">hapus</button>
         </td>
     </tr>`;
@@ -196,7 +160,17 @@ function addItem(){
     i++;
 }
 
-/* ===== SUBMIT (PERSIS KAYAK EDIT) ===== */
+/* ===== SUBMIT + LOADING (BARU) ===== */
+function submitWithLoading(){
+    if(!cekItem()) return false;
+
+    let modal = new bootstrap.Modal(document.getElementById('loadingModal'));
+    modal.show();
+
+    return true; // LANJUT SUBMIT
+}
+
+/* ===== VALIDASI (TETAP) ===== */
 function cekItem(){
     for(let row of document.querySelectorAll('#items tbody tr')){
         let no  = row.querySelector('input[name*="[no_invoices]"]');
@@ -208,8 +182,6 @@ function cekItem(){
         }
 
         let d = new Date(tgl.value);
-
-        // 🔥 AMBIL BAGIAN DEPAN SAJA (ANTI DOBEL)
         let raw = no.value.split('/')[0];
 
         no.value =

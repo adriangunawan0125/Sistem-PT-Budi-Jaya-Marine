@@ -35,13 +35,13 @@
             <select name="kategori"
                 class="form-control d-inline-block me-2 mb-2"
                 style="width:160px; margin-right:20px;">
-            <option value="">Semua Kategori</option>
-            <option value="setoran" {{ request('kategori')=='setoran'?'selected':'' }}>Setoran</option>
-            <option value="cicilan" {{ request('kategori')=='cicilan'?'selected':'' }}>Cicilan</option>
-            <option value="deposit" {{ request('kategori')=='deposit'?'selected':'' }}>Deposit</option>
-        </select>
+                <option value="">Semua Kategori</option>
+                <option value="setoran" {{ request('kategori')=='setoran'?'selected':'' }}>Setoran</option>
+                <option value="cicilan" {{ request('kategori')=='cicilan'?'selected':'' }}>Cicilan</option>
+                <option value="deposit" {{ request('kategori')=='deposit'?'selected':'' }}>Deposit</option>
+            </select>
 
-            {{-- CHECKBOX (INI YANG DIPENTING) --}}
+            {{-- CHECKBOX --}}
             <div class="form-check me-3 mb-2" style="margin-right: 40px;">
                 <input class="form-check-input"
                        type="checkbox"
@@ -53,19 +53,20 @@
 
             {{-- BUTTON GROUP --}}
             <div class="mb-2" style="margin-left:10px">
-                <button class="btn btn-primary">Filter</button>
+                <button class="btn btn-primary trigger-loading">Filter</button>
                 <a href="{{ route('pemasukan.index') }}" class="btn btn-secondary">Reset</a>
                 <a href="{{ route('pemasukan.create') }}" class="btn btn-success">Tambah</a>
                 <a href="{{ route('pemasukan.laporan.harian', ['tanggal'=>request('tanggal')]) }}"
-                   class="btn btn-info text-white">Laporan Harian</a>
+                   class="btn btn-info text-white trigger-loading">
+                    Laporan Harian
+                </a>
             </div>
 
         </div>
 
     </form>
 
-
-    {{-- CARD MITRA TIDAK SETOR (OTOMATIS MUNCUL) --}}
+      {{-- CARD MITRA TIDAK SETOR (OTOMATIS MUNCUL) --}}
     @if(isset($mitraKosong))
     <div class="card border-danger mb-3">
         <div class="card-header bg-danger text-white">
@@ -87,66 +88,204 @@
     {{-- TABLE --}}
     <table class="table table-bordered align-middle">
         <thead class="table-light text-center">
-            <tr>
-                <th>No</th>
-                <th>Tanggal</th>
-                <th>Mitra</th>
-                <th>Kategori</th>
-                <th>Deskripsi</th>
-                <th>Gambar</th>
-                <th>Nominal</th>
-                <th width="130">Aksi</th>
-            </tr>
+        <tr>
+            <th>No</th>
+            <th>Tanggal</th>
+            <th>Mitra</th>
+            <th>Kategori</th>
+            <th>Deskripsi</th>
+            <th>Gambar</th>
+            <th>Nominal</th>
+            <th width="130">Aksi</th>
+        </tr>
         </thead>
 
         <tbody>
-            @forelse($pemasukan as $item)
-            <tr>
-                <td class="text-center">{{ $loop->iteration }}</td>
-                <td class="text-center">{{ \Carbon\Carbon::parse($item->tanggal)->format('d-m-Y') }}</td>
-                <td>{{ $item->mitra->nama_mitra ?? '-' }}</td>
-                <td class="text-center">{{ ucfirst($item->kategori) }}</td>
-                <td>{{ $item->deskripsi }}</td>
+        @forelse($pemasukan as $item)
+        <tr>
+            <td class="text-center">{{ $loop->iteration }}</td>
+            <td class="text-center">{{ \Carbon\Carbon::parse($item->tanggal)->format('d-m-Y') }}</td>
+            <td>{{ $item->mitra->nama_mitra ?? '-' }}</td>
+            <td class="text-center">{{ ucfirst($item->kategori) }}</td>
+            <td>{{ $item->deskripsi }}</td>
 
-                <td class="text-center">
-                    @if($item->gambar)
-                        <img src="{{ asset('storage/pemasukan/'.$item->gambar) }}"
-                             width="65"
-                             class="img-thumbnail">
-                    @else
-                        -
-                    @endif
-                </td>
+            <td class="text-center">
+                @if($item->gambar)
+                    <img src="{{ asset('storage/pemasukan/'.$item->gambar) }}"
+                         width="65"
+                         class="img-thumbnail">
+                @else
+                    -
+                @endif
+            </td>
 
-                <td><b>Rp {{ number_format($item->nominal,0,',','.') }}</b></td>
+            <td><b>Rp {{ number_format($item->nominal,0,',','.') }}</b></td>
 
-                <td class="text-center">
-                    <a href="{{ route('pemasukan.edit',$item->id) }}"
-                       class="btn btn-sm btn-warning">Edit</a>
+            <td class="text-center">
+                <a href="{{ route('pemasukan.edit',$item->id) }}"
+                   class="btn btn-sm btn-warning mb-1">
+                    Edit
+                </a>
 
-                    <form action="{{ route('pemasukan.destroy',$item->id) }}"
-                          method="POST"
-                          class="d-inline"
-                          onsubmit="return confirm('Hapus data?')">
-                        @csrf
-                        @method('DELETE')
-                        <button class="btn btn-sm btn-danger">Hapus</button>
-                    </form>
-                </td>
-            </tr>
-            @empty
-            <tr>
-                <td colspan="8" class="text-center">Tidak ada data</td>
-            </tr>
-            @endforelse
-
-            <tr>
-                <th colspan="6" class="text-end">TOTAL</th>
-                <th colspan="2">Rp {{ number_format($total,0,',','.') }}</th>
-            </tr>
-
+                <button type="button"
+                        class="btn btn-sm btn-danger mb-1"
+                        data-bs-toggle="modal"
+                        data-bs-target="#deleteModal"
+                        data-id="{{ $item->id }}"
+                        data-name="{{ $item->mitra->nama_mitra ?? '-' }} ({{ ucfirst($item->kategori) }})">
+                    Hapus
+                </button>
+            </td>
+        </tr>
+        @empty
+        <tr>
+            <td colspan="8" class="text-center">Tidak ada data</td>
+        </tr>
+        @endforelse
         </tbody>
     </table>
 
 </div>
+
+{{-- ================= DELETE MODAL ================= --}}
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+
+            <div class="modal-body text-center py-4">
+
+                <div class="mb-3">
+                    <i class="bi bi-exclamation-triangle-fill text-danger"
+                       style="font-size:60px;"></i>
+                </div>
+
+                <h5 class="fw-bold mb-2">Hapus Data Pemasukan?</h5>
+
+                <p class="text-muted mb-4">
+                    Data <strong id="deleteName"></strong> akan dihapus permanen
+                    dan tidak bisa dikembalikan.
+                </p>
+
+                <form id="deleteForm" method="POST">
+                    @csrf
+                    @method('DELETE')
+
+                    <div class="d-flex justify-content-center gap-2">
+                        <button type="button"
+                                class="btn btn-secondary px-4" style="margin-right: 10px"
+                                data-bs-dismiss="modal">
+                            Batal
+                        </button>
+
+                        <button type="submit"
+                                class="btn btn-danger px-4">
+                            Ya, Hapus
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- ================= LOADING MODAL ================= --}}
+<div class="modal fade" id="loadingModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-body text-center py-4">
+                <div class="spinner-border text-primary mb-3"
+                     style="width:3rem;height:3rem;"></div>
+                <div class="fw-semibold">Memuat data...</div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ================= SUCCESS MODAL ================= -->
+@if (session('success'))
+    <input type="hidden" id="success-message" value="{{ session('success') }}">
+@endif
+
+<div class="modal fade" id="successModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+
+            <div class="modal-body text-center py-4">
+
+                <div class="mb-3">
+                    <i class="bi bi-check-circle-fill text-success"
+                       style="font-size:60px;"></i>
+                </div>
+
+                <h5 class="fw-bold mb-2">Berhasil</h5>
+                <div id="successText" class="text-muted"></div>
+
+                <div class="mt-4">
+                    <button class="btn btn-primary px-4"
+                            data-bs-dismiss="modal">
+                        OK
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    // LOADING
+    const loadingModal = new bootstrap.Modal(
+        document.getElementById('loadingModal')
+    );
+
+    document.querySelectorAll('.trigger-loading').forEach(el => {
+        el.addEventListener('click', function () {
+            loadingModal.show();
+        });
+    });
+
+    // DELETE MODAL
+    const deleteModal = document.getElementById('deleteModal');
+    const deleteForm  = document.getElementById('deleteForm');
+    const deleteName  = document.getElementById('deleteName');
+
+    deleteModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        const id     = button.getAttribute('data-id');
+        const name   = button.getAttribute('data-name');
+
+        deleteName.textContent = name;
+        deleteForm.action = `/pemasukan/${id}`;
+    });
+
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    // ================= SUCCESS MODAL =================
+    const successInput = document.getElementById('success-message');
+    if (successInput) {
+        const successModal = new bootstrap.Modal(
+            document.getElementById('successModal')
+        );
+
+        document.getElementById('successText').innerText =
+            successInput.value;
+
+        setTimeout(() => {
+            successModal.show();
+        }, 200);
+    }
+
+});
+</script>
+
+
 @endsection

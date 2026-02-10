@@ -202,7 +202,7 @@
 
     <hr class="sidebar-divider">
 
-    <div class="sidebar-heading">Addons</div>
+    <div class="sidebar-heading">Lainnya</div>
 
     <li class="nav-item">
         <a class="nav-link" href="/contact">

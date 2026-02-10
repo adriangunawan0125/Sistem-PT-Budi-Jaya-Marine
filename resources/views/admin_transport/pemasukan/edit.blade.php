@@ -15,7 +15,7 @@
         </div>
     @endif
 
-    <form action="{{ route('pemasukan.update', $pemasukan->id) }}"
+    <form id="editForm" action="{{ route('pemasukan.update', $pemasukan->id) }}"
           method="POST"
           enctype="multipart/form-data">
         @csrf
@@ -62,21 +62,21 @@
         </div>
 
         {{-- NOMINAL --}}
-       <div class="mb-3">
-    <label class="form-label">Nominal</label>
+        <div class="mb-3">
+            <label class="form-label">Nominal</label>
 
-    <input type="text"
-           class="form-control rupiah"
-           data-hidden="nominal"
-           placeholder="Rp 0"
-           value="{{ old('nominal')
-                ? 'Rp ' . number_format(old('nominal'), 0, ',', '.')
-                : 'Rp ' . number_format($pemasukan->nominal, 0, ',', '.') }}">
+            <input type="text"
+                   class="form-control rupiah"
+                   data-hidden="nominal"
+                   placeholder="Rp 0"
+                   value="{{ old('nominal')
+                        ? 'Rp ' . number_format(old('nominal'), 0, ',', '.')
+                        : 'Rp ' . number_format($pemasukan->nominal, 0, ',', '.') }}">
 
-    <input type="hidden"
-           name="nominal"
-           value="{{ old('nominal', $pemasukan->nominal) }}">
-</div>
+            <input type="hidden"
+                   name="nominal"
+                   value="{{ old('nominal', $pemasukan->nominal) }}">
+        </div>
 
         {{-- GAMBAR --}}
         <div class="mb-3">
@@ -87,10 +87,8 @@
                    accept="image/*"
                    onchange="previewImage(event)">
 
-            {{-- Preview gambar baru --}}
             <img id="preview" class="img-thumbnail mt-2" width="150" style="display:none;">
 
-            {{-- Gambar lama --}}
             @if ($pemasukan->gambar)
                 <div class="mt-3">
                     <p class="mb-1 text-muted">Gambar saat ini:</p>
@@ -113,7 +111,39 @@
     </form>
 </div>
 
-{{-- Preview Script --}}
+<!-- LOADING MODAL -->
+<div class="modal fade" id="loadingModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-body text-center py-4">
+                <div class="spinner-border text-primary mb-3" style="width:3rem;height:3rem;"></div>
+                <div class="fw-semibold">Memperbarui data...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="modal fade" id="successModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-body text-center py-4">
+                <div class="mb-3">
+                    <i class="bi bi-check-circle-fill text-success" style="font-size:60px;"></i>
+                </div>
+                <h5 class="fw-bold mb-2">Berhasil</h5>
+                <div id="successText" class="text-muted"></div>
+                <div class="mt-4">
+                    <button class="btn btn-success px-4" data-bs-dismiss="modal">
+                        OK
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Rupiah Script --}}
 <script>
 function formatRupiah(angka) {
     let number_string = angka.replace(/\D/g, ''),
@@ -135,12 +165,25 @@ document.querySelectorAll('.rupiah').forEach(el => {
         raw = raw.replace(/^0+/, '');
 
         this.value = raw ? formatRupiah(raw) : '';
-
-        let hiddenName = this.dataset.hidden;
-        document.querySelector(`input[name="${hiddenName}"]`).value = raw || 0;
+        document.querySelector('input[name="'+this.dataset.hidden+'"]').value = raw || 0;
     });
 });
 </script>
 
+{{-- LOADING SUBMIT SCRIPT (INI KUNCI NYA) --}}
+<script>
+document.getElementById('editForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    let modal = new bootstrap.Modal(
+        document.getElementById('loadingModal')
+    );
+    modal.show();
+
+    setTimeout(() => {
+        this.submit();
+    }, 200);
+});
+</script>
 
 @endsection

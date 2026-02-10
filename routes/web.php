@@ -255,7 +255,7 @@ Route::post('/admin/notifikasi/read-all', function () {
 
     //PEMASUKAN 
     Route::get('/pemasukan', [PemasukanController::class, 'index'])->name('pemasukan.index');
-    Route::get('/pemasukan/create', [PemasukanController::class, 'create'])->name('pemasukan.create');
+    Route::post('/pemasukan/create', [PemasukanController::class, 'create'])->name('pemasukan.create');
     Route::post('/pemasukan/store', [PemasukanController::class, 'store'])->name('pemasukan.store');
     Route::get('/pemasukan/{id}/edit', [PemasukanController::class, 'edit'])->name('pemasukan.edit');
     Route::put('/pemasukan/{id}/update', [PemasukanController::class, 'update'])->name('pemasukan.update');

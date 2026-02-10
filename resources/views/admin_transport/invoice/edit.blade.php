@@ -11,7 +11,8 @@
     <form action="{{ route('invoice.update', $invoice->id) }}"
           method="POST"
           enctype="multipart/form-data"
-          onsubmit="return cekItem()">
+          onsubmit="return submitWithLoading()"
+>
         @csrf
         @method('PUT')
 
@@ -152,6 +153,18 @@
            class="btn btn-secondary">Batal</a>
     </form>
 </div>
+<!-- MODAL LOADING UPDATE -->
+<div class="modal fade" id="loadingModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-body text-center py-4">
+                <div class="spinner-border text-primary mb-3" style="width:3rem;height:3rem;"></div>
+                <div class="fw-semibold">Memperbarui data...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <script>
 let i = {{ $invoice->items->count() }};
@@ -240,6 +253,17 @@ function cekItem(){
             `${pad3(raw)}/BJM/${bulanRomawi(d.getMonth()+1)}/${d.getFullYear()}`;
     }
     return true;
+}
+
+function submitWithLoading(){
+    if(!cekItem()) return false;
+
+    let modal = new bootstrap.Modal(
+        document.getElementById('loadingModal')
+    );
+    modal.show();
+
+    return true; // lanjut submit
 }
 </script>
 @endsection

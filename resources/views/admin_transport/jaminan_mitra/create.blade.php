@@ -4,8 +4,11 @@
 <div class="container">
     <h4 class="mb-3">Tambah Jaminan Mitra</h4>
 
-    <form action="{{ route('jaminan_mitra.store') }}"
-          method="POST" enctype="multipart/form-data">
+    <form id="createForm"
+          action="{{ route('jaminan_mitra.store') }}"
+          method="POST"
+          enctype="multipart/form-data"
+          onsubmit="showLoading()">
         @csrf
 
         <div class="mb-3">
@@ -22,9 +25,11 @@
 
         <div class="mb-3">
             <label class="form-label">Jenis Jaminan</label>
-            <input type="text" name="jaminan"
+            <input type="text"
+                   name="jaminan"
                    class="form-control"
-                   placeholder="Contoh: BPKB Motor" required>
+                   placeholder="Contoh: BPKB Motor"
+                   required>
         </div>
 
         <div class="mb-3">
@@ -47,4 +52,33 @@
            class="btn btn-secondary">Kembali</a>
     </form>
 </div>
+
+
+<!-- LOADING MODAL -->
+<div class="modal fade"
+     id="loadingModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-body text-center py-4">
+                <div class="spinner-border text-primary mb-3"
+                     style="width:3rem;height:3rem;"></div>
+                <div class="fw-semibold">Menyimpan data...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+function showLoading() {
+
+    const modalEl = document.getElementById('loadingModal');
+    const modal = new bootstrap.Modal(modalEl);
+
+    modal.show();
+}
+</script>
 @endsection

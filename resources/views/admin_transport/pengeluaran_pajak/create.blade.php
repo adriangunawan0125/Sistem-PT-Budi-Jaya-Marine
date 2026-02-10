@@ -4,7 +4,22 @@
 <div class="container">
     <h4>Tambah Pengeluaran Pajak</h4>
 
-    <form method="POST"
+       {{-- ALERT ERROR --}}
+    @if ($errors->any())
+        <div class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle"></i>
+            {{ $errors->first() }}
+        </div>
+    @endif
+
+    {{-- ALERT SUCCESS --}}
+    @if (session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    <form id="createForm" method="POST"
           action="{{ route('pengeluaran_pajak.store') }}"
           enctype="multipart/form-data">
         @csrf
@@ -65,6 +80,35 @@
     </form>
 </div>
 
+<!-- LOADING MODAL -->
+<div class="modal fade"
+     id="loadingModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1">
+     
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-body text-center py-4">
+                <div class="spinner-border text-primary mb-3"
+                     style="width:3rem;height:3rem;"></div>
+                <div class="fw-semibold">Memperbarui data...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+#loadingModal .modal-content{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    height:120px;
+}
+</style>
+
+
 <script>
 // ================= RUPIAH =================
 function formatRupiah(angka) {
@@ -92,4 +136,33 @@ function bindRupiah(el) {
 
 document.querySelectorAll('.rupiah').forEach(bindRupiah);
 </script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    const form = document.getElementById("createForm");
+    if(!form) return;
+
+    const modal = new bootstrap.Modal(document.getElementById("loadingModal"));
+
+    form.addEventListener("submit", function(e){
+
+        e.preventDefault();
+
+        if(!form.checkValidity()){
+            form.reportValidity();
+            return;
+        }
+
+        modal.show();
+
+        setTimeout(function(){
+            HTMLFormElement.prototype.submit.call(form);
+        }, 200);
+
+    });
+
+});
+</script>
+
 @endsection

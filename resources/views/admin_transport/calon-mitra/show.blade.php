@@ -54,6 +54,7 @@
         </div>
         @endif
     </div>
+
 {{-- AKSI --}}
 <div class="d-flex mt-4">
 
@@ -63,13 +64,16 @@
     </a>
 
     @if(!$calonmitra->is_checked)
-        <form action="{{ url('/calon-mitra/'.$calonmitra->id.'/approve') }}"
+        <form id="approveForm"
+              action="{{ url('/calon-mitra/'.$calonmitra->id.'/approve') }}"
               method="POST"
               style="margin-left:16px;">
             @csrf
-            <button type="submit"
+
+            <button type="button"
                     class="btn btn-success"
-                    onclick="return confirm('Setujui calon mitra ini?')">
+                    data-bs-toggle="modal"
+                    data-bs-target="#approveModal">
                 Setujui Jadi Mitra
             </button>
         </form>
@@ -80,11 +84,67 @@
         disabled>
     Sudah Disetujui
 </button>
-
     @endif
 
 </div>
 
 </div>
+
+
+<!-- APPROVE MODAL -->
+<div class="modal fade" id="approveModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+
+            <div class="modal-body text-center py-4">
+
+                <div class="mb-3">
+                    <i class="bi bi-check-circle-fill text-success"
+                       style="font-size:60px;"></i>
+                </div>
+
+                <h5 class="fw-bold mb-2">Setujui Calon Mitra?</h5>
+
+                <p class="text-muted mb-4">
+                    Calon mitra <strong>{{ $calonmitra->nama }}</strong> ini akan dijadikan mitra aktif.
+                </p>
+
+                <div class="d-flex justify-content-center gap-2">
+                    <button type="button"
+                            class="btn btn-secondary px-4" style="margin-right:7px"
+                            data-bs-dismiss="modal">
+                        Batal
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-success px-4"
+                            id="btnApprove">
+                        Setujui
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    const form = document.getElementById("approveForm");
+    if(!form) return;
+
+    const approveModal = bootstrap.Modal.getOrCreateInstance(document.getElementById("approveModal"));
+    const btnApprove = document.getElementById("btnApprove");
+
+    btnApprove.addEventListener("click", function(){
+        approveModal.hide();
+        form.submit();
+    });
+
+});
+</script>
 
 @endsection

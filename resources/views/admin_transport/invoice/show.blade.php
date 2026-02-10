@@ -17,18 +17,22 @@
     {{-- ACTION BUTTONS --}}
     <div class="mb-3 d-flex gap-2">
         <a href="{{ route('invoice.create', ['mitra_id' => $mitra->id]) }}"
-           class="btn btn-primary" style="margin-right: 7px">
+           class="btn btn-primary"
+           style="margin-right: 7px">
             + Invoice Baru
         </a>
 
         @if ($editableInvoice)
             <a href="{{ route('invoice.edit', $editableInvoice->id) }}"
-               class="btn btn-warning" style="margin-right: 7px">
+               class="btn btn-warning"
+               style="margin-right: 7px">
                 Edit Invoice
             </a>
 
             <a href="{{ route('invoice.print', $editableInvoice->id) }}"
-               class="btn btn-danger" style="margin-right: 7px">
+               class="btn btn-danger trigger-loading"
+               data-loading-text="Membuat PDF..."
+               style="margin-right: 7px">
                 Print PDF
             </a>
         @endif
@@ -119,7 +123,7 @@
 
                         <td class="text-center nowrap">
                             <a href="{{ route('invoice-item.show', $item->id) }}"
-                               class="btn btn-info btn-sm">
+                               class="btn btn-info btn-sm trigger-loading">
                                 Detail
                             </a>
                         </td>
@@ -140,9 +144,54 @@
     </div>
     @endif
 
-    <a href="{{ route('invoice.index') }}" class="btn btn-secondary mt-3">
+    <a href="{{ route('invoice.index') }}"
+       class="btn btn-secondary mt-3 trigger-loading">
         Kembali
     </a>
 
 </div>
+
+
+{{-- LOADING MODAL --}}
+<div class="modal fade"
+     id="loadingModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1">
+
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-body text-center py-4">
+                <div class="spinner-border text-primary mb-3"
+                     style="width:3rem;height:3rem;"></div>
+                <div class="fw-semibold" id="loadingText">
+                    Memuat data...
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{{-- SCRIPT --}}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const modalEl = document.getElementById("loadingModal");
+    const loadingText = document.getElementById("loadingText");
+    const loadingModal = new bootstrap.Modal(modalEl);
+
+    document.querySelectorAll(".trigger-loading").forEach(el => {
+        el.addEventListener("click", function () {
+
+            // ganti teks khusus (contoh: Print PDF)
+            const text = el.getAttribute("data-loading-text");
+            loadingText.innerText = text ?? "Memuat data...";
+
+            loadingModal.show();
+        });
+    });
+
+});
+</script>
 @endsection

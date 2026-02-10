@@ -19,7 +19,7 @@
         </div>
     @endif
 
-    <form action="{{ url('/admin-transport/mitra') }}" method="POST">
+    <form id="formMitra" action="{{ url('/admin-transport/mitra') }}" method="POST">
         @csrf
 
         {{-- NAMA MITRA --}}
@@ -30,11 +30,8 @@
                    class="form-control @error('nama_mitra') is-invalid @enderror"
                    value="{{ old('nama_mitra') }}"
                    required>
-
             @error('nama_mitra')
-                <div class="invalid-feedback">
-                    {{ $message }}
-                </div>
+                <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
 
@@ -42,8 +39,7 @@
         <div class="mb-3">
             <label>Unit</label>
             <select name="unit_id"
-                    class="form-control @error('unit_id') is-invalid @enderror"
->
+                    class="form-control @error('unit_id') is-invalid @enderror">
                 <option value="">-- Pilih Unit --</option>
                 @foreach($units as $unit)
                     <option value="{{ $unit->id }}"
@@ -52,11 +48,8 @@
                     </option>
                 @endforeach
             </select>
-
             @error('unit_id')
-                <div class="invalid-feedback">
-                    {{ $message }}
-                </div>
+                <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
 
@@ -67,11 +60,8 @@
                       class="form-control @error('alamat') is-invalid @enderror"
                       rows="3"
                       required>{{ old('alamat') }}</textarea>
-
             @error('alamat')
-                <div class="invalid-feedback">
-                    {{ $message }}
-                </div>
+                <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
 
@@ -83,11 +73,8 @@
                    class="form-control @error('no_hp') is-invalid @enderror"
                    value="{{ old('no_hp') }}"
                    required>
-
             @error('no_hp')
-                <div class="invalid-feedback">
-                    {{ $message }}
-                </div>
+                <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
 
@@ -99,11 +86,8 @@
                        name="kontrak_mulai"
                        class="form-control @error('kontrak_mulai') is-invalid @enderror"
                        value="{{ old('kontrak_mulai') }}">
-
                 @error('kontrak_mulai')
-                    <div class="invalid-feedback">
-                        {{ $message }}
-                    </div>
+                    <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
             </div>
 
@@ -113,11 +97,8 @@
                        name="kontrak_berakhir"
                        class="form-control @error('kontrak_berakhir') is-invalid @enderror"
                        value="{{ old('kontrak_berakhir') }}">
-
                 @error('kontrak_berakhir')
-                    <div class="invalid-feedback">
-                        {{ $message }}
-                    </div>
+                    <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
             </div>
         </div>
@@ -130,4 +111,58 @@
 
     </form>
 </div>
+
+<!-- LOADING MODAL -->
+<div class="modal fade" id="loadingModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-body text-center py-4">
+                <div class="spinner-border text-primary mb-3"
+                     style="width:3rem;height:3rem;"></div>
+                <div class="fw-semibold">Menyimpan data...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+#loadingModal .modal-content{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    height:180px;
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    const form = document.getElementById("formMitra");
+    if(!form) return;
+
+    const modal = new bootstrap.Modal(document.getElementById("loadingModal"));
+
+    form.addEventListener("submit", function(e){
+
+        e.preventDefault();
+
+        if(!form.checkValidity()){
+            form.reportValidity();
+            return;
+        }
+
+        modal.show();
+
+        setTimeout(function(){
+            HTMLFormElement.prototype.submit.call(form);
+        }, 200);
+
+    });
+
+});
+</script>
 @endsection

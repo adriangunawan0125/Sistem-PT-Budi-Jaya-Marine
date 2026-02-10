@@ -14,7 +14,7 @@
     </div>
 
     {{-- FILTER --}}
-    <form method="GET" class="mb-3">
+    <form method="GET" class="mb-3" id="filterForm">
 
         <input type="month"
                name="bulan"
@@ -22,18 +22,19 @@
                class="form-control d-inline-block me-2 mb-2"
                style="width:200px">
 
-        <button type="submit" class="btn btn-primary me-2 mb-2">
+        <button type="submit" class="btn btn-primary me-2 mb-2" id="btnFilter">
             Tampilkan
         </button>
 
         <a href="{{ route('pemasukan.print.bulanan', ['bulan' => $bulan]) }}"
            target="_blank"
-           class="btn btn-success me-2 mb-2">
+           class="btn btn-success me-2 mb-2" id="btnPrint"
+           data-url="{{ route('pemasukan.print.bulanan', ['bulan' => $bulan]) }}">
            Print PDF
         </a>
 
         <a href="{{ route('pemasukan.index') }}"
-           class="btn btn-secondary me-2 mb-2">
+           class="btn btn-secondary me-2 mb-2" >
             Kembali
         </a>
 
@@ -92,4 +93,54 @@
     </table>
 
 </div>
+{{-- ================= LOADING MODAL ================= --}}
+<div class="modal fade"
+     id="loadingModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-body text-center py-4">
+                <div class="spinner-border text-primary mb-3"
+                     style="width:3rem;height:3rem;"></div>
+                <div class="fw-semibold" id="loadingText">
+                    Memuat data...
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- ================= SCRIPT ================= --}}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const modal = new bootstrap.Modal(document.getElementById('loadingModal'));
+    const loadingText = document.getElementById('loadingText');
+
+    // FILTER → submit normal + modal
+    document.getElementById('btnFilter').addEventListener('click', function () {
+        loadingText.innerText = 'Memuat data...';
+        modal.show();
+    });
+
+    // PRINT PDF
+    document.getElementById('btnPrint').addEventListener('click', function (e) {
+        e.preventDefault();
+
+        loadingText.innerText = 'Membuat PDF...';
+        modal.show();
+
+        const url = this.dataset.url;
+
+        setTimeout(() => {
+            window.open(url, '_blank');
+            modal.hide();
+        }, 700);
+    });
+
+});
+</script>
+
 @endsection

@@ -12,14 +12,12 @@
         </div>
     @endif
 
-    {{-- ALERT SUCCESS --}}
+    {{-- SUCCESS TRIGGER (HIDDEN) --}}
     @if (session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
+        <input type="hidden" id="success-message" value="{{ session('success') }}">
     @endif
 
-    <form action="{{ url('/admin-transport/mitra/'.$mitra->id) }}" method="POST">
+    <form id="editForm" action="{{ url('/admin-transport/mitra/'.$mitra->id) }}" method="POST">
         @csrf
         @method('PUT')
 
@@ -31,11 +29,8 @@
                    class="form-control @error('nama_mitra') is-invalid @enderror"
                    value="{{ old('nama_mitra', $mitra->nama_mitra) }}"
                    required>
-
             @error('nama_mitra')
-                <div class="invalid-feedback">
-                    {{ $message }}
-                </div>
+                <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
 
@@ -52,11 +47,8 @@
                     </option>
                 @endforeach
             </select>
-
             @error('unit_id')
-                <div class="invalid-feedback">
-                    {{ $message }}
-                </div>
+                <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
 
@@ -67,11 +59,8 @@
                       class="form-control @error('alamat') is-invalid @enderror"
                       rows="3"
                       required>{{ old('alamat', $mitra->alamat) }}</textarea>
-
             @error('alamat')
-                <div class="invalid-feedback">
-                    {{ $message }}
-                </div>
+                <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
 
@@ -83,11 +72,8 @@
                    class="form-control @error('no_hp') is-invalid @enderror"
                    value="{{ old('no_hp', $mitra->no_hp) }}"
                    required>
-
             @error('no_hp')
-                <div class="invalid-feedback">
-                    {{ $message }}
-                </div>
+                <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
 
@@ -99,11 +85,8 @@
                        name="kontrak_mulai"
                        class="form-control @error('kontrak_mulai') is-invalid @enderror"
                        value="{{ old('kontrak_mulai', optional($mitra->kontrak_mulai)->format('Y-m-d')) }}">
-
                 @error('kontrak_mulai')
-                    <div class="invalid-feedback">
-                        {{ $message }}
-                    </div>
+                    <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
             </div>
 
@@ -113,11 +96,8 @@
                        name="kontrak_berakhir"
                        class="form-control @error('kontrak_berakhir') is-invalid @enderror"
                        value="{{ old('kontrak_berakhir', optional($mitra->kontrak_berakhir)->format('Y-m-d')) }}">
-
                 @error('kontrak_berakhir')
-                    <div class="invalid-feedback">
-                        {{ $message }}
-                    </div>
+                    <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
             </div>
         </div>
@@ -127,7 +107,84 @@
         <a href="{{ url('/admin-transport/mitra') }}" class="btn btn-secondary">
             Kembali
         </a>
-
     </form>
 </div>
+
+
+<!-- LOADING MODAL -->
+<div class="modal fade" id="loadingModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-body text-center py-4">
+                <div class="spinner-border text-primary mb-3"
+                     style="width:3rem;height:3rem;"></div>
+                <div class="fw-semibold">Memperbarui data...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- SUCCESS MODAL -->
+<div class="modal fade" id="successModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-body text-center py-4">
+                <div class="mb-3">
+                    <i class="bi bi-check-circle-fill text-success" style="font-size:60px;"></i>
+                </div>
+                <h5 class="fw-bold mb-2">Berhasil</h5>
+                <div id="successText" class="text-muted"></div>
+                <div class="mt-4">
+                    <button class="btn btn-success px-4" data-bs-dismiss="modal">
+                        OK
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    /* ========= LOADING SUBMIT ========= */
+    const form = document.getElementById("editForm");
+    const loadingModal = new bootstrap.Modal(document.getElementById("loadingModal"));
+
+    form.addEventListener("submit", function(e){
+
+        e.preventDefault();
+
+        if(!form.checkValidity()){
+            form.reportValidity();
+            return;
+        }
+
+        loadingModal.show();
+
+        setTimeout(() => {
+            form.submit();
+        }, 150);
+    });
+
+    /* ========= SUCCESS AFTER REDIRECT ========= */
+    const successInput = document.getElementById("success-message");
+
+    if(successInput){
+        const modal = new bootstrap.Modal(document.getElementById("successModal"));
+        document.getElementById("successText").innerText = successInput.value;
+
+        setTimeout(() => {
+            modal.show();
+        }, 250);
+    }
+
+});
+</script>
+
 @endsection

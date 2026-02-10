@@ -1,89 +1,172 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>Laporan Pajak Kendaraan</title>
+<meta charset="UTF-8">
+<title>Laporan Pajak Kendaraan</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+    body {
+        font-family: "Times New Roman", DejaVu Serif, serif;
+        font-size: 13px;
+        color: #000;
+    }
 
-    <style>
-        body {
-            font-family: DejaVu Sans, sans-serif;
-            font-size: 12px;
-        }
+    table { width:100%; border-collapse:collapse; }
 
-        .header {
-            text-align: center;
-            margin-bottom: 40px; /* ⬅️ JARAK HEADER KE TABEL */
-        }
+    .right { text-align:right; }
+    .center { text-align:center; }
+    .bold { font-weight:bold; }
 
-        .header h3 {
-            margin: 0;
-            font-size: 16px;
-            font-weight: bold;
-            line-height: 1.4;
-        }
+    /* ================= KOP ================= */
+    .kop {
+        border-bottom:3px solid #000;
+        margin-bottom:18px;
+        padding-bottom:12px;
+        margin-left:15px;
+    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px; /* ⬅️ JARAK TAMBAHAN BIAR AMAN */
-        }
+    .logo img { width:110px; }
 
-        th, td {
-            border: 1px solid #000;
-            padding: 6px;
-        }
+    .company {
+        text-align:center;
+        padding-right:120px;
+    }
 
-        th {
-            background: #f2f2f2;
-            text-align: center;
-        }
+    .company-name {
+        font-size:24px;
+        font-weight:bold;
+        margin-bottom:6px;
+    }
 
-        .text-center { text-align: center; }
-        .text-right { text-align: right; }
-        .fw-bold { font-weight: bold; }
-    </style>
+    .company-address {
+        font-size:12px;
+        line-height:1.5;
+    }
+
+    /* ================= JUDUL ================= */
+    .judul {
+        text-align:center;
+        margin-top:10px;
+        margin-bottom:15px;
+    }
+
+    .judul h3 {
+        margin:0;
+        font-size:18px;
+        letter-spacing:1px;
+        margin-bottom: 30px
+    }
+
+    .periode {
+        margin-bottom:15px;
+        font-size:13px;
+    }
+
+    /* ================= TABLE ================= */
+    .item-table th,
+    .item-table td {
+        border:1px solid #000;
+        padding:6px;
+        font-size:13px;
+    }
+
+    .item-table th {
+        background:#0076AF;
+        color:#fff;
+        text-align:center;
+    }
+
+    /* ================= MONEY ================= */
+    .money { width:100%; border-collapse:collapse; }
+    .money td { border:none; padding:0; }
+    .rp { width:22px; text-align:left; }
+    .val { text-align:right; }
+
+    .total-row {
+        background:#0076AF;
+        color:#fff;
+        font-weight:bold;
+    }
+</style>
 </head>
+
 <body>
 
-<div class="header">
-    <h3>
-        LAPORAN PAJAK KENDARAAN <br>
-        {{ \Carbon\Carbon::parse($bulan.'-01')->translatedFormat('F Y') }}
-    </h3>
+<!-- ================= KOP ================= -->
+<table class="kop">
+<tr>
+    <td class="logo">
+        <img src="{{ public_path('assets/kopbjm.jpeg') }}">
+    </td>
+    <td class="company">
+        <div class="company-name">PT. BUDI JAYA MARINE</div>
+        <div class="company-address">
+            Ruko Sentra Bisnis Jl. Harapan Indah Blok SS2 No.3<br>
+            RT/RW.003/007 Pejuang, Medan Satria, Kota Bekasi 17132<br>
+            Email : sasongko@budijayamarine.com | cs@budijayamarine.com<br>
+            Mobile : 0877 7023 9693
+        </div>
+    </td>
+</tr>
+</table>
+
+<!-- ================= JUDUL ================= -->
+<div class="judul">
+    <h3>LAPORAN PAJAK KENDARAAN</h3>
 </div>
 
-<table>
-    <thead>
-        <tr>
-            <th width="5%">No</th>
-            <th>Unit</th>
-            <th width="15%">Tanggal</th>
-            <th>Deskripsi</th>
-            <th width="15%">Nominal</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach($pajak as $i => $p)
-        <tr>
-            <td class="text-center">{{ $i+1 }}</td>
-            <td>{{ $p->unit->nama_unit }}</td>
-            <td class="text-center">{{ $p->tanggal }}</td>
-            <td>{{ $p->deskripsi }}</td>
-            <td class="text-right">
-                {{ number_format($p->nominal,0,',','.') }}
-            </td>
-        </tr>
-        @endforeach
+<div class="periode">
+    <b>Bulan :</b> {{ \Carbon\Carbon::parse($bulan.'-01')->translatedFormat('F Y') }}
+</div>
 
-        <tr>
-            <td colspan="4" class="fw-bold">Total</td>
-            <td class="fw-bold text-right">
-                {{ number_format($total,0,',','.') }}
-            </td>
-        </tr>
-    </tbody>
+<!-- ================= TABLE ================= -->
+<table class="item-table">
+<thead>
+<tr>
+    <th width="5%">No</th>
+    <th>Unit</th>
+    <th width="15%">Tanggal</th>
+    <th>Deskripsi</th>
+    <th width="15%">Nominal</th>
+</tr>
+</thead>
+
+<tbody>
+@foreach($pajak as $i => $p)
+<tr>
+    <td class="center">{{ $i+1 }}</td>
+    <td>{{ $p->unit->nama_unit }}</td>
+    <td class="center">{{ $p->tanggal }}</td>
+    <td>{{ $p->deskripsi }}</td>
+    <td>
+        <table class="money">
+            <tr>
+                <td class="rp">Rp</td>
+                <td class="val">
+                    {{ number_format($p->nominal,0,',','.') }}
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr>
+@endforeach
+</tbody>
+
+<tfoot>
+<tr class="total-row">
+    <td colspan="4" class="right">TOTAL</td>
+    <td>
+        <table class="money">
+            <tr>
+                <td class="rp">Rp</td>
+                <td class="val">
+                    {{ number_format($total,0,',','.') }}
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr>
+</tfoot>
 </table>
 
 </body>

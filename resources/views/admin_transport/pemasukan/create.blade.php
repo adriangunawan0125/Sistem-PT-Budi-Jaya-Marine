@@ -14,7 +14,7 @@
         </div>
     @endif
 
-    <form action="{{ route('pemasukan.store') }}"
+    <form id="createForm"
           method="POST"
           enctype="multipart/form-data">
         @csrf
@@ -93,6 +93,22 @@
         </a>
     </form>
 </div>
+<!-- LOADING MODAL -->
+<div class="modal fade"
+     id="loadingModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-body text-center py-4">
+                <div class="spinner-border text-primary mb-3"
+                     style="width:3rem;height:3rem;"></div>
+                <div class="fw-semibold">Menyimpan data...</div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
 function formatRupiah(angka) {
@@ -121,5 +137,13 @@ document.querySelectorAll('.rupiah').forEach(el => {
     });
 });
 </script>
+<script>
+function showLoading() {
 
+    const modalEl = document.getElementById('loadingModal');
+    const modal = new bootstrap.Modal(modalEl);
+
+    modal.show();
+}
+</script>
 @endsection

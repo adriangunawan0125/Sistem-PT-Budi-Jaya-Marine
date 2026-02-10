@@ -53,6 +53,7 @@
                             <li class="mb-2">Driver aktif Grab / Gojek / Maxim</li>
                             <li class="mb-2">Menyiapkan jaminan sesuai ketentuan</li>
                             <li class="mb-2">Setoran harian Rp200.000</li>
+                            <li class="mb-2">Menyiapkan biaya administrasi dan Deposit sesuai ketentuan</li>
                             <li>Bertanggung jawab & profesional</li>
                         </ul>
                     </div>

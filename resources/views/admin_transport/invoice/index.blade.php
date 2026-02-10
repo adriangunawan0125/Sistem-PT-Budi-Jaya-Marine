@@ -4,14 +4,16 @@
 <div class="container">
     <h4>Data Invoice</h4>
 
-        
-    <a href="{{ route('invoice.create') }}" class="btn btn-primary mb-3">
+    <a href="{{ route('invoice.create') }}"
+       class="btn btn-primary mb-3 trigger-loading">
         + Invoice Baru
     </a>  
 
-
     {{-- SEARCH --}}
-    <form method="GET" class="row g-2 mb-3">
+    <form method="GET"
+          class="row g-2 mb-3"
+          id="searchForm">
+
         <div class="col-md-4">
             <input type="text"
                    name="search"
@@ -21,12 +23,14 @@
         </div>
 
         <div class="col-md-2">
-            <button class="btn btn-primary w-100">Cari</button>
+            <button class="btn btn-primary w-100">
+                Cari
+            </button>
         </div>
 
         <div class="col-md-2">
             <a href="{{ route('invoice.index') }}"
-               class="btn btn-secondary w-100">
+               class="btn btn-secondary w-100 trigger-loading">
                 Reset
             </a>
         </div>
@@ -59,9 +63,8 @@
                     </td>
 
                     <td>
-                        {{-- DETAIL SELALU BISA DIAKSES --}}
                         <a href="{{ route('invoice.show', $row->mitra->id) }}"
-                           class="btn btn-info btn-sm">
+                           class="btn btn-info btn-sm trigger-loading">
                             Detail
                         </a>
                     </td>
@@ -82,4 +85,57 @@
         {{ $data->links('pagination::bootstrap-5') }}
     </div>
 </div>
+
+
+{{-- LOADING MODAL --}}
+<div class="modal fade"
+     id="loadingModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1">
+
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-body text-center py-4">
+                <div class="spinner-border text-primary mb-3"
+                     style="width:3rem;height:3rem;"></div>
+                <div class="fw-semibold">Memuat data...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{{-- SCRIPT --}}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const loadingModal = new bootstrap.Modal(
+        document.getElementById("loadingModal")
+    );
+
+    /* ===== SEARCH SUBMIT ===== */
+    const searchForm = document.getElementById("searchForm");
+    if (searchForm) {
+        searchForm.addEventListener("submit", function () {
+            loadingModal.show();
+        });
+    }
+
+    /* ===== KLIK LINK (DETAIL / RESET / TAMBAH / PAGINATION) ===== */
+    document.querySelectorAll(".trigger-loading").forEach(el => {
+        el.addEventListener("click", function () {
+            loadingModal.show();
+        });
+    });
+
+    /* ===== PAGINATION ===== */
+    document.querySelectorAll(".pagination a").forEach(link => {
+        link.addEventListener("click", function () {
+            loadingModal.show();
+        });
+    });
+
+});
+</script>
 @endsection

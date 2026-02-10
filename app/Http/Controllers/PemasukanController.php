@@ -174,7 +174,7 @@ public function update(Request $request, $id)
 
         $pemasukan->delete();
 
-        return back()->with('success', 'Pemasukan berhasil dihapus');
+        return back()->with('success', 'Data pemasukan berhasil dihapus');
     }
 
     /* ================= LAPORAN HARIAN ================= */
