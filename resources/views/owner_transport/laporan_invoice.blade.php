@@ -5,7 +5,7 @@
     <h4>Data Invoice</h4>
 
     {{-- SEARCH --}}
-    <form method="GET" class="row g-2 mb-3">
+    <form method="GET" class="row g-2 mb-3" id="filterForm">
         <div class="col-md-4">
             <input type="text"
                    name="search"
@@ -66,7 +66,7 @@
 
                     <td>
          <a href="{{ route('invoiceowner.show', $row->id) }}"
-   class="btn btn-info btn-sm">
+   class="btn btn-info btn-sm btn-loading">
     Detail
 </a>
 
@@ -88,4 +88,44 @@
         {{ $data->links('pagination::bootstrap-5') }}
     </div>
 </div>
+
+{{-- MODAL LOADING --}}
+<div class="modal fade" id="loadingModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-body text-center p-5">
+                <div class="spinner-border text-primary mb-3" style="width:3rem;height:3rem;"></div>
+                <h5 class="mb-0">Memuat data...</h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    let loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+
+    // FILTER submit
+    document.getElementById('filterForm').addEventListener('submit', function () {
+        loadingModal.show();
+    });
+
+    // SEMUA LINK PINDAH HALAMAN
+    document.querySelectorAll('.btn-loading').forEach(function(btn){
+        btn.addEventListener('click', function(e){
+            e.preventDefault();
+            loadingModal.show();
+
+            let url = this.getAttribute('href');
+
+            setTimeout(function(){
+                window.location.href = url;
+            }, 350);
+        });
+    });
+
+});
+</script>
+
 @endsection

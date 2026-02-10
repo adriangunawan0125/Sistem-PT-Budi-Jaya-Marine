@@ -51,7 +51,7 @@
                     </td>
                     <td>
                         <a href="{{ route('pengeluaran_transport.item_detail', $item->id) }}"
-                           class="btn btn-sm btn-info">
+                           class="btn btn-sm btn-info btn-loading">
                            Detail
                         </a>
                     </td>
@@ -84,4 +84,51 @@
     </a>
 
 </div>
+{{-- MODAL LOADING --}}
+<div class="modal fade" id="loadingModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-body text-center p-5">
+                <div class="spinner-border text-primary mb-3" style="width:3rem;height:3rem;"></div>
+                <h5 class="mb-0">Memuat data...</h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    let modalEl = document.getElementById('loadingModal');
+    if (!modalEl) return;
+
+    let loadingModal = new bootstrap.Modal(modalEl);
+
+    // FILTER (kalau ada)
+    let filterForm = document.getElementById('filterForm');
+    if (filterForm) {
+        filterForm.addEventListener('submit', function () {
+            loadingModal.show();
+        });
+    }
+
+    // SEMUA LINK PINDAH HALAMAN
+    document.querySelectorAll('.btn-loading').forEach(function(btn){
+        btn.addEventListener('click', function(e){
+            e.preventDefault();
+
+            let url = this.getAttribute('href');
+            if (!url) return;
+
+            loadingModal.show();
+
+            setTimeout(function(){
+                window.location.href = url;
+            }, 350);
+        });
+    });
+
+});
+</script>
+
 @endsection
