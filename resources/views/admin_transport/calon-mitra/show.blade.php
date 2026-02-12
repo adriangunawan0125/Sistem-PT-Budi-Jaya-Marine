@@ -71,7 +71,7 @@
             @csrf
 
             <button type="button"
-                    class="btn btn-success"
+                    class="btn btn-primary"
                     data-bs-toggle="modal"
                     data-bs-target="#approveModal">
                 Setujui Jadi Mitra

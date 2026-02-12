@@ -55,7 +55,7 @@
             <div class="mb-2" style="margin-left:10px">
                 <button class="btn btn-primary trigger-loading">Filter</button>
                 <a href="{{ route('pemasukan.index') }}" class="btn btn-secondary">Reset</a>
-                <a href="{{ route('pemasukan.create') }}" class="btn btn-success">Tambah</a>
+                <a href="{{ route('pemasukan.create') }}" class="btn btn-primary">Tambah</a>
                 <a href="{{ route('pemasukan.laporan.harian', ['tanggal'=>request('tanggal')]) }}"
                    class="btn btn-info text-white trigger-loading">
                     Laporan Harian
