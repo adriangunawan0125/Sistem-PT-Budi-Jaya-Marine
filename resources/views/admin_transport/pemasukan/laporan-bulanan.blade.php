@@ -28,7 +28,7 @@
 
         <a href="{{ route('pemasukan.print.bulanan', ['bulan' => $bulan]) }}"
            target="_blank"
-           class="btn btn-success me-2 mb-2" id="btnPrint"
+           class="btn btn-danger me-2 mb-2" id="btnPrint"
            data-url="{{ route('pemasukan.print.bulanan', ['bulan' => $bulan]) }}">
            Print PDF
         </a>

@@ -32,6 +32,9 @@ use App\Http\Controllers\AdminMarine\MarineInvoiceController;
 use App\Http\Controllers\PoMasukController;
 use App\Http\Controllers\PoSupplierController;
 use App\Http\Controllers\DeliveryOrderController;
+ use App\Http\Controllers\AdminMarine\MitraMarineController;
+use App\Http\Controllers\AdminMarine\QuotationController;
+
 
 //PUBLIC 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -276,6 +279,51 @@ Route::middleware(['auth', 'role:admin_marine'])->group(function () {
     Route::get('/admin-marine', function () {
   return view('admin_marine.dashboard');
     })->name('admin.marine.dashboard');
+
+
+Route::get('/mitra-marine', [MitraMarineController::class, 'index'])->name('mitra-marine.index');
+Route::get('/mitra-marine/create', [MitraMarineController::class, 'create'])->name('mitra-marine.create');
+Route::post('/mitra-marine/store', [MitraMarineController::class, 'store'])->name('mitra-marine.store');
+Route::get('/mitra-marine/{id}', [MitraMarineController::class, 'show'])->name('mitra-marine.show');
+Route::get('/mitra-marine/edit/{id}', [MitraMarineController::class, 'edit'])->name('mitra-marine.edit');
+Route::post('/mitra-marine/update/{id}', [MitraMarineController::class, 'update'])->name('mitra-marine.update');
+Route::delete('/mitra-marine/delete/{id}', [MitraMarineController::class, 'destroy'])->name('mitra-marine.delete');
+Route::get('/mitra-marine/show/{id}', [MitraMarineController::class, 'show'])->name('mitra-marine.show');
+
+Route::resource('quotations', \App\Http\Controllers\AdminMarine\QuotationController::class);
+
+// SUB ITEM
+Route::post('quotations/{quotation}/subitem', 
+    [\App\Http\Controllers\AdminMarine\QuotationController::class,'storeSubItem']
+)->name('quotations.subitem.store');
+
+Route::delete('subitem/{subItem}', 
+    [\App\Http\Controllers\AdminMarine\QuotationController::class,'deleteSubItem']
+)->name('quotations.subitem.delete');
+
+// ITEM
+Route::post('subitem/{subItem}/item', 
+    [\App\Http\Controllers\AdminMarine\QuotationController::class,'storeItem']
+)->name('quotations.item.store');
+
+Route::delete('item/{item}', 
+    [\App\Http\Controllers\AdminMarine\QuotationController::class,'deleteItem']
+)->name('quotations.item.delete');
+Route::post('quotations/{quotation}/bulk-save',
+    [\App\Http\Controllers\AdminMarine\QuotationController::class,'bulkSave']
+)->name('quotations.bulk.save');
+
+
+
+// TERMS
+Route::post('quotations/{quotation}/term', 
+    [\App\Http\Controllers\AdminMarine\QuotationController::class,'storeTerm']
+)->name('quotations.term.store');
+
+Route::delete('term/{term}', 
+    [\App\Http\Controllers\AdminMarine\QuotationController::class,'deleteTerm']
+)->name('quotations.term.delete');
+   
     
     Route::resource('companies', CompanyController::class);
 

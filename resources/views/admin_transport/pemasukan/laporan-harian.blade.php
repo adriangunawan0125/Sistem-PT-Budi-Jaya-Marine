@@ -30,7 +30,7 @@
         </button>
 
         <a href="{{ route('pemasukan.print.harian', ['tanggal' => $tanggal]) }}"
-           class="btn btn-success me-2 mb-2"
+           class="btn btn-danger me-2 mb-2"
            id="btnPrint"
            data-url="{{ route('pemasukan.print.harian', ['tanggal' => $tanggal]) }}">
             Print PDF
