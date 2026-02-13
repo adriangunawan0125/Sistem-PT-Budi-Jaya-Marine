@@ -6,7 +6,7 @@
     <div class="d-flex justify-content-between mb-3">
         <h4>Quotation</h4>
         <a href="{{ route('quotations.create') }}" class="btn btn-primary">
-            + Create Quotation
+            Buat Quotation
         </a>
     </div>
 

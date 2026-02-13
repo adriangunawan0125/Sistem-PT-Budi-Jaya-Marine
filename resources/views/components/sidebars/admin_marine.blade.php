@@ -109,8 +109,7 @@
         </a>
         <div id="quotation" class="collapse" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="#">Menu 1</a>
-                <a class="collapse-item" href="#">Menu 2</a>
+                <a class="collapse-item" href="{{ route('quotations.index') }}">Quotation</a>
             </div>
         </div>
     </li>

@@ -291,7 +291,6 @@ Route::delete('/mitra-marine/delete/{id}', [MitraMarineController::class, 'destr
 Route::get('/mitra-marine/show/{id}', [MitraMarineController::class, 'show'])->name('mitra-marine.show');
 
 Route::resource('quotations', \App\Http\Controllers\AdminMarine\QuotationController::class);
-
 // SUB ITEM
 Route::post('quotations/{quotation}/subitem', 
     [\App\Http\Controllers\AdminMarine\QuotationController::class,'storeSubItem']
@@ -312,6 +311,9 @@ Route::delete('item/{item}',
 Route::post('quotations/{quotation}/bulk-save',
     [\App\Http\Controllers\AdminMarine\QuotationController::class,'bulkSave']
 )->name('quotations.bulk.save');
+Route::get('quotations/{quotation}/print', 
+    [QuotationController::class, 'print']
+)->name('quotations.print');
 
 
 

@@ -11,28 +11,42 @@ use App\Models\QuotationTermsCondition;
 use App\Models\MitraMarine;
 use App\Models\VesselMitra;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 
 class QuotationController extends Controller
 {
+
+    /* ================= INDEX ================= */
     public function index()
     {
-        $quotations = Quotation::with(['mitra','vessel','subItems.items'])
+        $quotations = Quotation::with(['mitra','vessel'])
             ->latest()
             ->get();
 
         return view('admin_marine.quotation.index', compact('quotations'));
     }
 
+
+    /* ================= CREATE ================= */
     public function create()
     {
-        $mitras = MitraMarine::all();
+        $mitras  = MitraMarine::all();
         $vessels = VesselMitra::all();
+        $quotation = new Quotation();
 
-        return view('admin_marine.quotation.create', compact('mitras','vessels'));
+        return view('admin_marine.quotation.create',
+            compact('mitras','vessels','quotation'));
     }
 
-    public function store(Request $request)
-    {
+
+    /* ================= STORE ================= */
+  public function store(Request $request)
+{
+    DB::beginTransaction();
+
+    try {
+
         $request->validate([
             'mitra_id'  => 'required',
             'vessel_id' => 'required',
@@ -49,9 +63,30 @@ class QuotationController extends Controller
             'place'     => $request->place,
         ]);
 
-        return redirect()->route('quotations.edit', $quotation->id);
-    }
+        // 🔥 INI YANG BENAR
+        $this->saveDetail(
+            $quotation,
+            $request->input('sub_items', []),
+            $request->input('terms', [])
+        );
 
+        DB::commit();
+
+        return redirect()
+            ->route('quotations.index')
+            ->with('success','Quotation berhasil dibuat');
+
+    } catch (\Exception $e) {
+
+        DB::rollBack();
+        return back()->with('error',$e->getMessage());
+    }
+}
+
+
+
+
+    /* ================= EDIT ================= */
     public function edit(Quotation $quotation)
     {
         $quotation->load('mitra','vessel','subItems.items','termsConditions');
@@ -59,107 +94,146 @@ class QuotationController extends Controller
         return view('admin_marine.quotation.edit', compact('quotation'));
     }
 
+
+    /* ================= UPDATE ================= */
     public function update(Request $request, Quotation $quotation)
-    {
+{
+    DB::beginTransaction();
+
+    try {
+
+        // Update header
         $quotation->update([
-            'attention' => $request->attention,
-            'project'   => $request->project,
-            'place'     => $request->place,
-            'date'      => $request->date,
+            'attention' => $request->input('attention'),
+            'project'   => $request->input('project'),
+            'place'     => $request->input('place'),
+            'date'      => $request->input('date'),
         ]);
 
-        return back()->with('success','Header updated');
-    }
+        // Hapus detail lama
+        foreach ($quotation->subItems as $sub) {
+            $sub->items()->delete();
+        }
 
-    /*
-    |--------------------------------------------------------------------------
-    | BULK SAVE (NO RELOAD ADD)
-    |--------------------------------------------------------------------------
-    */
-    public function bulkSave(Request $request, Quotation $quotation)
+        $quotation->subItems()->delete();
+        $quotation->termsConditions()->delete();
+
+        // 🔥 WAJIB pakai input() supaya pasti kebaca
+        $this->saveDetail($quotation, $request->input('sub_items', []), $request->input('terms', []));
+
+        DB::commit();
+
+        return redirect()
+            ->route('quotations.index')
+            ->with('success','Quotation berhasil diupdate');
+
+    } catch (\Exception $e) {
+
+        DB::rollBack();
+        return back()->with('error',$e->getMessage());
+    }
+}
+
+
+
+    /* ================= PRINT ================= */
+    public function print(Quotation $quotation)
     {
-        DB::beginTransaction();
+        $quotation->load('mitra','vessel','subItems.items','termsConditions');
 
-        try {
+        $quotationDate = $quotation->date
+            ? Carbon::parse($quotation->date)
+            : Carbon::parse($quotation->created_at);
 
-            // hapus lama
-            $quotation->subItems()->delete();
-            $quotation->termsConditions()->delete();
+        $grandTotal = $quotation->subItems
+            ->sum(fn($s) => $s->items->sum('total'));
 
-            if ($request->sub_items) {
+        $pdf = Pdf::loadView('admin_marine.quotation.print', [
+            'quotation'     => $quotation,
+            'quotationDate' => $quotationDate,
+            'grandTotal'    => $grandTotal,
+        ])->setPaper('A4','portrait');
 
-                foreach ($request->sub_items as $sub) {
-
-                    $subItem = QuotationSubItem::create([
-                        'quotation_id' => $quotation->id,
-                        'name'         => $sub['name'],
-                        'item_type'    => $sub['item_type'],
-                    ]);
-
-                    foreach ($sub['items'] as $item) {
-
-                        $price = $item['price'] ?? 0;
-$qty   = $item['qty'] ?? 0;
-$day   = $item['day'] ?? 0;
-$hour  = $item['hour'] ?? 0;
-
-$total = 0;
-
-if($sub['item_type'] == 'basic'){
-    $total = $price * $qty;
-}
-
-if($sub['item_type'] == 'day'){
-    $total = $price * $qty * $day;
-}
-
-if($sub['item_type'] == 'hour'){
-    $total = $price * $qty * $hour;
-}
-
-if($sub['item_type'] == 'day_hour'){
-    if($hour > 0){
-        $total = $price * $qty * $day * $hour;
-    } else {
-        $total = $price * $qty * $day;
+        return $pdf->stream('quotation-'.$quotation->id.'.pdf');
     }
-}
 
-QuotationItem::create([
-    'sub_item_id' => $subItem->id,
-    'item'        => $item['item'],
-    'price'       => $price,
-    'qty'         => $qty,
-    'unit'        => $item['unit'] ?? null,
-    'day'         => $day ?: null,
-    'hour'        => $hour ?: null,
-    'total'       => $total,
-]);
 
+    /* ================= HELPER SAVE DETAIL ================= */
+    private function saveDetail($quotation, $subItems = [], $terms = [])
+{
+    if (!empty($subItems)) {
+
+        foreach ($subItems as $sub) {
+
+            if(empty($sub['name'])) continue;
+
+            $subItem = QuotationSubItem::create([
+                'quotation_id' => $quotation->id,
+                'name'         => $sub['name'],
+                'item_type'    => $sub['item_type'] ?? 'basic',
+            ]);
+
+            if(!empty($sub['items'])) {
+
+                foreach ($sub['items'] as $item) {
+
+                    if(empty($item['item'])) continue;
+
+                    $price = (float) ($item['price'] ?? 0);
+                    $qty   = (float) ($item['qty'] ?? 0);
+                    $day   = (float) ($item['day'] ?? 0);
+                    $hour  = (float) ($item['hour'] ?? 0);
+
+                    switch($sub['item_type']){
+
+                        case 'day':
+                            $total = $price * $qty * $day;
+                        break;
+
+                        case 'hour':
+                            $total = $price * $qty * $hour;
+                        break;
+
+                        case 'day_hour':
+                            $total = $hour > 0
+                                ? $price * $qty * $day * $hour
+                                : $price * $qty * $day;
+                        break;
+
+                        default:
+                            $total = $price * $qty;
+                        break;
                     }
-                }
-            }
 
-            if ($request->terms) {
-                foreach ($request->terms as $term) {
-                    QuotationTermsCondition::create([
-                        'quotation_id' => $quotation->id,
-                        'description'  => $term,
+                    QuotationItem::create([
+                        'sub_item_id' => $subItem->id,
+                        'item'        => $item['item'],
+                        'price'       => $price,
+                        'qty'         => $qty,
+                        'unit'        => $item['unit'] ?? null,
+                        'day'         => $day ?: null,
+                        'hour'        => $hour ?: null,
+                        'total'       => $total,
                     ]);
                 }
             }
-
-            DB::commit();
-
-            return response()->json(['success'=>true]);
-
-        } catch (\Exception $e) {
-
-            DB::rollBack();
-            return response()->json(['error'=>$e->getMessage()],500);
         }
     }
 
+    if (!empty($terms)) {
+        foreach ($terms as $term) {
+            if(!empty($term)){
+                QuotationTermsCondition::create([
+                    'quotation_id' => $quotation->id,
+                    'description'  => $term,
+                ]);
+            }
+        }
+    }
+}
+
+
+    /* ================= GENERATE QUOTE NO ================= */
     private function generateQuoteNumber()
     {
         $year  = date('Y');
@@ -180,33 +254,34 @@ QuotationItem::create([
         return $map[$bulan];
     }
 
-   public function show(Quotation $quotation)
-    {
-        $quotation->load([
-            'mitra',
-            'vessel',
-            'subItems.items',
-            'termsConditions' // ✅ SESUAI MODEL
-        ]);
+    public function show(Quotation $quotation)
+        {
+            $quotation->load([
+                'mitra',
+                'vessel',
+                'subItems.items',
+                'termsConditions' // ✅ SESUAI MODEL
+            ]);
 
-        return view('admin_marine.quotation.show', compact('quotation'));
-    }
+            return view('admin_marine.quotation.show', compact('quotation'));
+        }
 
-    public function destroy(Quotation $quotation)
+        /* ================= DELETE ================= */
+public function destroy(Quotation $quotation)
 {
     DB::beginTransaction();
 
     try {
 
-        // Hapus semua items di dalam subItems
+        // Hapus semua item dalam sub item
         foreach ($quotation->subItems as $sub) {
             $sub->items()->delete();
         }
 
-        // Hapus subItems
+        // Hapus sub items
         $quotation->subItems()->delete();
 
-        // Hapus terms & conditions
+        // Hapus terms
         $quotation->termsConditions()->delete();
 
         // Hapus quotation
@@ -216,15 +291,18 @@ QuotationItem::create([
 
         return redirect()
             ->route('quotations.index')
-            ->with('success', 'Quotation berhasil dihapus');
+            ->with('success','Quotation berhasil dihapus');
 
     } catch (\Exception $e) {
 
         DB::rollBack();
 
-        return back()->with('error', $e->getMessage());
+        return back()->with('error',$e->getMessage());
     }
 }
 
 
 }
+   
+   
+   
