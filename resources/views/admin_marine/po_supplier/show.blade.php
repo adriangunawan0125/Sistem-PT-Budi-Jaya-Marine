@@ -36,17 +36,17 @@
            Print PDF
         </a>
 
-        <a href="{{ route('po-masuk.show', $poSupplier->po_masuk_id) }}"
+        <a style="margin-left:6px;" href="{{ route('po-masuk.show', $poSupplier->po_masuk_id) }}"
            class="btn btn-secondary btn-sm">
             ← Kembali ke PO Masuk
         </a>
 
-        <a href="{{ route('po-supplier.edit', $poSupplier->id) }}"
+        <a style="margin-left:6px;" href="{{ route('po-supplier.edit', $poSupplier->id) }}"
            class="btn btn-warning btn-sm">
             Edit PO Supplier
         </a>
 
-        <form action="{{ route('po-supplier.destroy', $poSupplier->id) }}"
+        <form style="margin-left:6px;" action="{{ route('po-supplier.destroy', $poSupplier->id) }}"
               method="POST"
               onsubmit="return confirm('Yakin ingin menghapus PO Supplier ini?')">
             @csrf

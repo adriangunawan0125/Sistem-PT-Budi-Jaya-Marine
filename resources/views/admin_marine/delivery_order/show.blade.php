@@ -15,12 +15,12 @@
             Print PDF
         </a>
 
-        <a href="{{ route('delivery-order.edit', $deliveryOrder->id) }}"
+        <a style="margin-left:6px;" href="{{ route('delivery-order.edit', $deliveryOrder->id) }}"
            class="btn btn-warning btn-sm">
             Edit
         </a>
 
-        <form action="{{ route('delivery-order.destroy', $deliveryOrder->id) }}"
+        <form style="margin-left:6px;" action="{{ route('delivery-order.destroy', $deliveryOrder->id) }}"
               method="POST"
               onsubmit="return confirm('Yakin ingin menghapus DO ini?')">
             @csrf
@@ -30,7 +30,7 @@
             </button>
         </form>
 
-        <a href="{{ route('po-masuk.show', $deliveryOrder->po_masuk_id) }}"
+        <a style="margin-left:6px;" href="{{ route('po-masuk.show', $deliveryOrder->po_masuk_id) }}"
            class="btn btn-secondary btn-sm">
             ← Kembali
         </a>

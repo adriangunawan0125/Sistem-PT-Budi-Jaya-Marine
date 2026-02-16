@@ -99,12 +99,19 @@ class PoMasukController extends Controller
 
 
     /* ================= SHOW ================= */
-    public function show(PoMasuk $poMasuk)
-    {
-        $poMasuk->load(['items','poSuppliers','deliveryOrders']);
+  public function show(PoMasuk $poMasuk)
+{
+    $poMasuk->load([
+        'items',
+        'poSuppliers',
+        'deliveryOrders',
+        'pengeluaran',
+        'invoicePos'
+    ]);
 
-        return view('admin_marine.po_masuk.show', compact('poMasuk'));
-    }
+    return view('admin_marine.po_masuk.show', compact('poMasuk'));
+}
+
 
 
     /* ================= EDIT ================= */

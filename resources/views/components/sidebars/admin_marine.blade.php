@@ -104,7 +104,7 @@
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#podo">
             <i class="fas fa-dolly"></i>
-            <span>Kelola PO & DO</span>
+            <span>Kelola Project (po,do,dll)</span>
         </a>
         <div id="podo" class="collapse" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">

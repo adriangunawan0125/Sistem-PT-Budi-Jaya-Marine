@@ -83,7 +83,7 @@
 
                 <div class="col-md-6 mb-3">
                     <strong>Status</strong><br>
-                    <span class="badge 
+                    <span class="badge text-light
                         @if($poMasuk->status == 'draft') bg-secondary
                         @elseif($poMasuk->status == 'approved') bg-primary
                         @elseif($poMasuk->status == 'processing') bg-warning text-dark
@@ -135,7 +135,7 @@
         </div>
 
         <div class="card-footer text-end fw-bold">
-            Total Jual:
+            Nilai PO klien (Total Jual) :
             Rp {{ number_format($poMasuk->total_jual ?? 0,0,',','.') }}
         </div>
 
@@ -195,7 +195,7 @@
         </div>
 
         <div class="card-footer text-end fw-bold">
-            Total Beli:
+            Nilai PO Kita (Total Beli):
             Rp {{ number_format($poMasuk->poSuppliers->sum('grand_total'),0,',','.') }}
         </div>
 
@@ -321,6 +321,89 @@
 
 </div>
 
+{{-- ================= INVOICE PO ================= --}}
+<div class="card mb-4 shadow-sm">
+
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>Invoice PO</strong>
+
+        <a href="{{ route('invoice-po.create', $poMasuk->id) }}"
+           class="btn btn-success btn-sm">
+            + Buat Invoice
+        </a>
+    </div>
+
+    <div class="card-body p-0">
+        <table class="table table-bordered mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>No Invoice</th>
+                    <th width="140">Tanggal</th>
+                    <th width="120">Periode</th>
+                    <th width="160">Grand Total</th>
+                    <th width="120">Status</th>
+                    <th width="140">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @php
+                    $totalInvoice = $poMasuk->invoicePos->sum('grand_total');
+                @endphp
+
+                @forelse($poMasuk->invoicePos as $inv)
+                    <tr>
+                        <td>{{ $inv->no_invoice }}</td>
+
+                        <td>
+                            {{ \Carbon\Carbon::parse($inv->tanggal_invoice)->format('d M Y') }}
+                        </td>
+
+                        <td>
+                            {{ $inv->periode ?? '-' }}
+                        </td>
+
+                        <td>
+                            Rp {{ number_format($inv->grand_total,0,',','.') }}
+                        </td>
+
+                        <td>
+                            <span class="badge text-light
+                                @if($inv->status == 'draft') bg-secondary
+                                @elseif($inv->status == 'issued') bg-primary
+                                @elseif($inv->status == 'paid') bg-success
+                                @elseif($inv->status == 'cancelled') bg-danger
+                                @endif">
+                                {{ strtoupper($inv->status) }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <a href="{{ route('invoice-po.show',$inv->id) }}"
+                               class="btn btn-sm btn-primary">
+                                Detail
+                            </a>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">
+                            Belum ada Invoice
+                        </td>
+                    </tr>
+                @endforelse
+
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card-footer text-end fw-bold">
+        Total Invoice :
+        Rp {{ number_format($totalInvoice ?? 0,0,',','.') }}
+    </div>
+
+</div>
+
     {{-- ================= MARGIN ================= --}}
     <div class="card shadow-sm">
 
@@ -339,11 +422,11 @@
 
             <table class="table table-bordered">
                 <tr>
-                    <th width="200">Total Jual</th>
+                    <th width="200">Nilai PO Klien</th>
                     <td>Rp {{ number_format($poMasuk->total_jual,0,',','.') }}</td>
                 </tr>
                 <tr>
-                    <th>Total Beli</th>
+                    <th>Nilai PO Kita</th>
                     <td>Rp {{ number_format($totalBeli,0,',','.') }}</td>
                 </tr>
                 <tr>

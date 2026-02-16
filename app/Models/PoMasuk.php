@@ -51,5 +51,11 @@ class PoMasuk extends Model
     {
         return $this->hasMany(PengeluaranPo::class);
     }
+  public function invoicePos()
+{
+    return $this->hasMany(\App\Models\InvoicePo::class, 'po_masuk_id');
+}
+
+
 
 }

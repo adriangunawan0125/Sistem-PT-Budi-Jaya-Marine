@@ -38,7 +38,7 @@ use App\Http\Controllers\AdminMarine\PoMasukController;
 use App\Http\Controllers\AdminMarine\PoSupplierController;
 use App\Http\Controllers\AdminMarine\DeliveryOrderController;
 use App\Http\Controllers\AdminMarine\PengeluaranPoController;
-
+use App\Http\Controllers\AdminMarine\InvoicePoController;
 
 
 //PUBLIC 
@@ -453,5 +453,52 @@ Route::put('pengeluaran-po/update/{pengeluaranPo}',
 Route::delete('pengeluaran-po/destroy/{pengeluaranPo}', 
     [PengeluaranPoController::class,'destroy'])
     ->name('pengeluaran-po.destroy');
-});
+
+/* ================= INVOICE PO ================= */
+
+/* INDEX */
+Route::get('invoice-po', 
+    [InvoicePoController::class,'index'])
+    ->name('invoice-po.index');
+
+/* CREATE (by PO Masuk) */
+Route::get('invoice-po/create/{poMasuk}', 
+    [InvoicePoController::class,'create'])
+    ->name('invoice-po.create');
+
+/* STORE */
+Route::post('invoice-po/store', 
+    [InvoicePoController::class,'store'])
+    ->name('invoice-po.store');
+
+/* SHOW */
+Route::get('invoice-po/show/{invoicePo}', 
+    [InvoicePoController::class,'show'])
+    ->name('invoice-po.show');
+
+/* EDIT */
+Route::get('invoice-po/edit/{invoicePo}', 
+    [InvoicePoController::class,'edit'])
+    ->name('invoice-po.edit');
+
+/* UPDATE */
+Route::put('invoice-po/update/{invoicePo}', 
+    [InvoicePoController::class,'update'])
+    ->name('invoice-po.update');
+
+/* DELETE */
+Route::delete('invoice-po/destroy/{invoicePo}', 
+    [InvoicePoController::class,'destroy'])
+    ->name('invoice-po.destroy');
+
+/* PRINT */
+Route::get('invoice-po/print/{invoicePo}', 
+    [InvoicePoController::class,'print'])
+    ->name('invoice-po.print');
+    
+Route::patch('invoice-po/{invoicePo}/status',
+    [InvoicePoController::class, 'updateStatus'])
+    ->name('invoice-po.update-status');
+
+    });
 

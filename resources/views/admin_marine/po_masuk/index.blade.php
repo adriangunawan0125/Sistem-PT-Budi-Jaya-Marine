@@ -85,7 +85,7 @@ Rp {{ number_format($margin,0,',','.') }}
 </td>
 
 <td>
-<span class="badge 
+<span class="badge text-light
 @if($po->status == 'draft') bg-secondary
 @elseif($po->status == 'approved') bg-primary
 @elseif($po->status == 'processing') bg-warning text-dark
