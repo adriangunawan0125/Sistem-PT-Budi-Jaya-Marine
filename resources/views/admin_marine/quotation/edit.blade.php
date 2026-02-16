@@ -34,15 +34,22 @@ value="{{ $quotation->date }}">
 
 <div class="mb-3">
 <label>Mitra</label>
-<input type="text" class="form-control"
-value="{{ $quotation->mitra->nama_mitra ?? '-' }}" readonly>
+<input type="text"
+name="mitra_name"
+class="form-control"
+value="{{ old('mitra_name', $quotation->mitra_name) }}"
+required>
 </div>
 
 <div class="mb-3">
 <label>Vessel</label>
-<input type="text" class="form-control"
-value="{{ $quotation->vessel->nama_vessel ?? '-' }}" readonly>
+<input type="text"
+name="vessel_name"
+class="form-control"
+value="{{ old('vessel_name', $quotation->vessel_name) }}"
+required>
 </div>
+
 
 <div class="mb-3">
 <label>Attention</label>

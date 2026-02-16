@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Quotation</title>
+<title>PO Supplier</title>
 
 <style>
 body{
@@ -17,7 +17,6 @@ table{ width:100%; border-collapse:collapse; }
 .right{ text-align:right; }
 .bold{ font-weight:bold; }
 
-/* ================= KOP ================= */
 .kop{
     border-bottom:2px solid #000;
     padding-bottom:8px;
@@ -36,12 +35,6 @@ table{ width:100%; border-collapse:collapse; }
     font-weight:bold;
 }
 
-.company-address{
-    font-size:12px;
-    line-height:1.5;
-}
-
-/* ================= ITEM TABLE ================= */
 .item-table th,
 .item-table td{
     border:1px solid #000;
@@ -53,10 +46,6 @@ table{ width:100%; border-collapse:collapse; }
     background:#b7c7d9;
     font-weight:bold;
     text-align:center;
-}
-
-.sub-row{
-    font-weight:bold;
 }
 
 .total-row{
@@ -76,10 +65,6 @@ table{ width:100%; border-collapse:collapse; }
 .rp{ width:20px; }
 .val{ text-align:right; }
 
-.terms{
-    margin-top:25px;
-    font-size:12px;
-}
 </style>
 </head>
 
@@ -107,28 +92,24 @@ table{ width:100%; border-collapse:collapse; }
 <table width="100%">
 <tr>
 <td width="60%">
-To<br>
-Attn<br>
-Quote No<br>
-Project<br>
-Vessel Name<br>
-Place
+Supplier<br>
+No PO Internal<br>
+Tanggal PO<br>
+PO Client
 </td>
 <td width="40%">
-: {{ $quotation->mitra_name ?? '-' }}<br>
-: {{ $quotation->attention ?? '-' }}<br>
-: {{ $quotation->quote_no }}<br>
-: {{ $quotation->project ?? '-' }}<br>
-: {{ $quotation->vessel_name ?? '-' }}<br>
-: {{ $quotation->place ?? '-' }}
+: {{ $poSupplier->nama_perusahaan }}<br>
+: {{ $poSupplier->no_po_internal }}<br>
+: {{ $poDate->format('d M Y') }}<br>
+: {{ $poSupplier->poMasuk->no_po_klien ?? '-' }}
 </td>
 </tr>
 </table>
 
-<br>
+<br><br>
 
 Dear Sir/Madam,<br>
-In compliance with your inquiry, we are pleased to offer you this quotation as follow :
+Please supply the following items as per our purchase order:
 
 <br><br>
 
@@ -141,27 +122,14 @@ In compliance with your inquiry, we are pleased to offer you this quotation as f
     <th width="15%">Price</th>
     <th width="8%">Qty</th>
     <th width="10%">Unit</th>
-    <th width="18%">Total</th>
+    <th width="18%">Amount</th>
 </tr>
 </thead>
 <tbody>
 
-@php 
-    $no = 1; 
-@endphp
+@php $no = 1; @endphp
 
-@foreach($quotation->subItems as $sub)
-
-<tr class="sub-row">
-    <td></td>
-    <td class="bold">{{ $sub->name }}</td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-</tr>
-
-@foreach($sub->items as $item)
+@foreach($poSupplier->items as $item)
 <tr>
     <td class="center">{{ $no++ }}</td>
     <td>{{ $item->item }}</td>
@@ -170,7 +138,7 @@ In compliance with your inquiry, we are pleased to offer you this quotation as f
         <table class="money">
         <tr>
             <td class="rp">Rp</td>
-            <td class="val">{{ number_format($item->price,0,',','.') }}</td>
+            <td class="val">{{ number_format($item->price_beli,0,',','.') }}</td>
         </tr>
         </table>
     </td>
@@ -182,17 +150,41 @@ In compliance with your inquiry, we are pleased to offer you this quotation as f
         <table class="money">
         <tr>
             <td class="rp">Rp</td>
-            <td class="val">{{ number_format($item->total,0,',','.') }}</td>
+            <td class="val">{{ number_format($item->amount,0,',','.') }}</td>
         </tr>
         </table>
     </td>
 </tr>
 @endforeach
 
-@endforeach
-
 <tr class="total-row">
     <td colspan="5" class="right">TOTAL</td>
+    <td>
+        <table class="money">
+        <tr>
+            <td class="rp">Rp</td>
+            <td class="val">{{ number_format($poSupplier->total_beli,0,',','.') }}</td>
+        </tr>
+        </table>
+    </td>
+</tr>
+
+@if($poSupplier->discount_amount > 0)
+<tr class="total-row">
+    <td colspan="5" class="right">DISCOUNT</td>
+    <td>
+        <table class="money">
+        <tr>
+            <td class="rp">Rp</td>
+            <td class="val"> {{ number_format($poSupplier->discount_amount,0,',','.') }}</td>
+        </tr>
+        </table>
+    </td>
+</tr>
+@endif
+
+<tr class="total-row">
+    <td colspan="5" class="right">GRAND TOTAL</td>
     <td>
         <table class="money">
         <tr>
@@ -206,26 +198,14 @@ In compliance with your inquiry, we are pleased to offer you this quotation as f
 </tbody>
 </table>
 
-@if($quotation->termsConditions->count())
-<div class="terms">
-<br>
-<b>Terms and conditions as follows:</b><br><br>
-
-@foreach($quotation->termsConditions as $term)
-{{ $loop->iteration }}. {{ $term->description }}<br>
-@endforeach
-</div>
-@endif
-
 <br><br>
 
-Yours Faithfully &<br>
-Best regards,<br>
+Yours Faithfully,<br>
 <b>PT BUDI JAYA MARINE</b>
 
-<br><br><br><br><br>
+<br><br><br><br>
 
-Suartini T.
+Authorized Signature
 
 </body>
 </html>

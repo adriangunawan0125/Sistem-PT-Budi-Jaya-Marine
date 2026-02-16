@@ -32,32 +32,38 @@
             @forelse($quotations as $q)
 
                 @php
-                    $grandTotal = 0;
-                    foreach($q->subItems as $sub){
-                        foreach($sub->items as $item){
-                            $grandTotal += $item->total;
-                        }
-                    }
+                    $grandTotal = $q->subItems
+                        ->sum(fn($sub) => $sub->items->sum('total'));
                 @endphp
 
                 <tr>
                     <td>{{ $q->quote_no }}</td>
-                    <td>{{ $q->mitra->nama_mitra ?? '-' }}</td>
-                    <td>{{ $q->vessel->nama_vessel ?? '-' }}</td>
+
+                    {{-- FIX DI SINI --}}
+                    <td>{{ $q->mitra_name }}</td>
+                    <td>{{ $q->vessel_name }}</td>
+
                     <td>{{ $q->project }}</td>
-                    <td>{{ $q->date ? \Carbon\Carbon::parse($q->date)->format('d-m-Y') : '-' }}</td>
+
+                    <td>
+                        {{ $q->date 
+                            ? \Carbon\Carbon::parse($q->date)->format('d-m-Y') 
+                            : '-' }}
+                    </td>
+
                     <td class="text-end">
                         Rp {{ number_format($grandTotal,0,',','.') }}
                     </td>
+
                     <td class="d-flex gap-1">
 
                         <a href="{{ route('quotations.show',$q->id) }}"
-                           class="btn btn-sm btn-info" style="margin-right: 4px;">
+                           class="btn btn-sm btn-info">
                             Detail
                         </a>
 
                         <a href="{{ route('quotations.edit',$q->id) }}"
-                           class="btn btn-sm btn-warning" style="margin-right: 4px;">
+                           class="btn btn-sm btn-warning">
                             Edit
                         </a>
 

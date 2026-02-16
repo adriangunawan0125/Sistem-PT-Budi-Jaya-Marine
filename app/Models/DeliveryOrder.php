@@ -19,12 +19,13 @@ class DeliveryOrder extends Model
     ];
 
     public function poMasuk()
-    {
-        return $this->belongsTo(PoMasuk::class, 'po_masuk_id');
-    }
-    public function items()
 {
-    return $this->hasMany(DeliveryOrderItem::class, 'delivery_order_id');
+    return $this->belongsTo(PoMasuk::class);
+}
+
+public function items()
+{
+    return $this->hasMany(DeliveryOrderItem::class);
 }
 
 }

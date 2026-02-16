@@ -11,45 +11,45 @@ class PoMasuk extends Model
 
     protected $table = 'po_masuk';
 
-    protected $fillable = [
-        'nama_perusahaan',
-        'alamat',
-        'tanggal_po',
-        'no_po_klien',
-        'vessel',
-        'total_jual',
-        'status',
-        'margin',
-        'margin_status',
-    ];
+  protected $fillable = [
+    'mitra_marine',
+    'vessel',
+    'alamat',
+    'tanggal_po',
+    'no_po_klien',
+    'status',
+    'total_jual',
+    'margin',
+    'margin_status',
+];
 
-    // PO Masuk punya banyak item
+    /* ================= RELATION ================= */
     public function items()
     {
         return $this->hasMany(PoMasukItem::class, 'po_masuk_id');
     }
 
-    // PO Masuk punya banyak PO Supplier
     public function poSuppliers()
     {
         return $this->hasMany(PoSupplier::class, 'po_masuk_id');
     }
 
-    // PO Masuk punya satu / banyak DO
     public function deliveryOrders()
     {
         return $this->hasMany(DeliveryOrder::class, 'po_masuk_id');
     }
-
-    // Hitung total beli dari semua PO supplier
+    /* ================= CALCULATION ================= */
     public function totalBeli()
     {
         return $this->poSuppliers()->sum('total_beli');
     }
-
-    // Hitung margin
     public function hitungMargin()
     {
         return $this->total_jual - $this->totalBeli();
     }
+    public function pengeluaran()
+    {
+        return $this->hasMany(PengeluaranPo::class);
+    }
+
 }

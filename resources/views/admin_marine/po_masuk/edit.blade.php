@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
 
-<h4 class="mb-4">Create PO Masuk (Client PO)</h4>
+<h4 class="mb-4">Edit PO Masuk</h4>
 
 @if ($errors->any())
 <div class="alert alert-danger">
@@ -15,15 +15,13 @@
 </div>
 @endif
 
-<form action="{{ route('po-masuk.store') }}" method="POST">
+<form action="{{ route('po-masuk.update',$poMasuk->id) }}" method="POST">
 @csrf
+@method('PUT')
 
 {{-- ================= HEADER ================= --}}
 <div class="card mb-4">
-<div class="card-header">
-<strong>PO Client Information</strong>
-</div>
-
+<div class="card-header"><strong>Header PO</strong></div>
 <div class="card-body">
 
 <div class="row mb-3">
@@ -32,7 +30,7 @@
 <input type="text"
 name="mitra_marine"
 class="form-control"
-value="{{ old('mitra_marine') }}"
+value="{{ old('mitra_marine', $poMasuk->mitra_marine) }}"
 required>
 </div>
 
@@ -41,7 +39,7 @@ required>
 <input type="text"
 name="vessel"
 class="form-control"
-value="{{ old('vessel') }}"
+value="{{ old('vessel', $poMasuk->vessel) }}"
 required>
 </div>
 </div>
@@ -52,7 +50,7 @@ required>
 <input type="text"
 name="no_po_klien"
 class="form-control"
-value="{{ old('no_po_klien') }}"
+value="{{ old('no_po_klien', $poMasuk->no_po_klien) }}"
 required>
 </div>
 
@@ -61,7 +59,7 @@ required>
 <input type="date"
 name="tanggal_po"
 class="form-control"
-value="{{ old('tanggal_po', date('Y-m-d')) }}"
+value="{{ old('tanggal_po', $poMasuk->tanggal_po) }}"
 required>
 </div>
 </div>
@@ -70,12 +68,8 @@ required>
 <div class="col-md-6">
 <label>Type</label>
 <select name="type" class="form-control" required>
-<option value="sparepart" {{ old('type')=='sparepart'?'selected':'' }}>
-Sparepart
-</option>
-<option value="manpower" {{ old('type')=='manpower'?'selected':'' }}>
-Manpower
-</option>
+<option value="sparepart" {{ $poMasuk->type == 'sparepart' ? 'selected' : '' }}>Sparepart</option>
+<option value="manpower" {{ $poMasuk->type == 'manpower' ? 'selected' : '' }}>Manpower</option>
 </select>
 </div>
 </div>
@@ -84,7 +78,7 @@ Manpower
 <label>Alamat Project / Delivery</label>
 <textarea name="alamat"
 class="form-control"
-rows="3">{{ old('alamat') }}</textarea>
+rows="3">{{ old('alamat', $poMasuk->alamat) }}</textarea>
 </div>
 
 </div>
@@ -93,7 +87,7 @@ rows="3">{{ old('alamat') }}</textarea>
 {{-- ================= ITEMS ================= --}}
 <div class="card mb-4">
 <div class="card-header d-flex justify-content-between">
-<strong>Items</strong>
+<strong>Item PO</strong>
 <button type="button"
 class="btn btn-sm btn-primary"
 onclick="addItem()">
@@ -102,21 +96,71 @@ onclick="addItem()">
 </div>
 
 <div class="card-body p-0">
-
 <table class="table table-bordered mb-0">
-<thead class="table-light">
+<thead class="table-dark">
 <tr>
-<th width="30%">Item</th>
+<th>Item</th>
 <th width="15%">Price Jual</th>
 <th width="10%">Qty</th>
-<th width="10%">Unit</th>
-<th width="20%">Amount</th>
+<th width="12%">Unit</th>
+<th width="15%">Amount</th>
 <th width="5%"></th>
 </tr>
 </thead>
-<tbody id="item-body"></tbody>
-</table>
 
+<tbody id="item-body">
+
+@foreach($poMasuk->items as $i => $item)
+<tr>
+<td>
+<input type="text"
+name="items[{{ $i }}][item]"
+class="form-control"
+value="{{ $item->item }}" required>
+</td>
+
+<td>
+<input type="number"
+name="items[{{ $i }}][price_jual]"
+class="form-control price"
+value="{{ $item->price_jual }}"
+oninput="calculateRow(this)" required>
+</td>
+
+<td>
+<input type="number"
+name="items[{{ $i }}][qty]"
+class="form-control qty"
+value="{{ $item->qty }}"
+oninput="calculateRow(this)" required>
+</td>
+
+<td>
+<input type="text"
+name="items[{{ $i }}][unit]"
+class="form-control"
+value="{{ $item->unit }}">
+</td>
+
+<td>
+<input type="number"
+class="form-control amount"
+value="{{ $item->amount }}"
+readonly>
+</td>
+
+<td>
+<button type="button"
+class="btn btn-danger btn-sm"
+onclick="this.closest('tr').remove();updateTotal();">
+X
+</button>
+</td>
+</tr>
+@endforeach
+
+</tbody>
+</table>
 </div>
 </div>
 
@@ -125,7 +169,9 @@ onclick="addItem()">
 <div class="card-body text-end">
 <h4>
 Total Jual: Rp
-<span id="total-jual">0</span>
+<span id="grand-total">
+{{ number_format($poMasuk->total_jual,0,',','.') }}
+</span>
 </h4>
 </div>
 </div>
@@ -138,7 +184,7 @@ Cancel
 
 <button type="submit"
 class="btn btn-success">
-Save PO Masuk
+Update PO
 </button>
 </div>
 
@@ -147,38 +193,30 @@ Save PO Masuk
 
 <script>
 
-let itemIndex = 0;
+let itemIndex = {{ $poMasuk->items->count() }};
 
-/* ================= ADD ITEM ================= */
 function addItem(){
-
-let tbody = document.getElementById('item-body');
 
 let row = `
 <tr>
 <td>
 <input type="text"
 name="items[${itemIndex}][item]"
-class="form-control"
-required>
+class="form-control" required>
 </td>
 
 <td>
 <input type="number"
-step="0.01"
 name="items[${itemIndex}][price_jual]"
 class="form-control price"
-oninput="calculateRow(this)"
-required>
+oninput="calculateRow(this)" required>
 </td>
 
 <td>
 <input type="number"
-step="1"
 name="items[${itemIndex}][qty]"
 class="form-control qty"
-oninput="calculateRow(this)"
-required>
+oninput="calculateRow(this)" required>
 </td>
 
 <td>
@@ -196,24 +234,18 @@ readonly>
 <td>
 <button type="button"
 class="btn btn-danger btn-sm"
-onclick="removeRow(this)">
+onclick="this.closest('tr').remove();updateTotal();">
 X
 </button>
 </td>
-</tr>
-`;
+</tr>`;
 
-tbody.insertAdjacentHTML('beforeend', row);
+document.getElementById('item-body')
+.insertAdjacentHTML('beforeend', row);
+
 itemIndex++;
 }
 
-/* ================= REMOVE ROW ================= */
-function removeRow(btn){
-btn.closest('tr').remove();
-updateTotal();
-}
-
-/* ================= CALCULATE ROW ================= */
 function calculateRow(input){
 
 let row = input.closest('tr');
@@ -221,14 +253,13 @@ let row = input.closest('tr');
 let price = parseFloat(row.querySelector('.price').value) || 0;
 let qty   = parseFloat(row.querySelector('.qty').value) || 0;
 
-let amount = price * qty;
+let total = price * qty;
 
-row.querySelector('.amount').value = amount.toFixed(2);
+row.querySelector('.amount').value = total;
 
 updateTotal();
 }
 
-/* ================= UPDATE TOTAL ================= */
 function updateTotal(){
 
 let total = 0;
@@ -237,11 +268,11 @@ document.querySelectorAll('.amount').forEach(a=>{
 total += parseFloat(a.value) || 0;
 });
 
-document.getElementById('total-jual')
+document.getElementById('grand-total')
 .innerText = total.toLocaleString('id-ID');
-
 }
 
-</script>
+updateTotal();
 
+</script>
 @endsection

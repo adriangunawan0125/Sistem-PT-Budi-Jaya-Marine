@@ -24,9 +24,25 @@ class PoSupplierItem extends Model
     {
         return $this->belongsTo(PoSupplier::class, 'po_supplier_id');
     }
-    public function deliveryItems()
-{
-    return $this->hasMany(DeliveryOrderItem::class, 'po_supplier_item_id');
-}
 
+    /*
+    |--------------------------------------------------------------------------
+    | AUTO CALCULATE AMOUNT
+    |--------------------------------------------------------------------------
+    */
+
+    protected static function booted()
+    {
+        static::saving(function ($item) {
+            $item->amount = ($item->price_beli ?? 0) * ($item->qty ?? 0);
+        });
+
+        static::saved(function ($item) {
+            $item->poSupplier?->recalculateTotals();
+        });
+
+        static::deleted(function ($item) {
+            $item->poSupplier?->recalculateTotals();
+        });
+    }
 }

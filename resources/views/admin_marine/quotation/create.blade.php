@@ -26,24 +26,23 @@
 <div class="row mb-3">
 <div class="col-md-6">
 <label>Mitra</label>
-<select name="mitra_id" class="form-control" required>
-<option value="">-- Select Mitra --</option>
-@foreach($mitras as $m)
-<option value="{{ $m->id }}">{{ $m->nama_mitra }}</option>
-@endforeach
-</select>
+<input type="text"
+name="mitra_name"
+class="form-control"
+value="{{ old('mitra_name') }}"
+required>
 </div>
 
 <div class="col-md-6">
 <label>Vessel</label>
-<select name="vessel_id" class="form-control" required>
-<option value="">-- Select Vessel --</option>
-@foreach($vessels as $v)
-<option value="{{ $v->id }}">{{ $v->nama_vessel }}</option>
-@endforeach
-</select>
+<input type="text"
+name="vessel_name"
+class="form-control"
+value="{{ old('vessel_name') }}"
+required>
 </div>
 </div>
+
 
 <div class="row mb-3">
 <div class="col-md-6">

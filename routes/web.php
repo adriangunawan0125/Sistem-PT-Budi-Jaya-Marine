@@ -29,11 +29,16 @@ use App\Http\Controllers\PemasukanController;
 use App\Http\Controllers\owner_transport\OwnerTransportController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\AdminMarine\MarineInvoiceController;
-use App\Http\Controllers\PoMasukController;
-use App\Http\Controllers\PoSupplierController;
-use App\Http\Controllers\DeliveryOrderController;
- use App\Http\Controllers\AdminMarine\MitraMarineController;
+//use App\Http\Controllers\PoMasukController;
+//use App\Http\Controllers\PoSupplierController;
+//use App\Http\Controllers\DeliveryOrderController;
+use App\Http\Controllers\AdminMarine\MitraMarineController;
 use App\Http\Controllers\AdminMarine\QuotationController;
+use App\Http\Controllers\AdminMarine\PoMasukController;
+use App\Http\Controllers\AdminMarine\PoSupplierController;
+use App\Http\Controllers\AdminMarine\DeliveryOrderController;
+use App\Http\Controllers\AdminMarine\PengeluaranPoController;
+
 
 
 //PUBLIC 
@@ -334,50 +339,119 @@ Route::delete('term/{term}',
 
     
     
-Route::get('/po-masuk', [PoMasukController::class, 'index'])->name('po-masuk.index');
 
+Route::resource('po-masuk', PoMasukController::class);
 
-Route::get('/po-masuk', [PoMasukController::class, 'index'])->name('po-masuk.index');
-Route::get('/po-masuk/create', [PoMasukController::class, 'create'])->name('po-masuk.create');
-Route::post('/po-masuk', [PoMasukController::class, 'store'])->name('po-masuk.store');
-Route::get('/po-masuk/{id}', [PoMasukController::class, 'show'])->name('po-masuk.show');
+/* ================= PO SUPPLIER ================= */
+/* ================= PO SUPPLIER ================= */
 
+// index
+Route::get('po-supplier', [PoSupplierController::class, 'index'])
+    ->name('po-supplier.index');
 
-    /*
-    |--------------------------------------------------------------------------
-    | PO SUPPLIER (DARI PO MASUK)
-    |--------------------------------------------------------------------------
-    */
-Route::get('/po-supplier', [PoSupplierController::class, 'index'])->name('po-supplier.index');
-Route::get('/po-supplier/create/{poMasukId}', [PoSupplierController::class, 'create'])->name('po-supplier.create');
-Route::post('/po-supplier', [PoSupplierController::class, 'store'])->name('po-supplier.store');
-Route::get('/po-supplier/{id}', [PoSupplierController::class, 'show'])->name('po-supplier.show');
+// create (pakai route model binding)
+Route::get('po-supplier/create/{poMasuk}', [PoSupplierController::class, 'create'])
+    ->name('po-supplier.create');
 
-// routes/web.php
+// store
+Route::post('po-supplier', [PoSupplierController::class, 'store'])
+    ->name('po-supplier.store');
 
-// list DO berdasarkan PO Masuk
-Route::get('/delivery-order/{poMasuk}', 
+    Route::get('po-supplier/{poSupplier}', [PoSupplierController::class, 'show'])
+    ->name('po-supplier.show');
+
+// edit
+Route::get('po-supplier/{poSupplier}/edit', [PoSupplierController::class, 'edit'])
+    ->name('po-supplier.edit');
+
+// update
+Route::put('po-supplier/{poSupplier}', [PoSupplierController::class, 'update'])
+    ->name('po-supplier.update');
+
+// destroy
+Route::delete('po-supplier/{poSupplier}', [PoSupplierController::class, 'destroy'])
+    ->name('po-supplier.destroy');
+Route::get('po-supplier/{poSupplier}/print',
+    [PoSupplierController::class, 'print']
+)->name('po-supplier.print');
+
+/* ================= DELIVERY ORDER ================= */
+
+// List DO per PO
+Route::get('po-masuk/{poMasuk}/delivery-orders', 
     [DeliveryOrderController::class, 'index']
 )->name('delivery-order.index');
 
-// form create DO
-Route::get('/delivery-order/create/{poMasuk}', 
+// Form create DO
+Route::get('po-masuk/{poMasuk}/delivery-orders/create', 
     [DeliveryOrderController::class, 'create']
 )->name('delivery-order.create');
 
-// simpan DO
-Route::post('/delivery-order', 
+// Store DO
+Route::post('delivery-orders', 
     [DeliveryOrderController::class, 'store']
 )->name('delivery-order.store');
 
-// detail DO
-Route::get('/delivery-order/show/{deliveryOrder}', 
+// Show DO
+Route::get('delivery-orders/{deliveryOrder}', 
     [DeliveryOrderController::class, 'show']
 )->name('delivery-order.show');
 
-// ubah status DO -> delivered
-Route::put('/delivery-order/deliver/{deliveryOrder}', 
-    [DeliveryOrderController::class, 'deliver']
-)->name('delivery-order.deliver');
+// Edit DO
+Route::get('delivery-orders/{deliveryOrder}/edit', 
+    [DeliveryOrderController::class, 'edit']
+)->name('delivery-order.edit');
+
+// Update DO
+Route::put('delivery-orders/{deliveryOrder}', 
+    [DeliveryOrderController::class, 'update']
+)->name('delivery-order.update');
+
+// Delete DO
+Route::delete('delivery-orders/{deliveryOrder}', 
+    [DeliveryOrderController::class, 'destroy']
+)->name('delivery-order.destroy');
+
+Route::get('delivery-order/{deliveryOrder}/print',
+    [DeliveryOrderController::class, 'print']
+)->name('delivery-order.print');
+
+// PO Masuk Status
+Route::patch('po-masuk/{poMasuk}/approve', [PoMasukController::class,'approve'])
+    ->name('po-masuk.approve');
+
+Route::patch('po-masuk/{poMasuk}/close', [PoMasukController::class,'close'])
+    ->name('po-masuk.close');
+
+// Delivery Order Status
+Route::patch('delivery-order/{deliveryOrder}/deliver', [DeliveryOrderController::class,'markDelivered'])
+    ->name('delivery-order.deliver');
+Route::patch('po-supplier/{poSupplier}/approve',
+    [PoSupplierController::class,'approve'])
+    ->name('po-supplier.approve');
+
+Route::patch('po-supplier/{poSupplier}/cancel',
+    [PoSupplierController::class,'cancel'])
+    ->name('po-supplier.cancel');
+Route::resource('pengeluaran-po', PengeluaranPoController::class);
+    Route::get('pengeluaran-po/create/{poMasuk}', 
+    [PengeluaranPoController::class,'create'])
+    ->name('pengeluaran-po.create');
+
+Route::post('pengeluaran-po/store', 
+    [PengeluaranPoController::class,'store'])
+    ->name('pengeluaran-po.store');
+
+Route::get('pengeluaran-po/edit/{pengeluaranPo}', 
+    [PengeluaranPoController::class,'edit'])
+    ->name('pengeluaran-po.edit');
+
+Route::put('pengeluaran-po/update/{pengeluaranPo}', 
+    [PengeluaranPoController::class,'update'])
+    ->name('pengeluaran-po.update');
+
+Route::delete('pengeluaran-po/destroy/{pengeluaranPo}', 
+    [PengeluaranPoController::class,'destroy'])
+    ->name('pengeluaran-po.destroy');
 });
 

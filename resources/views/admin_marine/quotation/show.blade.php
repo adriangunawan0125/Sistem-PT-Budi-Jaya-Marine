@@ -3,9 +3,6 @@
 @section('content')
 
 <style>
-
-/* ================= CARD TABLE STYLE ================= */
-
 .item-table{
     width:100%;
     border-collapse:collapse;
@@ -44,19 +41,14 @@
     padding:0;
 }
 
-.rp{
-    width:25px;
-}
-
-.val{
-    text-align:right;
-}
+.rp{ width:25px; }
+.val{ text-align:right; }
 
 .header-label{
     font-weight:600;
     color:#555;
+    font-size:13px;
 }
-
 </style>
 
 <div class="container">
@@ -68,11 +60,11 @@
         <div class="d-flex gap-2">
             <a href="{{ route('quotations.index') }}" 
                class="btn btn-secondary btn-sm">
-               kembali
+               Kembali
             </a>
 
             <a href="{{ route('quotations.print', $quotation->id) }}" 
-               target="_blank" style="margin-left: 4px"
+               target="_blank"
                class="btn btn-danger btn-sm">
                Print PDF
             </a>
@@ -87,7 +79,7 @@
             <div class="row mb-3">
                 <div class="col-md-6">
                     <div class="header-label">To</div>
-                    {{ $quotation->mitra->nama_mitra ?? '-' }}
+                    {{ $quotation->mitra_name ?? '-' }}
                 </div>
 
                 <div class="col-md-6 text-md-end">
@@ -99,12 +91,14 @@
             <div class="row mb-3">
                 <div class="col-md-6">
                     <div class="header-label">Vessel</div>
-                    {{ $quotation->vessel->nama_vessel ?? '-' }}
+                    {{ $quotation->vessel_name ?? '-' }}
                 </div>
 
                 <div class="col-md-6 text-md-end">
                     <div class="header-label">Date</div>
-                    {{ $quotation->date ? \Carbon\Carbon::parse($quotation->date)->format('d M Y') : '-' }}
+                    {{ $quotation->date 
+                        ? \Carbon\Carbon::parse($quotation->date)->format('d M Y') 
+                        : '-' }}
                 </div>
             </div>
 
@@ -155,7 +149,6 @@
 
                     @foreach($quotation->subItems as $sub)
 
-                        {{-- SUB ITEM --}}
                         <tr class="sub-row">
                             <td></td>
                             <td>{{ $sub->name }}</td>
@@ -171,7 +164,6 @@
 
                             <tr>
                                 <td class="text-center">{{ $no++ }}</td>
-
                                 <td>{{ $item->item }}</td>
 
                                 <td>
@@ -209,9 +201,8 @@
 
                     @endforeach
 
-                    {{-- TOTAL ROW --}}
                     <tr class="total-row">
-                        <td colspan="5" style="text-align:right;">
+                        <td colspan="5" class="text-end">
                             TOTAL
                         </td>
                         <td>

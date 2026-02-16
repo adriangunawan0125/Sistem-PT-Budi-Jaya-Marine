@@ -3,30 +3,23 @@
 @section('content')
 <div class="container">
 
-{{-- ================= HEADER ================= --}}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h4 class="mb-0">Buat Delivery Order</h4>
+<h4 class="mb-4">Edit Delivery Order</h4>
 
-    <a href="{{ route('po-masuk.show', $poMasuk->id) }}"
-       class="btn btn-secondary btn-sm">
-        ← Kembali ke PO
-    </a>
-</div>
-
-<form action="{{ route('delivery-order.store') }}" method="POST">
+<form action="{{ route('delivery-order.update', $deliveryOrder->id) }}"
+      method="POST">
 @csrf
+@method('PUT')
 
-<input type="hidden" name="po_masuk_id" value="{{ $poMasuk->id }}">
-
-{{-- ================= INFO DO ================= --}}
+{{-- ================= INFO ================= --}}
 <div class="card mb-4 shadow-sm">
     <div class="card-body">
 
         <div class="row">
             <div class="col-md-6 mb-3">
-                <label>No Delivery Order</label>
+                <label>No DO</label>
                 <input type="text"
                        name="no_do"
+                       value="{{ $deliveryOrder->no_do }}"
                        class="form-control"
                        required>
             </div>
@@ -35,25 +28,33 @@
                 <label>Tanggal DO</label>
                 <input type="date"
                        name="tanggal_do"
+                       value="{{ $deliveryOrder->tanggal_do }}"
                        class="form-control"
-                       value="{{ date('Y-m-d') }}"
                        required>
             </div>
         </div>
 
-        <div>
-            <strong>PO Klien :</strong>
-            {{ $poMasuk->no_po_klien }}
+        <div class="mb-3">
+            <label>Status</label>
+            <select name="status" class="form-control">
+                <option value="draft"
+                    {{ $deliveryOrder->status=='draft'?'selected':'' }}>
+                    Draft
+                </option>
+                <option value="delivered"
+                    {{ $deliveryOrder->status=='delivered'?'selected':'' }}>
+                    Delivered
+                </option>
+            </select>
         </div>
 
     </div>
 </div>
 
-
 {{-- ================= ITEMS ================= --}}
 <div class="card mb-4 shadow-sm">
-    <div class="card-header d-flex justify-content-between align-items-center">
-        <strong>Items Delivery</strong>
+    <div class="card-header d-flex justify-content-between">
+        <strong>Items</strong>
 
         <button type="button"
                 class="btn btn-sm btn-primary"
@@ -74,14 +75,13 @@
             </thead>
             <tbody id="item-body">
 
-                {{-- Default tampilkan item dari PO --}}
-                @foreach($poMasuk->items as $i => $item)
+                @foreach($deliveryOrder->items as $i => $item)
                 <tr>
                     <td>
                         <input type="text"
                                name="items[{{ $i }}][item]"
-                               class="form-control"
                                value="{{ $item->item }}"
+                               class="form-control"
                                required>
                     </td>
 
@@ -89,6 +89,7 @@
                         <input type="number"
                                step="0.01"
                                name="items[{{ $i }}][qty]"
+                               value="{{ $item->qty }}"
                                class="form-control"
                                required>
                     </td>
@@ -96,8 +97,8 @@
                     <td>
                         <input type="text"
                                name="items[{{ $i }}][unit]"
-                               class="form-control"
                                value="{{ $item->unit }}"
+                               class="form-control"
                                required>
                     </td>
 
@@ -116,21 +117,17 @@
     </div>
 </div>
 
-
 <div class="text-end">
     <button class="btn btn-success">
-        Simpan Delivery Order
+        Update Delivery Order
     </button>
 </div>
 
 </form>
 </div>
 
-
-{{-- ================= SCRIPT ================= --}}
 <script>
-
-let itemIndex = {{ $poMasuk->items->count() }};
+let itemIndex = {{ $deliveryOrder->items->count() }};
 
 function addItem(){
 
@@ -177,7 +174,6 @@ function addItem(){
 function removeRow(btn){
     btn.closest('tr').remove();
 }
-
 </script>
 
 @endsection

@@ -90,26 +90,13 @@
     <div class="sidebar-heading">Kelola</div>
 
     <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#mitraMarine">
-            <i class="fas fa-ship"></i>
-            <span>Kelola Mitra Marine</span>
-        </a>
-        <div id="mitraMarine" class="collapse" data-parent="#accordionSidebar">
-            <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="#">Menu 1</a>
-                <a class="collapse-item" href="#">Menu 2</a>
-            </div>
-        </div>
-    </li>
-
-    <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#quotation">
             <i class="fas fa-file-signature"></i>
             <span>Kelola Quotation</span>
         </a>
         <div id="quotation" class="collapse" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="{{ route('quotations.index') }}">Quotation</a>
+                <a class="collapse-item" href="{{ route('quotations.index') }}">Daftar Quotation</a>
             </div>
         </div>
     </li>
@@ -121,8 +108,9 @@
         </a>
         <div id="podo" class="collapse" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="#">Menu 1</a>
-                <a class="collapse-item" href="#">Menu 2</a>
+                <a class="collapse-item" href="#">Daftar PO dari Klien </a>
+                <a class="collapse-item" href="#">Daftar PO ke supplier</a>
+                <a class="collapse-item" href="#">Daftar Delivery order</a>
             </div>
         </div>
     </li>
@@ -134,8 +122,7 @@
         </a>
         <div id="invoice" class="collapse" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="#">Menu 1</a>
-                <a class="collapse-item" href="#">Menu 2</a>
+                <a class="collapse-item" href="#">Daftar Invoice</a>
             </div>
         </div>
     </li>
@@ -147,8 +134,7 @@
         </a>
         <div id="soa" class="collapse" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="#">Menu 1</a>
-                <a class="collapse-item" href="#">Menu 2</a>
+                <a class="collapse-item" href="#">Daftar SOA</a>
             </div>
         </div>
     </li>
@@ -160,8 +146,7 @@
         </a>
         <div id="workingReport" class="collapse" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="#">Menu 1</a>
-                <a class="collapse-item" href="#">Menu 2</a>
+                <a class="collapse-item" href="#">Daftar Working Report</a>
             </div>
         </div>
     </li>
@@ -173,8 +158,7 @@
         </a>
         <div id="timesheet" class="collapse" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="#">Menu 1</a>
-                <a class="collapse-item" href="#">Menu 2</a>
+                <a class="collapse-item" href="#">Daftar Timesheet</a>
             </div>
         </div>
     </li>
