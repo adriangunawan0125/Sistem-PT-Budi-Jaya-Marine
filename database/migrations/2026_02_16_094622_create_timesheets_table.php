@@ -6,20 +6,28 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('timesheets', function (Blueprint $table) {
             $table->id();
+
+            $table->foreignId('po_masuk_id')
+                  ->constrained('po_masuk')
+                  ->cascadeOnDelete();
+
+            $table->string('project');
+            $table->string('manpower');
+
+            $table->enum('status', ['draft','submitted','approved'])
+                  ->default('draft');
+
+            $table->decimal('total_hours', 8, 2)
+                  ->default(0.00);
+
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('timesheets');

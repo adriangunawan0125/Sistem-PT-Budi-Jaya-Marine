@@ -402,6 +402,89 @@
         Rp {{ number_format($totalInvoice ?? 0,0,',','.') }}
     </div>
 
+    
+
+</div>
+
+{{-- ================= TIMESHEET ================= --}}
+<div class="card mb-4 shadow-sm">
+
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>Timesheet</strong>
+
+        <a href="{{ route('timesheet.create', $poMasuk->id) }}"
+           class="btn btn-primary btn-sm">
+            + Buat Timesheet
+        </a>
+    </div>
+
+    <div class="card-body p-0">
+
+        <table class="table table-bordered mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Project</th>
+                    <th width="150">Manpower</th>
+                    <th width="120">Total Hours</th>
+                    <th width="120">Status</th>
+                    <th width="140">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @php
+                    $totalHours = $poMasuk->timesheets->sum('total_hours');
+                @endphp
+
+                @forelse($poMasuk->timesheets as $ts)
+                    <tr>
+                        <td>
+                            <strong>{{ $ts->project }}</strong>
+                        </td>
+
+                        <td>
+                            {{ $ts->manpower }}
+                        </td>
+
+                        <td>
+                            {{ number_format($ts->total_hours,2) }} Jam
+                        </td>
+
+                        <td>
+                            <span class="badge text-light
+                                @if($ts->status == 'draft') bg-secondary
+                                @elseif($ts->status == 'approved') bg-primary
+                                @elseif($ts->status == 'completed') bg-success
+                                @endif">
+                                {{ strtoupper($ts->status) }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <a href="{{ route('timesheet.show', $ts->id) }}"
+                               class="btn btn-sm btn-info">
+                                Detail
+                            </a>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">
+                            Belum ada Timesheet
+                        </td>
+                    </tr>
+                @endforelse
+
+            </tbody>
+        </table>
+
+    </div>
+
+    <div class="card-footer text-end fw-bold">
+        Total Jam Kerja :
+        {{ number_format($totalHours ?? 0,2) }} Jam
+    </div>
+
 </div>
 
     {{-- ================= MARGIN ================= --}}

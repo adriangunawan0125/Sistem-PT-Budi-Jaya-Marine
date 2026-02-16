@@ -55,6 +55,11 @@ class PoMasuk extends Model
 {
     return $this->hasMany(\App\Models\InvoicePo::class, 'po_masuk_id');
 }
+public function timesheets()
+{
+    return $this->hasMany(\App\Models\Timesheet::class);
+}
+
 
 
 

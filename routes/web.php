@@ -495,10 +495,45 @@ Route::delete('invoice-po/destroy/{invoicePo}',
 Route::get('invoice-po/print/{invoicePo}', 
     [InvoicePoController::class,'print'])
     ->name('invoice-po.print');
-    
+
 Route::patch('invoice-po/{invoicePo}/status',
     [InvoicePoController::class, 'updateStatus'])
     ->name('invoice-po.update-status');
+
+// TIMESHEET ROUTES
+
+Route::get('timesheet/index',
+    [App\Http\Controllers\AdminMarine\TimesheetController::class, 'index']
+)->name('timesheet.index');
+
+Route::get('timesheet/create/{poMasukId}',
+    [App\Http\Controllers\AdminMarine\TimesheetController::class, 'create']
+)->name('timesheet.create');
+
+Route::post('timesheet/store',
+    [App\Http\Controllers\AdminMarine\TimesheetController::class, 'store']
+)->name('timesheet.store');
+
+Route::get('timesheet/{timesheet}',
+    [App\Http\Controllers\AdminMarine\TimesheetController::class, 'show']
+)->name('timesheet.show');
+
+Route::get('timesheet/{timesheet}/edit',
+    [App\Http\Controllers\AdminMarine\TimesheetController::class, 'edit']
+)->name('timesheet.edit');
+
+Route::put('timesheet/{timesheet}',
+    [App\Http\Controllers\AdminMarine\TimesheetController::class, 'update']
+)->name('timesheet.update');
+
+Route::delete('timesheet/{timesheet}',
+    [App\Http\Controllers\AdminMarine\TimesheetController::class, 'destroy']
+)->name('timesheet.destroy');
+
+Route::get('timesheet/{timesheet}/print',
+    [App\Http\Controllers\AdminMarine\TimesheetController::class, 'print']
+)->name('timesheet.print');
+
 
     });
 

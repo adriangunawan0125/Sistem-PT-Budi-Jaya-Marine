@@ -108,9 +108,10 @@
         </a>
         <div id="podo" class="collapse" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="#">Daftar PO dari Klien </a>
-                <a class="collapse-item" href="#">Daftar PO ke supplier</a>
-                <a class="collapse-item" href="#">Daftar Delivery order</a>
+                <a class="collapse-item" href="{{ route('po-masuk.index') }}">Daftar PO dari Klien </a>
+                <a class="collapse-item" href="{{ route('po-supplier.index') }}">Daftar PO ke supplier</a>
+                <a class="collapse-item" href="#"
+>Daftar Delivery order</a>
             </div>
         </div>
     </li>
@@ -122,7 +123,7 @@
         </a>
         <div id="invoice" class="collapse" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="#">Daftar Invoice</a>
+                <a class="collapse-item" href="{{ route('invoice-po.index') }}">Daftar Invoice</a>
             </div>
         </div>
     </li>
@@ -158,7 +159,7 @@
         </a>
         <div id="timesheet" class="collapse" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="#">Daftar Timesheet</a>
+                <a class="collapse-item" href="{{ route('timesheet.index') }}">Daftar Timesheet</a>
             </div>
         </div>
     </li>
