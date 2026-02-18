@@ -1,6 +1,5 @@
 <?php
 
-
 use App\Http\Controllers\AdminMarine\TimesheetController;
 use App\Http\Controllers\ContactMessageController;
 use Illuminate\Support\Facades\Route;
@@ -39,7 +38,8 @@ use App\Http\Controllers\AdminMarine\PoSupplierController;
 use App\Http\Controllers\AdminMarine\DeliveryOrderController;
 use App\Http\Controllers\AdminMarine\PengeluaranPoController;
 use App\Http\Controllers\AdminMarine\InvoicePoController;
-
+use App\Http\Controllers\AdminMarine\WorkingReportController;
+use App\Http\Controllers\AdminMarine\SoaController;
 
 //PUBLIC 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -533,6 +533,66 @@ Route::delete('timesheet/{timesheet}',
 Route::get('timesheet/{timesheet}/print',
     [App\Http\Controllers\AdminMarine\TimesheetController::class, 'print']
 )->name('timesheet.print');
+
+/* ================= WORKING REPORT ================= */
+
+Route::get('working-report/index',
+    [WorkingReportController::class, 'index']
+)->name('working-report.index');
+
+Route::get('working-report/create/{poMasukId}',
+    [WorkingReportController::class, 'create']
+)->name('working-report.create');
+
+Route::post('working-report/store',
+    [WorkingReportController::class, 'store']
+)->name('working-report.store');
+
+Route::get('working-report/{workingReport}',
+    [WorkingReportController::class, 'show']
+)->name('working-report.show');
+
+Route::get('working-report/{workingReport}/edit',
+    [WorkingReportController::class, 'edit']
+)->name('working-report.edit');
+
+Route::put('working-report/{workingReport}',
+    [WorkingReportController::class, 'update']
+)->name('working-report.update');
+
+Route::delete('working-report/{workingReport}',
+    [WorkingReportController::class, 'destroy']
+)->name('working-report.destroy');
+
+Route::get('working-report/{workingReport}/print',
+    [WorkingReportController::class, 'print']
+)->name('working-report.print');
+
+Route::get('soa/index', [App\Http\Controllers\AdminMarine\SoaController::class, 'index'])
+    ->name('soa.index');
+
+Route::get('soa/create/{poMasukId?}',
+    [SoaController::class, 'create']
+)->name('soa.create');
+
+
+Route::post('soa/store', [App\Http\Controllers\AdminMarine\SoaController::class, 'store'])
+    ->name('soa.store');
+
+Route::get('soa/{soa}', [App\Http\Controllers\AdminMarine\SoaController::class, 'show'])
+    ->name('soa.show');
+
+Route::get('soa/{soa}/edit', [App\Http\Controllers\AdminMarine\SoaController::class, 'edit'])
+    ->name('soa.edit');
+
+Route::put('soa/{soa}', [App\Http\Controllers\AdminMarine\SoaController::class, 'update'])
+    ->name('soa.update');
+
+Route::delete('soa/{soa}', [App\Http\Controllers\AdminMarine\SoaController::class, 'destroy'])
+    ->name('soa.destroy');
+
+Route::get('soa/{soa}/print', [App\Http\Controllers\AdminMarine\SoaController::class, 'print'])
+    ->name('soa.print');
 
 
     });

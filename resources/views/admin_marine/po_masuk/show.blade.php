@@ -487,6 +487,73 @@
 
 </div>
 
+{{-- ================= WORKING REPORT ================= --}}
+<div class="card mb-4 shadow-sm">
+
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>Working Report</strong>
+
+        <a href="{{ route('working-report.create', $poMasuk->id) }}"
+           class="btn btn-dark btn-sm">
+            + Buat Working Report
+        </a>
+    </div>
+
+    <div class="card-body p-0">
+
+        <table class="table table-bordered mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Project</th>
+                    <th width="150">Periode</th>
+                    <th width="140">Total Item</th>
+                    <th width="160">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @forelse($poMasuk->workingReports as $wr)
+                    <tr>
+                        <td>
+                            <strong>{{ $wr->project }}</strong>
+                        </td>
+
+                        <td>
+                            {{ $wr->periode }}
+                        </td>
+
+                        <td class="text-center">
+                            {{ $wr->items->count() }}
+                        </td>
+
+                        <td>
+                            <a href="{{ route('working-report.show', $wr->id) }}"
+                               class="btn btn-sm btn-primary">
+                                Detail
+                            </a>
+
+                            <a href="{{ route('working-report.print', $wr->id) }}"
+                               class="btn btn-sm btn-info"
+                               target="_blank">
+                                Print
+                            </a>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="4" class="text-center text-muted">
+                            Belum ada Working Report
+                        </td>
+                    </tr>
+                @endforelse
+
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+
     {{-- ================= MARGIN ================= --}}
     <div class="card shadow-sm">
 
@@ -501,7 +568,6 @@
     $totalPengeluaran = $poMasuk->pengeluaran->sum('amount');
     $margin = $poMasuk->total_jual - $totalBeli - $totalPengeluaran;
 @endphp
-
 
             <table class="table table-bordered">
                 <tr>

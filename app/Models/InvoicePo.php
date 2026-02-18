@@ -64,4 +64,10 @@ class InvoicePo extends Model
     return $this->belongsTo(\App\Models\PoMasuk::class, 'po_masuk_id');
 }
 
+public function soaItems()
+{
+    return $this->hasMany(SoaItem::class, 'invoice_po_id');
+}
+
+
 }

@@ -59,6 +59,11 @@ public function timesheets()
 {
     return $this->hasMany(\App\Models\Timesheet::class);
 }
+public function workingReports()
+{
+    return $this->hasMany(\App\Models\WorkingReport::class);
+}
+
 
 
 
