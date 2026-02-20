@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
+<div class="container py-4">
 
 <h4 class="mb-4">Buat Timesheet</h4>
 
@@ -10,114 +10,126 @@
 
 <input type="hidden" name="po_masuk_id" value="{{ $poMasuk->id }}">
 
-{{-- INFO PO --}}
+{{-- ================= INFO PO ================= --}}
 <div class="card mb-4 shadow-sm">
 <div class="card-body">
 
-<div class="row">
+<div class="row g-3">
     <div class="col-md-4">
-        <strong>Company :</strong><br>
-        {{ $poMasuk->mitra_marine }}
+        <small class="text-muted">Company</small>
+        <div class="fw-semibold">{{ $poMasuk->mitra_marine }}</div>
     </div>
     <div class="col-md-4">
-        <strong>Vessel :</strong><br>
-        {{ $poMasuk->vessel }}
+        <small class="text-muted">Vessel</small>
+        <div class="fw-semibold">{{ $poMasuk->vessel }}</div>
     </div>
     <div class="col-md-4">
-        <strong>PO No :</strong><br>
-        {{ $poMasuk->no_po_klien }}
+        <small class="text-muted">PO No</small>
+        <div class="fw-semibold">{{ $poMasuk->no_po_klien }}</div>
     </div>
 </div>
 
-<hr>
+<hr class="my-4">
 
-<div class="row">
+<div class="row g-3">
     <div class="col-md-6">
-        <label>Project</label>
-        <input type="text" name="project" class="form-control" required>
+        <label class="form-label small">Project</label>
+        <input type="text" name="project" class="form-control form-control-sm" required>
     </div>
 
     <div class="col-md-6">
-        <label>Manpower</label>
-        <input type="text" name="manpower" class="form-control" required>
+        <label class="form-label small">Manpower</label>
+        <input type="text" name="manpower" class="form-control form-control-sm" required>
     </div>
 </div>
 
 </div>
 </div>
 
-{{-- ITEM TABLE --}}
+{{-- ================= TIMESHEET ITEMS ================= --}}
 <div class="card shadow-sm">
-<div class="card-body">
+<div class="card-header d-flex justify-content-between align-items-center">
+    <strong>Timesheet Items</strong>
+    <button type="button" class="btn btn-secondary btn-sm" onclick="addRow()">
+        + Tambah Item
+    </button>
+</div>
 
-<h5>Timesheet Items</h5>
+<div class="card-body">
 
 <div id="items-wrapper">
 
-<div class="item-row border rounded p-3 mb-3">
+<div class="item-row border rounded p-3 mb-3 bg-light">
 
-    <div class="row mb-2">
+    <div class="row g-3 mb-2">
         <div class="col-md-3">
-            <label>Date</label>
-            <input type="date" name="items[0][work_date]" class="form-control" required>
+            <label class="form-label small">Date</label>
+            <input type="date" name="items[0][work_date]" class="form-control form-control-sm" required>
         </div>
 
         <div class="col-md-3">
-            <label>Start Time</label>
-            <input type="time" name="items[0][time_start]" class="form-control time-start" required>
+            <label class="form-label small">Start Time</label>
+            <input type="time" name="items[0][time_start]" class="form-control form-control-sm time-start" required>
         </div>
 
         <div class="col-md-3">
-            <label>End Time</label>
-            <input type="time" name="items[0][time_end]" class="form-control time-end" required>
+            <label class="form-label small">End Time</label>
+            <input type="time" name="items[0][time_end]" class="form-control form-control-sm time-end" required>
         </div>
 
         <div class="col-md-3">
-            <label>Hours</label>
-            <input type="text" class="form-control hours bg-light" readonly>
+            <label class="form-label small">Hours</label>
+            <input type="text" class="form-control form-control-sm hours bg-white" readonly>
         </div>
     </div>
 
-    <div class="row mb-2">
+    <div class="row g-3 mb-2">
         <div class="col-md-4">
-            <label>Manpower</label>
-            <input type="text" name="items[0][manpower]" class="form-control">
+            <label class="form-label small">Manpower</label>
+            <input type="text" name="items[0][manpower]" class="form-control form-control-sm">
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-12">
-            <label>Kind of Work</label>
-            <textarea name="items[0][kind_of_work]"
-                      class="form-control"
-                      rows="3"
-                      placeholder="Deskripsi pekerjaan..."
-                      required></textarea>
-        </div>
+    <div class="mb-2">
+        <label class="form-label small">Kind of Work</label>
+        <textarea name="items[0][kind_of_work]"
+                  class="form-control form-control-sm"
+                  rows="3"
+                  required></textarea>
     </div>
 
-    <div class="text-end mt-2">
-        <button type="button" class="btn btn-danger btn-sm remove-row">Hapus</button>
+    <div class="text-end">
+        <button type="button" class="btn btn-danger btn-sm remove-row">
+            Hapus
+        </button>
     </div>
 
 </div>
 
 </div>
 
-<button type="button" class="btn btn-secondary btn-sm mt-2" onclick="addRow()">
-    + Tambah Row
-</button>
-
 </div>
 </div>
 
-<button class="btn btn-success mt-3">Simpan Timesheet</button>
 
 </form>
+<div class="d-flex justify-content gap-2 mt-4">
+
+    <a href="{{ route('po-masuk.show', $poMasuk->id) }}"
+       class="btn btn-secondary" style="margin-right: 4px">
+        Kembali
+    </a>
+
+    <button type="submit" class="btn btn-success">
+        Simpan Timesheet
+    </button>
 
 </div>
+</div>
 
+{{-- ================= SCRIPT ================= --}}
 <script>
+
 let index = 1;
 
 function addRow() {
@@ -125,50 +137,49 @@ function addRow() {
     let wrapper = document.getElementById('items-wrapper');
 
     wrapper.insertAdjacentHTML('beforeend', `
-        <div class="item-row border rounded p-3 mb-3">
+        <div class="item-row border rounded p-3 mb-3 bg-light">
 
-            <div class="row mb-2">
+            <div class="row g-3 mb-2">
                 <div class="col-md-3">
-                    <label>Date</label>
-                    <input type="date" name="items[${index}][work_date]" class="form-control" required>
+                    <label class="form-label small">Date</label>
+                    <input type="date" name="items[${index}][work_date]" class="form-control form-control-sm" required>
                 </div>
 
                 <div class="col-md-3">
-                    <label>Start Time</label>
-                    <input type="time" name="items[${index}][time_start]" class="form-control time-start" required>
+                    <label class="form-label small">Start Time</label>
+                    <input type="time" name="items[${index}][time_start]" class="form-control form-control-sm time-start" required>
                 </div>
 
                 <div class="col-md-3">
-                    <label>End Time</label>
-                    <input type="time" name="items[${index}][time_end]" class="form-control time-end" required>
+                    <label class="form-label small">End Time</label>
+                    <input type="time" name="items[${index}][time_end]" class="form-control form-control-sm time-end" required>
                 </div>
 
                 <div class="col-md-3">
-                    <label>Hours</label>
-                    <input type="text" class="form-control hours bg-light" readonly>
+                    <label class="form-label small">Hours</label>
+                    <input type="text" class="form-control form-control-sm hours bg-white" readonly>
                 </div>
             </div>
 
-            <div class="row mb-2">
+            <div class="row g-3 mb-2">
                 <div class="col-md-4">
-                    <label>Manpower</label>
-                    <input type="text" name="items[${index}][manpower]" class="form-control">
+                    <label class="form-label small">Manpower</label>
+                    <input type="text" name="items[${index}][manpower]" class="form-control form-control-sm">
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-md-12">
-                    <label>Kind of Work</label>
-                    <textarea name="items[${index}][kind_of_work]"
-                              class="form-control"
-                              rows="3"
-                              placeholder="Deskripsi pekerjaan..."
-                              required></textarea>
-                </div>
+            <div class="mb-2">
+                <label class="form-label small">Kind of Work</label>
+                <textarea name="items[${index}][kind_of_work]"
+                          class="form-control form-control-sm"
+                          rows="3"
+                          required></textarea>
             </div>
 
-            <div class="text-end mt-2">
-                <button type="button" class="btn btn-danger btn-sm remove-row">Hapus</button>
+            <div class="text-end">
+                <button type="button" class="btn btn-danger btn-sm remove-row">
+                    Hapus
+                </button>
             </div>
 
         </div>
@@ -188,11 +199,17 @@ function attachEvents() {
 
         function calculate() {
             if(start.value && end.value) {
+
                 let s = new Date("1970-01-01T" + start.value + ":00");
                 let e = new Date("1970-01-01T" + end.value + ":00");
 
+                // handle cross midnight
+                if(e < s){
+                    e.setDate(e.getDate() + 1);
+                }
+
                 let diff = (e - s) / (1000 * 60 * 60);
-                hours.value = diff > 0 ? diff.toFixed(2) : 0;
+                hours.value = diff.toFixed(2);
             }
         }
 
@@ -208,6 +225,7 @@ function attachEvents() {
 }
 
 attachEvents();
+
 </script>
 
 @endsection

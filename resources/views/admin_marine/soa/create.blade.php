@@ -1,159 +1,230 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
 
-<h4 class="mb-4">Buat Statement of Account (SOA)</h4>
+<style>
+.filter-select{
+    font-size:12px;
+    height:32px;
+    border-radius:6px;
+    border:1px solid #dee2e6;
+    background:#fff;
+}
+
+.filter-select:focus{
+    border-color:#0d6efd;
+    box-shadow:0 0 0 0.1rem rgba(13,110,253,.15);
+}
+
+.item-row{
+    background:#f8f9fa;
+}
+
+.card-body.small label{
+    font-size:12px;
+}
+
+textarea.form-control-sm{
+    resize:vertical;
+}
+</style>
+
+<div class="container py-4">
+
+<h5 class="mb-4 fw-semibold">Buat Statement of Account</h5>
 
 <form action="{{ route('soa.store') }}" method="POST">
 @csrf
 
 {{-- ================= HEADER ================= --}}
-<div class="card mb-4 shadow-sm">
-<div class="card-body">
+<div class="card shadow-sm mb-4">
+<div class="card-body small">
 
-<div class="row mb-3">
+<div class="row g-3">
+
     <div class="col-md-4">
-        <label class="form-label">Debtor</label>
-        <input type="text" name="debtor" class="form-control" required>
+        <label class="form-label small text-muted">Debtor</label>
+        <input type="text"
+               name="debtor"
+               class="form-control form-control-sm"
+               required>
     </div>
 
     <div class="col-md-4">
-        <label class="form-label">Address</label>
-        <input type="text" name="address" class="form-control">
+        <label class="form-label small text-muted">Address</label>
+        <input type="text"
+               name="address"
+               class="form-control form-control-sm">
     </div>
 
     <div class="col-md-4">
-        <label class="form-label">Statement Date</label>
-        <input type="date" name="statement_date" id="statement_date" class="form-control" required>
+        <label class="form-label small text-muted">Statement Date</label>
+        <input type="date"
+               name="statement_date"
+               id="statement_date"
+               class="form-control form-control-sm"
+               required>
     </div>
-</div>
 
-<div class="row">
     <div class="col-md-4">
-        <label class="form-label">Termin</label>
-        <input type="text" name="termin" class="form-control" placeholder="Contoh: 30 Days">
+        <label class="form-label small text-muted">Termin</label>
+        <input type="text"
+               name="termin"
+               class="form-control form-control-sm"
+               placeholder="Contoh: 30 Days">
     </div>
+
 </div>
 
 </div>
 </div>
+
 
 {{-- ================= ITEMS ================= --}}
 <div class="card shadow-sm">
-<div class="card-body">
+<div class="card-header d-flex justify-content-between align-items-center small">
+    <strong>SOA Items</strong>
 
-<h5 class="mb-3">SOA Items</h5>
+    <button type="button"
+            class="btn btn-primary btn-sm"
+            onclick="addItem()">
+        + Tambah Invoice
+    </button>
+</div>
+
+<div class="card-body">
 
 <div id="items-wrapper"></div>
 
-<button type="button" class="btn btn-outline-secondary btn-sm mt-2" onclick="addItem()">
-    + Tambah Invoice
-</button>
-
 </div>
 </div>
 
-<button class="btn btn-success mt-3">
-    Simpan SOA
-</button>
+<div class="text-end mt-4">
+    <button class="btn btn-success btn-sm px-4">
+        Simpan SOA
+    </button>
+    <a href="{{route('soa.index')}}" class="btn btn-sm btn-secondary" style="margin-left: 4px">
+        Kembali</a>     
+</div>
 
 </form>
 </div>
+
 
 {{-- ================= SCRIPT ================= --}}
 <script>
 
 let index = 0;
 
-/* ================= TAMBAH ITEM ================= */
 function addItem(){
 
     let wrapper = document.getElementById('items-wrapper');
 
     wrapper.insertAdjacentHTML('beforeend', `
-        <div class="item-row border rounded p-3 mb-3">
+        <div class="item-row border rounded-3 p-3 mb-3 small bg-light">
 
-            <div class="row mb-3">
+    {{-- ROW 1 --}}
+    <div class="row g-3 align-items-end mb-2">
 
-                <div class="col-md-4">
-                    <label class="form-label">Pilih Invoice</label>
-                    <select name="items[${index}][invoice_po_id]" 
-                            class="form-select invoice-select"
-                            required>
-                        <option value="">-- Pilih Invoice --</option>
-                        @foreach($invoiceList as $inv)
-                            <option value="{{ $inv->id }}"
-                                data-date="{{ $inv->tanggal_invoice }}"
-                                data-total="{{ $inv->grand_total }}">
-                                {{ $inv->no_invoice }}
-                                ({{ $inv->poMasuk->no_po_klien ?? '-' }})
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+      <div class="col-md-3">
+    <label class="form-label small text-muted mb-1">
+        Invoice
+    </label>
 
-                <div class="col-md-2">
-                    <label class="form-label">Invoice Date</label>
-                    <input type="text" class="form-control invoice-date bg-light" readonly>
-                </div>
+    <select name="items[${index}][invoice_po_id]"
+            class="form-control form-control-sm filter-control invoice-select"
+            required>
 
-                <div class="col-md-2">
-                    <label class="form-label">Pending Payment</label>
-                    <input type="text" class="form-control pending-payment bg-light" readonly>
-                </div>
+        <option value="">Pilih Invoice</option>
 
-                <div class="col-md-2">
-                    <label class="form-label">Acceptment Date</label>
-                    <input type="date" 
-                           name="items[${index}][acceptment_date]"
-                           class="form-control acceptment-date"
-                           required>
-                </div>
+       @foreach($invoiceList as $inv)
+    <option value="{{ $inv->id }}"
+        data-date="{{ $inv->tanggal_invoice }}"
+        data-total="{{ $inv->grand_total }}">
 
-                <div class="col-md-2">
-                    <label class="form-label">Days</label>
-                    <input type="text" class="form-control days bg-light" readonly>
-                </div>
+        {{ $inv->no_invoice }}
+             -- {{ $inv->poMasuk->no_po_klien ?? '-' }}
+        -- {{ $inv->poMasuk->mitra_marine ?? '-' }}
+        -- {{ $inv->poMasuk->vessel ?? '-' }}
+    
+        -- Rp {{ number_format($inv->grand_total,0,',','.') }}
 
-            </div>
+    </option>
+@endforeach
 
-            <div class="row mb-3">
-                <div class="col-md-12">
-                    <label class="form-label">Job Details</label>
-                    <textarea name="items[${index}][job_details]" 
-                              class="form-control" 
-                              rows="2"
-                              placeholder="Isi job details (boleh panjang)..."></textarea>
-                </div>
-            </div>
+    </select>
+</div>
 
-            <div class="row">
-                <div class="col-md-10">
-                    <label class="form-label">Remarks</label>
-                    <input type="text" 
-                           name="items[${index}][remarks]"
-                           class="form-control">
-                </div>
 
-                <div class="col-md-2 d-flex align-items-end">
-                    <button type="button" 
-                            class="btn btn-danger btn-sm w-100 remove-item">
-                        Hapus
-                    </button>
-                </div>
-            </div>
-
+        <div class="col-md-2">
+            <label class="form-label small text-muted">Invoice Date</label>
+            <input type="text"
+                   class="form-control form-control-sm invoice-date bg-white"
+                   readonly>
         </div>
+
+        <div class="col-md-2">
+            <label class="form-label small text-muted">Pending</label>
+            <input type="text"
+                   class="form-control form-control-sm pending-payment bg-white"
+                   readonly>
+        </div>
+
+        <div class="col-md-2">
+            <label class="form-label small text-muted">Accept Date</label>
+            <input type="date"
+                   name="items[${index}][acceptment_date]"
+                   class="form-control form-control-sm acceptment-date"
+                   required>
+        </div>
+
+        <div class="col-md-1">
+            <label class="form-label small text-muted">Days</label>
+            <input type="text"
+                   class="form-control form-control-sm days bg-white"
+                   readonly>
+        </div>
+
+        <div class="col-md-2 text-end">
+            <button type="button"
+                    class="btn btn-sm btn-danger remove-item mt-4">
+             Hapus
+            </button>
+        </div>
+
+    </div>
+
+    {{-- ROW 2 --}}
+    <div class="row g-3">
+
+        <div class="col-md-8">
+            <label class="form-label small text-muted">Job Details</label>
+            <textarea name="items[${index}][job_details]"
+                      class="form-control form-control-sm"
+                      rows="2"
+                      placeholder="Isi job details..."></textarea>
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label small text-muted">Remarks</label>
+            <input type="text"
+                   name="items[${index}][remarks]"
+                   class="form-control form-control-sm">
+        </div>
+
+    </div>
+
+</div>
+
     `);
 
     index++;
 }
 
-/* ================= GLOBAL EVENT LISTENER ================= */
+
+/* ================= EVENT ================= */
 document.addEventListener('change', function(e){
 
-    // Invoice change
     if(e.target.classList.contains('invoice-select')){
 
         let option = e.target.options[e.target.selectedIndex];
@@ -165,20 +236,18 @@ document.addEventListener('change', function(e){
         row.querySelector('.pending-payment').value = formatRupiah(total);
     }
 
-    // Acceptment date change
     if(e.target.classList.contains('acceptment-date')){
         calculateDays(e.target);
     }
 });
 
-/* ================= REMOVE ================= */
 document.addEventListener('click', function(e){
     if(e.target.classList.contains('remove-item')){
         e.target.closest('.item-row').remove();
     }
 });
 
-/* ================= HITUNG DAYS ================= */
+
 function calculateDays(input){
 
     let row = input.closest('.item-row');
@@ -195,13 +264,26 @@ function calculateDays(input){
     }
 }
 
-/* ================= FORMAT RUPIAH ================= */
 function formatRupiah(angka){
     return new Intl.NumberFormat('id-ID').format(angka);
 }
 
-addItem(); // auto 1 row saat load
+addItem();
 
 </script>
+<style>
+.filter-control{
+    font-size: 12px;
+    height: 32px;
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
+    background-color: #fff;
+}
+
+.filter-control:focus{
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.1rem rgba(13,110,253,.15);
+}
+</style>
 
 @endsection

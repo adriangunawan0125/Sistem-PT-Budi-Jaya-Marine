@@ -11,54 +11,67 @@
 <input type="hidden" name="po_masuk_id" value="{{ $poMasuk->id }}">
 
 {{-- ================= INFO SUPPLIER ================= --}}
-<div class="card mb-4">
-<div class="card-header">
+<div class="card mb-4 shadow-sm">
+<div class="card-header bg-light">
 <strong>Informasi Supplier</strong>
 </div>
 <div class="card-body">
 
+<div class="row g-3">
+<div class="col-md-6">
+<label class="form-label small mb-1">Nama Perusahaan</label>
 <input name="nama_perusahaan"
-class="form-control mb-2"
-placeholder="Nama perusahaan"
+class="form-control form-control-sm"
 required>
+</div>
 
-<textarea name="alamat"
-class="form-control mb-2"
-placeholder="Alamat"></textarea>
+<div class="col-md-6">
+<label class="form-label small mb-1">No PO Internal</label>
+<input name="no_po_internal"
+class="form-control form-control-sm"
+required>
+</div>
 
+<div class="col-md-6">
+<label class="form-label small mb-1">Tanggal PO</label>
 <input type="date"
 name="tanggal_po"
-class="form-control mb-2"
+class="form-control form-control-sm"
 required>
+</div>
 
-<input name="no_po_internal"
-class="form-control mb-2"
-placeholder="No PO internal"
-required>
+<div class="col-md-12">
+<label class="form-label small mb-1">Alamat</label>
+<textarea name="alamat"
+class="form-control form-control-sm"
+rows="2"></textarea>
+</div>
+</div>
 
 </div>
 </div>
 
 {{-- ================= ITEMS ================= --}}
-<div class="card mb-4">
-<div class="card-header d-flex justify-content-between">
+<div class="card mb-4 shadow-sm">
+<div class="card-header bg-light d-flex justify-content-between align-items-center">
 <strong>Items</strong>
 <button type="button"
-class="btn btn-sm btn-primary"
+class="btn btn-primary btn-sm px-3"
 onclick="addItem()">
 + Add Item
 </button>
 </div>
 
 <div class="card-body p-0">
-<table class="table table-bordered mb-0">
-<thead>
+<div class="table-responsive">
+<table class="table table-bordered table-hover align-middle po-table mb-0">
+<thead class="table-light text-center">
 <tr>
-<th>Item</th>
+<th width="30%">Item</th>
 <th width="15%">Price Beli</th>
 <th width="10%">Qty</th>
 <th width="10%">Unit</th>
-<th width="15%">Amount</th>
+<th width="20%">Amount</th>
 <th width="5%"></th>
 </tr>
 </thead>
@@ -66,19 +79,20 @@ onclick="addItem()">
 </table>
 </div>
 </div>
+</div>
 
 {{-- ================= DISCOUNT ================= --}}
-<div class="card mb-4">
-<div class="card-header">
+<div class="card mb-4 shadow-sm">
+<div class="card-header bg-light">
 <strong>Discount</strong>
 </div>
 <div class="card-body">
 
-<div class="row">
-<div class="col-md-4">
+<div class="row g-3">
+<div class="col-md-3">
 <select name="discount_type"
 id="discount-type"
-class="form-control"
+class="form-control form-control-sm filter-control"
 onchange="updateTotal()">
 <option value="">No Discount</option>
 <option value="percent">Percent (%)</option>
@@ -86,11 +100,11 @@ onchange="updateTotal()">
 </select>
 </div>
 
-<div class="col-md-4">
+<div class="col-md-3">
 <input type="number"
 name="discount_value"
 id="discount-value"
-class="form-control"
+class="form-control form-control-sm"
 placeholder="Discount value"
 oninput="updateTotal()">
 </div>
@@ -100,11 +114,11 @@ oninput="updateTotal()">
 </div>
 
 {{-- ================= TERMS ================= --}}
-<div class="card mb-4">
-<div class="card-header d-flex justify-content-between">
+<div class="card mb-4 shadow-sm">
+<div class="card-header bg-light d-flex justify-content-between align-items-center">
 <strong>Terms & Conditions</strong>
 <button type="button"
-class="btn btn-sm btn-primary"
+class="btn btn-primary btn-sm px-3 " style="margin-left: 4px"
 onclick="addTerm()">
 + Add Term
 </button>
@@ -116,24 +130,76 @@ onclick="addTerm()">
 </div>
 
 {{-- ================= TOTAL ================= --}}
-<div class="card mb-4">
+<div class="card mb-4 shadow-sm">
 <div class="card-body text-end">
 
-<h5>Total Beli: Rp <span id="total-beli">0</span></h5>
-<h5>Discount: Rp <span id="discount-amount">0</span></h5>
-<h4>Grand Total: Rp <span id="grand-total">0</span></h4>
+<h6 class="mb-1">
+Total Beli:
+<span class="fw-bold">
+Rp <span id="total-beli">0</span>
+</span>
+</h6>
+
+<h6 class="mb-1 text-danger">
+Discount:
+Rp <span id="discount-amount">0</span>
+</h6>
+
+<h5 class="mt-2">
+Grand Total:
+<span class="fw-bold text-primary">
+Rp <span id="grand-total">0</span>
+</span>
+</h5>
 
 </div>
 </div>
 
 <div class="text-end">
-<button class="btn btn-success">
+<button class="btn btn-success btn-sm px-4">
 Simpan PO Supplier
 </button>
+     <a href="{{ route('po-masuk.show', $poMasuk->id) }}"
+           class="btn btn-secondary btn-sm px-3" style="margin-left: 4px">
+            Kembali
+        </a>
 </div>
 
 </form>
 </div>
+
+<style>
+
+.po-table th,
+.po-table td{
+    font-size:13px;
+    padding:10px 12px;
+    vertical-align:middle;
+}
+
+.table-hover tbody tr:hover{
+    background-color:#f5f7fa;
+}
+
+.form-control-sm{
+    font-size:13px;
+}
+
+.filter-control {
+    height: 38px;
+    border-radius: 6px;
+}
+
+.filter-control:focus {
+    box-shadow: 0 0 0 0.15rem rgba(13,110,253,.25);
+}
+
+.amount {
+    text-align: right;
+}
+
+</style>
+
 
 <script>
 

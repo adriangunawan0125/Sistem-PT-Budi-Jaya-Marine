@@ -15,14 +15,39 @@ class InvoicePoController extends Controller
 {
 
     /* ================= INDEX ================= */
-    public function index()
-    {
-        $invoices = InvoicePo::with('poMasuk')
-            ->latest()
-            ->get();
+  public function index(Request $request)
+{
+    $query = InvoicePo::with('poMasuk')->latest();
 
-        return view('admin_marine.invoice_po.index', compact('invoices'));
+    /* ================= SEARCH ================= */
+    if ($request->filled('search')) {
+        $search = $request->search;
+
+        $query->where(function ($q) use ($search) {
+            $q->where('no_invoice', 'like', "%$search%")
+              ->orWhereHas('poMasuk', function ($po) use ($search) {
+                  $po->where('no_po_klien', 'like', "%$search%")
+                     ->orWhere('vessel', 'like', "%$search%")
+                     ->orWhere('mitra_marine', 'like', "%$search%");
+              });
+        });
     }
+
+    /* ================= FILTER BULAN ================= */
+    if ($request->filled('month')) {
+        $query->whereMonth('tanggal_invoice', $request->month);
+    }
+
+    /* ================= FILTER TAHUN ================= */
+    if ($request->filled('year')) {
+        $query->whereYear('tanggal_invoice', $request->year);
+    }
+
+    $invoices = $query->paginate(10)->withQueryString();
+
+    return view('admin_marine.invoice_po.index', compact('invoices'));
+}
+
 
     /* ================= CREATE ================= */
     public function create($poMasukId)

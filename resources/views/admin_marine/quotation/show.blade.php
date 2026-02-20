@@ -2,60 +2,11 @@
 
 @section('content')
 
-<style>
-.item-table{
-    width:100%;
-    border-collapse:collapse;
-}
+<div class="container-fluid px-3">
 
-.item-table th,
-.item-table td{
-    border:1px solid #000;
-    padding:6px;
-    font-size:13px;
-}
-
-.item-table th{
-    background:#b7c7d9;
-    font-weight:bold;
-    text-align:center;
-}
-
-.sub-row{
-    font-weight:bold;
-    background:#f8f9fa;
-}
-
-.total-row{
-    font-weight:bold;
-    background:#f1f1f1;
-}
-
-.money{
-    width:100%;
-    border-collapse:collapse;
-}
-
-.money td{
-    border:none;
-    padding:0;
-}
-
-.rp{ width:25px; }
-.val{ text-align:right; }
-
-.header-label{
-    font-weight:600;
-    color:#555;
-    font-size:13px;
-}
-</style>
-
-<div class="container">
-
-    {{-- ================= HEADER ACTION ================= --}}
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="mb-0">Quotation Detail</h4>
+    {{-- HEADER ACTION --}}
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-semibold mb-0">Quotation Detail</h5>
 
         <div class="d-flex gap-2">
             <a href="{{ route('quotations.index') }}" 
@@ -65,77 +16,89 @@
 
             <a href="{{ route('quotations.print', $quotation->id) }}" 
                target="_blank"
-               class="btn btn-danger btn-sm">
+               class="btn btn-danger btn-sm" style="margin-left: 7px">
                Print PDF
             </a>
         </div>
     </div>
 
 
-    {{-- ================= HEADER INFO CARD ================= --}}
-    <div class="card mb-4 shadow-sm">
+    {{-- HEADER INFO --}}
+    <div class="card shadow-sm mb-4">
         <div class="card-body">
 
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <div class="header-label">To</div>
-                    {{ $quotation->mitra_name ?? '-' }}
+                    <div class="info-label">To</div>
+                    <div class="info-value">{{ $quotation->mitra_name ?? '-' }}</div>
                 </div>
 
                 <div class="col-md-6 text-md-end">
-                    <div class="header-label">Quote No</div>
-                    {{ $quotation->quote_no }}
+                    <div class="info-label">Quote No</div>
+                    <div class="info-value fw-semibold">
+                        {{ $quotation->quote_no }}
+                    </div>
                 </div>
             </div>
 
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <div class="header-label">Vessel</div>
-                    {{ $quotation->vessel_name ?? '-' }}
+                    <div class="info-label">Vessel</div>
+                    <div class="info-value">
+                        {{ $quotation->vessel_name ?? '-' }}
+                    </div>
                 </div>
 
                 <div class="col-md-6 text-md-end">
-                    <div class="header-label">Date</div>
-                    {{ $quotation->date 
-                        ? \Carbon\Carbon::parse($quotation->date)->format('d M Y') 
-                        : '-' }}
+                    <div class="info-label">Date</div>
+                    <div class="info-value">
+                        {{ $quotation->date 
+                            ? \Carbon\Carbon::parse($quotation->date)->format('d M Y') 
+                            : '-' }}
+                    </div>
                 </div>
             </div>
 
             <div class="mb-2">
-                <div class="header-label">Attention</div>
-                {{ $quotation->attention ?? '-' }}
+                <div class="info-label">Attention</div>
+                <div class="info-value">
+                    {{ $quotation->attention ?? '-' }}
+                </div>
             </div>
 
             <div class="mb-2">
-                <div class="header-label">Project</div>
-                {{ $quotation->project ?? '-' }}
+                <div class="info-label">Project</div>
+                <div class="info-value">
+                    {{ $quotation->project ?? '-' }}
+                </div>
             </div>
 
-            <div class="mb-2">
-                <div class="header-label">Place</div>
-                {{ $quotation->place ?? '-' }}
+            <div>
+                <div class="info-label">Place</div>
+                <div class="info-value">
+                    {{ $quotation->place ?? '-' }}
+                </div>
             </div>
 
         </div>
     </div>
 
 
-    {{-- ================= ITEM CARD ================= --}}
+    {{-- ITEM TABLE --}}
     @php 
         $grandTotal = 0; 
         $no = 1;
     @endphp
 
-    <div class="card mb-4 shadow-sm">
-        <div class="card-header">
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light">
             <strong>Item Details</strong>
         </div>
 
-        <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle mb-0 item-table">
 
-            <table class="item-table">
-                <thead>
+                <thead class="table-light text-center">
                     <tr>
                         <th width="5%">No</th>
                         <th>Item</th>
@@ -145,86 +108,62 @@
                         <th width="18%">Total</th>
                     </tr>
                 </thead>
+
                 <tbody>
 
-                    @foreach($quotation->subItems as $sub)
+                @foreach($quotation->subItems as $sub)
 
-                        <tr class="sub-row">
-                            <td></td>
-                            <td>{{ $sub->name }}</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
+                    <tr class="sub-row">
+                        <td></td>
+                        <td colspan="5">{{ $sub->name }}</td>
+                    </tr>
+
+                    @foreach($sub->items as $item)
+
+                        @php $grandTotal += $item->total; @endphp
+
+                        <tr>
+                            <td class="text-center">{{ $no++ }}</td>
+
+                            <td>{{ $item->item }}</td>
+
+                            <td class="text-end">
+                                Rp {{ number_format($item->price,0,',','.') }}
+                            </td>
+
+                            <td class="text-center">
+                                {{ $item->qty }}
+                            </td>
+
+                            <td class="text-center">
+                                {{ $item->unit }}
+                            </td>
+
+                            <td class="text-end">
+                                Rp {{ number_format($item->total,0,',','.') }}
+                            </td>
                         </tr>
-
-                        @foreach($sub->items as $item)
-
-                            @php $grandTotal += $item->total; @endphp
-
-                            <tr>
-                                <td class="text-center">{{ $no++ }}</td>
-                                <td>{{ $item->item }}</td>
-
-                                <td>
-                                    <table class="money">
-                                        <tr>
-                                            <td class="rp">Rp</td>
-                                            <td class="val">
-                                                {{ number_format($item->price,0,',','.') }}
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </td>
-
-                                <td class="text-center">
-                                    {{ $item->qty }}
-                                </td>
-
-                                <td class="text-center">
-                                    {{ $item->unit }}
-                                </td>
-
-                                <td>
-                                    <table class="money">
-                                        <tr>
-                                            <td class="rp">Rp</td>
-                                            <td class="val">
-                                                {{ number_format($item->total,0,',','.') }}
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </td>
-                            </tr>
-
-                        @endforeach
 
                     @endforeach
 
-                    <tr class="total-row">
-                        <td colspan="5" class="text-end">
-                            TOTAL
-                        </td>
-                        <td>
-                            <table class="money">
-                                <tr>
-                                    <td class="rp">Rp</td>
-                                    <td class="val">
-                                        {{ number_format($grandTotal,0,',','.') }}
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
+                @endforeach
+
+                <tr class="total-row">
+                    <td colspan="5" class="text-end fw-semibold">
+                        TOTAL
+                    </td>
+                    <td class="text-end fw-bold">
+                        Rp {{ number_format($grandTotal,0,',','.') }}
+                    </td>
+                </tr>
 
                 </tbody>
             </table>
-
         </div>
     </div>
 
 
-    {{-- ================= TERMS CARD ================= --}}
+    {{-- TERMS --}}
     @if($quotation->termsConditions->count())
         <div class="card shadow-sm">
             <div class="card-header bg-secondary text-white">
@@ -232,7 +171,7 @@
             </div>
 
             <div class="card-body">
-                <ol class="mb-0">
+                <ol class="mb-0 small">
                     @foreach($quotation->termsConditions as $term)
                         <li class="mb-2">
                             {{ $term->description }}
@@ -244,4 +183,39 @@
     @endif
 
 </div>
+
+
+<style>
+
+.info-label{
+    font-size:12px;
+    font-weight:600;
+    color:#6c757d;
+}
+
+.info-value{
+    font-size:14px;
+}
+
+.item-table th,
+.item-table td{
+    font-size:13px;
+    padding:8px 10px;
+}
+
+.sub-row{
+    background:#f8f9fa;
+    font-weight:600;
+}
+
+.total-row{
+    background:#f1f3f5;
+}
+
+.table-hover tbody tr:hover{
+    background:#f5f7fa;
+}
+
+</style>
+
 @endsection

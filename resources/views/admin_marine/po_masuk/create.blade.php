@@ -6,8 +6,8 @@
 <h4 class="mb-4">Create PO Masuk (Client PO)</h4>
 
 @if ($errors->any())
-<div class="alert alert-danger">
-<ul class="mb-0">
+<div class="alert alert-danger py-2">
+<ul class="mb-0 small">
 @foreach ($errors->all() as $error)
 <li>{{ $error }}</li>
 @endforeach
@@ -19,57 +19,59 @@
 @csrf
 
 {{-- ================= HEADER ================= --}}
-<div class="card mb-4">
-<div class="card-header">
+<div class="card mb-4 shadow-sm">
+<div class="card-header bg-light">
 <strong>PO Client Information</strong>
 </div>
 
 <div class="card-body">
 
-<div class="row mb-3">
+<div class="row g-3 mb-3">
 <div class="col-md-6">
-<label>Mitra</label>
+<label class="form-label small mb-1">Mitra</label>
 <input type="text"
 name="mitra_marine"
-class="form-control"
+class="form-control form-control-sm"
 value="{{ old('mitra_marine') }}"
 required>
 </div>
 
 <div class="col-md-6">
-<label>Vessel</label>
+<label class="form-label small mb-1">Vessel</label>
 <input type="text"
 name="vessel"
-class="form-control"
+class="form-control form-control-sm"
 value="{{ old('vessel') }}"
 required>
 </div>
 </div>
 
-<div class="row mb-3">
+<div class="row g-3 mb-3">
 <div class="col-md-6">
-<label>No PO Klien</label>
+<label class="form-label small mb-1">No PO Klien</label>
 <input type="text"
 name="no_po_klien"
-class="form-control"
+class="form-control form-control-sm"
 value="{{ old('no_po_klien') }}"
 required>
 </div>
 
 <div class="col-md-6">
-<label>Tanggal PO</label>
+<label class="form-label small mb-1">Tanggal PO</label>
 <input type="date"
 name="tanggal_po"
-class="form-control"
+class="form-control form-control-sm"
 value="{{ old('tanggal_po', date('Y-m-d')) }}"
 required>
 </div>
 </div>
 
-<div class="row mb-3">
+<div class="row g-3 mb-3">
 <div class="col-md-6">
-<label>Type</label>
-<select name="type" class="form-control" required>
+<label class="form-label small mb-1">Type</label>
+<select name="type"
+        class="form-control form-control-sm filter-control"
+        required>
 <option value="sparepart" {{ old('type')=='sparepart'?'selected':'' }}>
 Sparepart
 </option>
@@ -81,9 +83,9 @@ Manpower
 </div>
 
 <div class="mb-3">
-<label>Alamat Project / Delivery</label>
+<label class="form-label small mb-1">Alamat Project / Delivery</label>
 <textarea name="alamat"
-class="form-control"
+class="form-control form-control-sm"
 rows="3">{{ old('alamat') }}</textarea>
 </div>
 
@@ -91,23 +93,23 @@ rows="3">{{ old('alamat') }}</textarea>
 </div>
 
 {{-- ================= ITEMS ================= --}}
-<div class="card mb-4">
-<div class="card-header d-flex justify-content-between">
+<div class="card mb-4 shadow-sm">
+<div class="card-header bg-light d-flex justify-content-between align-items-center">
 <strong>Items</strong>
 <button type="button"
-class="btn btn-sm btn-primary"
+class="btn btn-primary btn-sm px-3"
 onclick="addItem()">
 + Add Item
 </button>
 </div>
 
 <div class="card-body p-0">
-
-<table class="table table-bordered mb-0">
-<thead class="table-light">
+<div class="table-responsive">
+<table class="table table-bordered table-hover align-middle po-table mb-0">
+<thead class="table-light text-center">
 <tr>
 <th width="30%">Item</th>
-<th width="15%">Price Jual</th>
+<th width="15%">Price</th>
 <th width="10%">Qty</th>
 <th width="10%">Unit</th>
 <th width="20%">Amount</th>
@@ -116,34 +118,64 @@ onclick="addItem()">
 </thead>
 <tbody id="item-body"></tbody>
 </table>
-
+</div>
 </div>
 </div>
 
 {{-- ================= TOTAL ================= --}}
-<div class="card mb-4">
+<div class="card mb-4 shadow-sm">
 <div class="card-body text-end">
-<h4>
-Total Jual: Rp
-<span id="total-jual">0</span>
-</h4>
+<h5 class="mb-0">
+Total Jual:
+<span class="fw-bold text-primary">
+Rp <span id="total-jual">0</span>
+</span>
+</h5>
 </div>
 </div>
 
 <div class="text-end">
 <a href="{{ route('po-masuk.index') }}"
-class="btn btn-secondary">
-Cancel
+class="btn btn-secondary btn-sm px-3">
+Kembali
 </a>
 
 <button type="submit"
-class="btn btn-success">
+class="btn btn-success btn-sm px-3">
 Save PO Masuk
 </button>
 </div>
 
 </form>
 </div>
+
+<style>
+
+.po-table th,
+.po-table td{
+    font-size:13px;
+    padding:10px 12px;
+    vertical-align:middle;
+}
+
+.table-hover tbody tr:hover{
+    background-color:#f5f7fa;
+}
+
+.form-control-sm{
+    font-size:13px;
+}
+
+.filter-control {
+    height: 38px;
+    border-radius: 6px;
+}
+
+.filter-control:focus {
+    box-shadow: 0 0 0 0.15rem rgba(13,110,253,.25);
+}
+
+</style>
 
 <script>
 

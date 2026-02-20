@@ -3,12 +3,12 @@
 @section('content')
 <div class="container py-4">
 
-    {{-- HEADER --}}
+    {{-- ================= HEADER ================= --}}
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h4 class="mb-0">Detail Invoice</h4>
 
         <a href="{{ route('po-masuk.show', $invoicePo->po_masuk_id) }}"
-           class="btn btn-outline-secondary btn-sm">
+           class="btn btn-secondary btn-sm">
             ← Kembali ke PO
         </a>
     </div>
@@ -22,49 +22,54 @@
         ];
     @endphp
 
-    {{-- INFO CARD --}}
+    {{-- ================= INFO CARD ================= --}}
     <div class="card shadow-sm mb-4">
         <div class="card-body">
 
-            <div class="row">
+            <div class="row g-4">
 
                 {{-- LEFT SIDE --}}
                 <div class="col-md-8">
 
-                    <h5 class="fw-bold mb-3">
-                        {{ $invoicePo->no_invoice }}
-                        <span class="text-light badge bg-{{ $colors[$invoicePo->status] }} ms-2">
+                    <div class="d-flex align-items-center mb-3" >
+                        <h5 class="fw-bold mb-0" style="margin-right: 7px">
+                            {{ $invoicePo->no_invoice }}
+                        </h5>
+
+                        <span class=" text-light badge bg-{{ $colors[$invoicePo->status] ?? 'secondary' }} ms-3 px-3 py-2">
                             {{ strtoupper($invoicePo->status) }}
                         </span>
-                    </h5>
+                    </div>
 
-                    <div class="row">
+                    <div class="row gy-3">
+
                         <div class="col-md-6 mb-3">
-                            <small class="text-muted">Tanggal</small>
+                            <small class="text-muted d-block">Tanggal</small>
                             <div>
                                 {{ \Carbon\Carbon::parse($invoicePo->tanggal_invoice)->format('d M Y') }}
                             </div>
                         </div>
 
-                        <div class="col-md-6 mb-3">
-                            <small class="text-muted">Periode</small>
+                        <div class="col-md-6">
+                            <small class="text-muted d-block">Periode</small>
                             <div>{{ $invoicePo->periode ?? '-' }}</div>
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <small class="text-muted">Authorization</small>
+                            <small class="text-muted d-block">Authorization</small>
                             <div>{{ $invoicePo->authorization_no ?? '-' }}</div>
                         </div>
 
-                        <div class="col-md-6 mb-3">
-                            <small class="text-muted">Vessel</small>
+                        <div class="col-md-6">
+                            <small class="text-muted d-block">Vessel</small>
                             <div>{{ $invoicePo->poMasuk->vessel ?? '-' }}</div>
                         </div>
 
-                        <div class="col-md-6 mb-3">
-                            <small class="text-muted">PO No</small>
+                        <div class="col-md-6">
+                            <small class="text-muted d-block">PO No</small>
                             <div>{{ $invoicePo->poMasuk->no_po_klien ?? '-' }}</div>
                         </div>
+
                     </div>
 
                 </div>
@@ -72,72 +77,67 @@
                 {{-- RIGHT SIDE --}}
                 <div class="col-md-4">
 
-                    {{-- DROPDOWN STYLE FILTER --}}
+                    {{-- STATUS DROPDOWN --}}
                     <form action="{{ route('invoice-po.update-status', $invoicePo->id) }}"
                           method="POST"
-                          class="mb-3">
+                          class="mb-4">
                         @csrf
                         @method('PATCH')
 
-                        <label class="small text-muted mb-1">
+                        <label class="form-label small mb-1">
                             Ubah Status
                         </label>
 
-                        <div style="max-width: 200px;">
-                            <select name="status"
-                                    class="form-select form-select-sm"
-                                    style="border-radius:6px;"
-                                    onchange="this.form.submit()">
+                        <select name="status"
+                                class="form-control form-control-sm"
+                                onchange="this.form.submit()">
 
-                                <option value="draft"
-                                    {{ $invoicePo->status == 'draft' ? 'selected' : '' }}>
-                                    Draft
-                                </option>
+                            <option value="draft"
+                                {{ $invoicePo->status == 'draft' ? 'selected' : '' }}>
+                                Draft
+                            </option>
 
-                                <option value="issued"
-                                    {{ $invoicePo->status == 'issued' ? 'selected' : '' }}>
-                                    Issued
-                                </option>
+                            <option value="issued"
+                                {{ $invoicePo->status == 'issued' ? 'selected' : '' }}>
+                                Issued
+                            </option>
 
-                                <option value="paid"
-                                    {{ $invoicePo->status == 'paid' ? 'selected' : '' }}>
-                                    Paid
-                                </option>
+                            <option value="paid"
+                                {{ $invoicePo->status == 'paid' ? 'selected' : '' }}>
+                                Paid
+                            </option>
 
-                                <option value="cancelled"
-                                    {{ $invoicePo->status == 'cancelled' ? 'selected' : '' }}>
-                                    Cancelled
-                                </option>
+                            <option value="cancelled"
+                                {{ $invoicePo->status == 'cancelled' ? 'selected' : '' }}>
+                                Cancelled
+                            </option>
 
-                            </select>
-                        </div>
+                        </select>
                     </form>
 
-                   {{-- ACTION BUTTONS --}}
-<div class="d-flex gap-2 mt-3" style="max-width:200px;">
+                    {{-- ACTION BUTTONS --}}
+                   <div class="d-flex flex-column gap-2">
 
-    {{-- PRINT --}}
-    <a href="{{ route('invoice-po.print', $invoicePo->id) }}" style="margin-right:6px;"
+    <a href="{{ route('invoice-po.print', $invoicePo->id) }}"
        target="_blank"
-       class="btn btn-danger btn-sm w-100">
-        Print
+       class="btn btn-danger btn-sm w-100 mb-1">
+        Print Invoice
     </a>
 
-    {{-- EDIT --}}
     <a href="{{ route('invoice-po.edit', $invoicePo->id) }}"
-       class="btn btn-warning btn-sm w-100" style="margin-right:6px;">
-        Edit
+       class="btn btn-warning btn-sm w-100 mb-1">
+        Edit Invoice
     </a>
 
-    {{-- DELETE --}}
     <form action="{{ route('invoice-po.destroy', $invoicePo->id) }}"
           method="POST"
           class="w-100"
           onsubmit="return confirm('Yakin ingin menghapus invoice ini?')">
         @csrf
         @method('DELETE')
-        <button class="btn btn-danger btn-sm w-100">
-            Hapus
+        <button type="submit"
+                class="btn btn-danger btn-sm w-100">
+            Hapus Invoice
         </button>
     </form>
 
@@ -152,54 +152,61 @@
     </div>
 
 
-    {{-- ITEM TABLE --}}
+    {{-- ================= ITEM TABLE ================= --}}
     <div class="card shadow-sm">
         <div class="card-body p-0">
 
-            <table class="table table-bordered mb-0">
-                <thead class="table-light text-center">
-                    <tr>
-                        <th>Description</th>
-                        <th width="80">Qty</th>
-                        <th width="80">Unit</th>
-                        <th width="150">Price</th>
-                        <th width="150">Amount</th>
-                    </tr>
-                </thead>
-                <tbody>
+            <div class="table-responsive">
+                <table class="table table-bordered align-middle mb-0">
+                    <thead class="table-light text-center">
+                        <tr>
+                            <th>Description</th>
+                            <th width="80">Qty</th>
+                            <th width="100">Unit</th>
+                            <th width="150">Price</th>
+                            <th width="150">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
 
-                @foreach($invoicePo->items as $item)
-                    <tr>
-                        <td>{{ $item->description }}</td>
-                        <td class="text-center">{{ $item->qty }}</td>
-                        <td class="text-center">{{ $item->unit }}</td>
-                        <td class="text-end">
-                            Rp {{ number_format($item->price,0,',','.') }}
-                        </td>
-                        <td class="text-end fw-semibold">
-                            Rp {{ number_format($item->amount,0,',','.') }}
-                        </td>
-                    </tr>
-                @endforeach
+                    @foreach($invoicePo->items as $item)
+                        <tr>
+                            <td>{{ $item->description }}</td>
+                            <td class="text-center">{{ $item->qty }}</td>
+                            <td class="text-center">{{ $item->unit }}</td>
+                            <td class="text-end">
+                                Rp {{ number_format($item->price,0,',','.') }}
+                            </td>
+                            <td class="text-end fw-semibold">
+                                Rp {{ number_format($item->amount,0,',','.') }}
+                            </td>
+                        </tr>
+                    @endforeach
 
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
 
         </div>
 
+        {{-- ================= SUMMARY ================= --}}
         <div class="card-footer bg-white">
             <div class="row justify-content-end">
                 <div class="col-md-4">
 
                     <div class="d-flex justify-content-between mb-2">
-                        <span>Subtotal</span>
-                        <span>Rp {{ number_format($invoicePo->subtotal,0,',','.') }}</span>
+                        <span class="text-muted">Subtotal</span>
+                        <span>
+                            Rp {{ number_format($invoicePo->subtotal,0,',','.') }}
+                        </span>
                     </div>
 
                     @if($invoicePo->discount_amount > 0)
                     <div class="d-flex justify-content-between text-danger mb-2">
                         <span>Discount</span>
-                        <span>- Rp {{ number_format($invoicePo->discount_amount,0,',','.') }}</span>
+                        <span>
+                            - Rp {{ number_format($invoicePo->discount_amount,0,',','.') }}
+                        </span>
                     </div>
                     @endif
 
@@ -207,7 +214,9 @@
 
                     <div class="d-flex justify-content-between fs-5 fw-bold">
                         <span>Grand Total</span>
-                        <span>Rp {{ number_format($invoicePo->grand_total,0,',','.') }}</span>
+                        <span>
+                            Rp {{ number_format($invoicePo->grand_total,0,',','.') }}
+                        </span>
                     </div>
 
                 </div>

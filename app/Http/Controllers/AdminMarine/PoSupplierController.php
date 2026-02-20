@@ -15,14 +15,36 @@ use Carbon\Carbon;
 class PoSupplierController extends Controller
 {
     /* ================= INDEX ================= */
-    public function index()
-    {
-        $poSuppliers = PoSupplier::with('poMasuk')
-            ->latest()
-            ->get();
+   public function index(Request $request)
+{
+    $query = PoSupplier::with('poMasuk');
 
-        return view('admin_marine.po_supplier.index', compact('poSuppliers'));
+    // ================= SEARCH =================
+    if ($request->search) {
+        $query->where(function ($q) use ($request) {
+            $q->where('no_po_internal', 'like', '%' . $request->search . '%')
+              ->orWhere('nama_perusahaan', 'like', '%' . $request->search . '%')
+              ->orWhereHas('poMasuk', function ($sub) use ($request) {
+                  $sub->where('no_po_klien', 'like', '%' . $request->search . '%');
+              });
+        });
     }
+
+    // ================= FILTER BULAN =================
+    if ($request->month) {
+        $query->whereMonth('tanggal_po', $request->month);
+    }
+
+    // ================= FILTER TAHUN =================
+    if ($request->year) {
+        $query->whereYear('tanggal_po', $request->year);
+    }
+
+    $poSuppliers = $query->latest()->paginate(15)->withQueryString();
+
+    return view('admin_marine.po_supplier.index', compact('poSuppliers'));
+}
+
 
     /* ================= CREATE ================= */
     public function create($poMasukId)
@@ -263,30 +285,44 @@ class PoSupplierController extends Controller
         return $pdf->stream('po-supplier-'.$poSupplier->id.'.pdf');
     }
     /* ================= APPROVE ================= */
-public function approve(PoSupplier $poSupplier)
+public function updateStatus(Request $request, PoSupplier $poSupplier)
 {
+    $request->validate([
+        'status' => 'required|in:draft,approved,cancelled'
+    ]);
+
     DB::beginTransaction();
 
     try {
 
         $poSupplier->update([
-            'status' => 'approved'
+            'status' => $request->status
         ]);
 
         $poMasuk = $poSupplier->poMasuk;
 
-        // Jika ada supplier approved → PO Masuk jadi processing
-        $hasApproved = $poMasuk->poSuppliers()
-            ->where('status','approved')
-            ->exists();
+        // ================= LOGIC SYNC KE PO MASUK =================
 
-        if ($hasApproved) {
+        if ($request->status === 'approved') {
+
+            // Jika ada minimal 1 approved → PO Masuk jadi processing
             $poMasuk->update(['status' => 'processing']);
+
+        } elseif ($request->status === 'cancelled') {
+
+            // Cek apakah masih ada supplier approved
+            $hasApproved = $poMasuk->poSuppliers()
+                ->where('status','approved')
+                ->exists();
+
+            if (!$hasApproved) {
+                $poMasuk->update(['status' => 'approved']);
+            }
         }
 
         DB::commit();
 
-        return back()->with('success','PO Supplier berhasil di-approve');
+        return back()->with('success','Status PO Supplier berhasil diupdate.');
 
     } catch (\Exception $e) {
 
@@ -294,39 +330,4 @@ public function approve(PoSupplier $poSupplier)
         return back()->with('error',$e->getMessage());
     }
 }
-
-
-/* ================= CANCEL ================= */
-public function cancel(PoSupplier $poSupplier)
-{
-    DB::beginTransaction();
-
-    try {
-
-        $poSupplier->update([
-            'status' => 'cancelled'
-        ]);
-
-        $poMasuk = $poSupplier->poMasuk;
-
-        // Jika tidak ada supplier approved → balik ke approved
-        $hasApproved = $poMasuk->poSuppliers()
-            ->where('status','approved')
-            ->exists();
-
-        if (!$hasApproved) {
-            $poMasuk->update(['status' => 'approved']);
-        }
-
-        DB::commit();
-
-        return back()->with('success','PO Supplier berhasil di-cancel');
-
-    } catch (\Exception $e) {
-
-        DB::rollBack();
-        return back()->with('error',$e->getMessage());
-    }
-}
-
 }

@@ -14,15 +14,38 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class WorkingReportController extends Controller
 {
     /* ================= INDEX ================= */
-    public function index()
-    {
-        $workingReports = WorkingReport::with('poMasuk')
-            ->latest()
-            ->get();
+public function index(Request $request)
+{
+    $query = WorkingReport::with('poMasuk')->latest();
 
-        return view('admin_marine.working_report.index',
-            compact('workingReports'));
+    // SEARCH
+    if ($request->search) {
+        $query->where(function ($q) use ($request) {
+            $q->where('project', 'like', '%' . $request->search . '%')
+              ->orWhereHas('poMasuk', function ($po) use ($request) {
+                  $po->where('mitra_marine', 'like', '%' . $request->search . '%')
+                     ->orWhere('vessel', 'like', '%' . $request->search . '%')
+                     ->orWhere('no_po_klien', 'like', '%' . $request->search . '%');
+              });
+        });
     }
+
+    // FILTER BULAN
+    if ($request->month) {
+        $query->whereMonth('created_at', $request->month);
+    }
+
+    // FILTER TAHUN
+    if ($request->year) {
+        $query->whereYear('created_at', $request->year);
+    }
+
+    $workingReports = $query->paginate(10);
+
+    return view('admin_marine.working_report.index',
+        compact('workingReports'));
+}
+
 
     /* ================= CREATE ================= */
     public function create($poMasukId)

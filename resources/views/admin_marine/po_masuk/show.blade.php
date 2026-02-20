@@ -3,329 +3,528 @@
 @section('content')
 <div class="container">
 
-    {{-- ================= PAGE TITLE ================= --}}
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0">Detail PO Klien</h2>
+<style>
+.table-supplier th,
+.table-supplier td{
+    font-size:13px;
+    padding:8px 10px;
+    vertical-align:middle;
+}
 
-        <div class="d-flex gap-2">
+.supplier-footer-label{
+    font-size:12px;
+    color:#6c757d;
+}
 
-            <a href="{{ route('po-masuk.index') }}" 
-               class="btn btn-secondary btn-sm">
-                ← Kembali
-            </a>
+.supplier-footer-value{
+    font-size:16px;
+    font-weight:700;
+}
 
-            {{-- APPROVE --}}
-            @if($poMasuk->status == 'draft')
-            <form action="{{ route('po-masuk.approve',$poMasuk->id) }}"
-                  method="POST">
-                @csrf
-                @method('PATCH')
-                <button class="btn btn-success btn-sm">
-                    Approve PO
-                </button>
-            </form>
-            @endif
+.detail-label{
+    font-size:12px;
+    color:#6c757d;
+    margin-bottom:2px;
+}
 
-            {{-- CLOSE --}}
-            @if($poMasuk->status == 'delivered')
-            <form action="{{ route('po-masuk.close',$poMasuk->id) }}"
-                  method="POST">
-                @csrf
-                @method('PATCH')
-                <button class="btn btn-danger btn-sm">
-                    Close PO
-                </button>
-            </form>
-            @endif
+.detail-value{
+    font-weight:600;
+    font-size:14px;
+}
+</style>
+
+
+{{-- ================= PO MASUK ================= --}}
+<div class="card shadow-sm border-0 mb-5">
+
+    {{-- HEADER --}}
+    {{-- HEADER --}}
+<div class="card-header bg-white d-flex justify-content-between align-items-center">
+
+    <div class="fw-semibold small">
+        Informasi PO Klien
+    </div>
+
+    <div class="d-flex align-items-center gap-3">
+ <a href="{{ route('po-masuk.index') }}"
+           class="btn btn-secondary btn-sm" style="margin-right: 6px">
+            Kembali
+        </a>
+         <a href="{{ route('po-masuk.edit',$poMasuk->id) }}"
+           class="btn btn-warning btn-sm" style="margin-right: 6px">
+            Edit PO-Klien
+        </a>
+        {{-- STATUS DROPDOWN --}}
+        <form action="{{ route('po-masuk.update-status', $poMasuk->id) }}"
+              method="POST"
+              class="mb-0">
+            @csrf
+            @method('PATCH')
+
+            <select name="status"
+                    class="form-control form-control-sm"
+                    onchange="this.form.submit()">
+
+                <option value="draft"
+                    {{ $poMasuk->status == 'draft' ? 'selected' : '' }}>
+                    Draft
+                </option>
+
+                <option value="approved"
+                    {{ $poMasuk->status == 'approved' ? 'selected' : '' }}>
+                    Approved
+                </option>
+
+                <option value="processing"
+                    {{ $poMasuk->status == 'processing' ? 'selected' : '' }}>
+                    Processing
+                </option>
+
+                <option value="delivered"
+                    {{ $poMasuk->status == 'delivered' ? 'selected' : '' }}>
+                    Delivered
+                </option>
+
+                <option value="closed"
+                    {{ $poMasuk->status == 'closed' ? 'selected' : '' }}>
+                    Closed
+                </option>
+
+            </select>
+        </form>
+
+       
+
+    </div>
+
+</div>
+
+
+    {{-- BODY INFO --}}
+    <div class="card-body">
+
+        <div class="row g-4">
+
+            <div class="col-md-4">
+                <div class="detail-label">No PO</div>
+                <div class="detail-value">
+                    {{ $poMasuk->no_po_klien }}
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="detail-label">Tanggal</div>
+                <div class="detail-value">
+                    {{ \Carbon\Carbon::parse($poMasuk->tanggal_po)->format('d M Y') }}
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="detail-label">Status</div>
+                <span class="badge px-3 py-2 text-light
+                    @if($poMasuk->status == 'draft') bg-secondary
+                    @elseif($poMasuk->status == 'approved') bg-primary
+                    @elseif($poMasuk->status == 'processing') bg-warning 
+                    @elseif($poMasuk->status == 'delivered') bg-info
+                    @elseif($poMasuk->status == 'closed') bg-success
+                    @endif">
+                    {{ strtoupper($poMasuk->status) }}
+                </span>
+            </div>
+
+            <div class="col-md-6">
+                <div class="detail-label">Mitra</div>
+                <div class="detail-value">
+                    {{ $poMasuk->mitra->nama_mitra ?? '-' }}
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="detail-label">Vessel</div>
+                <div class="detail-value">
+                    {{ $poMasuk->vessel->nama_vessel ?? '-' }}
+                </div>
+            </div>
 
         </div>
+
     </div>
 
 
-    {{-- ========================================================= --}}
-    {{-- ========== CLIENT PO (HEADER + ITEM SATU CARD) ========= --}}
-    {{-- ========================================================= --}}
-    <div class="card mb-4 shadow-sm">
+    {{-- TABLE --}}
+    <div class="card-body p-0">
 
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <strong>PO dari Klien (Harga Jual)</strong>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover table-supplier mb-0">
 
-            <a href="{{ route('po-masuk.edit',$poMasuk->id) }}"
-               class="btn btn-sm btn-warning">
-                Edit PO Klien
-            </a>
+                <thead class="table-light text-center">
+                    <tr>
+                        <th>Item</th>
+                        <th width="80">Qty</th>
+                        <th width="90">Unit</th>
+                        <th width="150">Harga Jual</th>
+                        <th width="150">Amount</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                @forelse ($poMasuk->items as $item)
+                    <tr>
+                        <td>{{ $item->item }}</td>
+                        <td class="text-center">{{ $item->qty }}</td>
+                        <td class="text-center">{{ $item->unit }}</td>
+                        <td class="text-end fw-semibold">
+                            Rp {{ number_format($item->price_jual,0,',','.') }}
+                        </td>
+                        <td class="text-end fw-semibold">
+                            Rp {{ number_format($item->amount,0,',','.') }}
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="5"
+                            class="text-center text-muted py-4 small">
+                            Belum ada item
+                        </td>
+                    </tr>
+                @endforelse
+                </tbody>
+
+            </table>
         </div>
 
-        <div class="card-body">
+    </div>
 
-            {{-- ===== HEADER INFO ===== --}}
-            <div class="row mb-4">
 
-                <div class="col-md-6 mb-3">
-                    <strong>No PO Klien</strong><br>
-                    {{ $poMasuk->no_po_klien }}
-                </div>
+    {{-- FOOTER --}}
+    <div class="card-footer bg-white text-end">
 
-                <div class="col-md-6 mb-3">
-                    <strong>Tanggal PO</strong><br>
-                    {{ \Carbon\Carbon::parse($poMasuk->tanggal_po)->format('d M Y') }}
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <strong>Mitra</strong><br>
-                    {{ $poMasuk->mitra->nama_mitra ?? '-' }}
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <strong>Vessel</strong><br>
-                    {{ $poMasuk->vessel->nama_vessel ?? '-' }}
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <strong>Status</strong><br>
-                    <span class="badge text-light
-                        @if($poMasuk->status == 'draft') bg-secondary
-                        @elseif($poMasuk->status == 'approved') bg-primary
-                        @elseif($poMasuk->status == 'processing') bg-warning text-dark
-                        @elseif($poMasuk->status == 'delivered') bg-info
-                        @elseif($poMasuk->status == 'closed') bg-success
-                        @endif">
-                        {{ strtoupper($poMasuk->status) }}
-                    </span>
-                </div>
-
-            </div>
-
-            <hr>
-
-            {{-- ===== ITEM TABLE ===== --}}
-            <h5 class="mb-3">Item PO Klien</h5>
-
-            <div class="table-responsive">
-                <table class="table table-bordered">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Item</th>
-                            <th width="80">Qty</th>
-                            <th width="80">Unit</th>
-                            <th width="150">Harga Jual</th>
-                            <th width="150">Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($poMasuk->items as $item)
-                            <tr>
-                                <td>{{ $item->item }}</td>
-                                <td>{{ $item->qty }}</td>
-                                <td>{{ $item->unit }}</td>
-                                <td>Rp {{ number_format($item->price_jual,0,',','.') }}</td>
-                                <td>Rp {{ number_format($item->amount,0,',','.') }}</td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" class="text-center text-muted">
-                                    Belum ada item
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-
+        <div class="supplier-footer-label">
+            Total Nilai PO Klien
         </div>
 
-        <div class="card-footer text-end fw-bold">
-            Nilai PO klien (Total Jual) :
+        <div class="supplier-footer-value text-primary">
             Rp {{ number_format($poMasuk->total_jual ?? 0,0,',','.') }}
         </div>
 
     </div>
 
+</div>
 
-    {{-- ================= PO SUPPLIER ================= --}}
-    <div class="card mb-4 shadow-sm">
 
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <strong>PO ke Supplier (Harga Beli)</strong>
+<style>
+.table-supplier th,
+.table-supplier td{
+    font-size:13px;
+    padding:8px 10px;
+    vertical-align:middle;
+}
 
-            <a href="{{ route('po-supplier.create', $poMasuk->id) }}"
-               class="btn btn-success btn-sm">
-                + Buat PO Supplier
-            </a>
+.supplier-footer-label{
+    font-size:12px;
+    color:#6c757d;
+}
+
+.supplier-footer-value{
+    font-size:16px;
+    font-weight:700;
+}
+</style>
+
+
+{{-- ================= PO SUPPLIER ================= --}}
+<div class="card shadow-sm border-0 mb-5">
+
+    {{-- HEADER --}}
+    <iv class="card-header bg-white d-flex justify-content-between align-items-center">
+
+        <div class="fw-semibold small">
+            PO ke Supplier (Harga Beli)
         </div>
 
-        <div class="card-body p-0">
-            <table class="table table-bordered mb-0">
-                <thead class="table-light">
+        <a href="{{ route('po-supplier.create', $poMasuk->id) }}"
+           class="btn btn-success btn-sm">
+            + Buat PO Supplier
+        </a>
+
+    </iv>
+
+
+    {{-- BODY --}}
+    <div class="card-body p-0">
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover table-supplier mb-0">
+
+                <thead class="table-light text-center">
                     <tr>
                         <th>Supplier</th>
-                        <th>No PO</th>
-                        <th width="150">Grand Total</th>
-                        <th width="120">Status</th>
-                        <th width="140">Aksi</th>
+                        <th width="170">No PO Internal</th>
+                        <th width="160" class="text-end">Grand Total</th>
+                        <th width="130">Status</th>
+                        <th width="120">Action</th>
                     </tr>
                 </thead>
+
                 <tbody>
-                    @forelse ($poMasuk->poSuppliers as $sup)
-                        <tr>
-                            <td>{{ $sup->nama_perusahaan ?? '-' }}</td>
-                            <td>{{ $sup->no_po_internal }}</td>
-                            <td>Rp {{ number_format($sup->grand_total ?? 0,0,',','.') }}</td>
-                            <td>
-                                <span class="badge bg-info text-light">
-                                    {{ strtoupper($sup->status) }}
-                                </span>
-                            </td>
-                            <td>
+
+                @forelse ($poMasuk->poSuppliers as $sup)
+
+                    @php
+                        $badge = match($sup->status){ 
+                            'approved' => 'bg-success',
+                            'cancelled' => 'bg-danger',
+                            'processing' => 'bg-warning',
+                            default => 'bg-secondary'
+                        };
+                    @endphp
+
+                    <tr>
+
+                        <td class="fw-semibold">
+                            {{ $sup->nama_perusahaan ?? '-' }}
+                        </td>
+
+                        <td class="text-center">
+                            {{ $sup->no_po_internal }}
+                        </td>
+
+                        <td class="text-end fw-semibold">
+                            Rp {{ number_format($sup->grand_total ?? 0,0,',','.') }}
+                        </td>
+
+                     <td class="text-center">
+
+    @php
+        $badgeClass = match($sup->status) {
+            'draft'      => 'bg-secondary',
+            'sent'       => 'bg-primary',
+            'approved'   => 'bg-info text-light',
+            'processing' => 'bg-warning',
+            'completed'  => 'bg-success',
+            'cancelled'  => 'bg-danger',
+            default      => 'bg-dark',
+        };
+    @endphp
+
+    <span class="badge text-light px-3 py-2 {{ $badgeClass }}">
+        {{ strtoupper($sup->status ?? '-') }}
+    </span>
+
+</td>
+
+                        <td>
+                            <div class="d-flex justify-content-center">
                                 <a href="{{ route('po-supplier.show', $sup->id) }}"
-                                   class="btn btn-sm btn-primary">
+                                   class="btn btn-primary btn-sm">
                                     Detail
                                 </a>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="5" class="text-center text-muted">
-                                Belum ada PO Supplier
-                            </td>
-                        </tr>
-                    @endforelse
+                            </div>
+                        </td>
+
+                    </tr>
+
+                @empty
+                    <tr>
+                        <td colspan="5"
+                            class="text-center text-muted py-4 small">
+                            Belum ada PO Supplier
+                        </td>
+                    </tr>
+                @endforelse
+
                 </tbody>
+
             </table>
         </div>
 
-        <div class="card-footer text-end fw-bold">
-            Nilai PO Kita (Total Beli):
+    </div>
+
+
+    {{-- FOOTER --}}
+    <div class="card-footer bg-white text-end">
+
+        <div class="supplier-footer-label">
+            Total Nilai PO Supplier (Total Beli)
+        </div>
+
+        <div class="supplier-footer-value text-danger">
             Rp {{ number_format($poMasuk->poSuppliers->sum('grand_total'),0,',','.') }}
         </div>
 
     </div>
 
+</div>
 
-    {{-- ================= DELIVERY ORDER ================= --}}
-    <div class="card mb-4 shadow-sm">
+{{-- ================= DELIVERY ORDER ================= --}}
+<div class="card shadow-sm border-0 mb-5">
 
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <strong>Delivery Order</strong>
-
-            <a href="{{ route('delivery-order.create', $poMasuk->id) }}"
-               class="btn btn-warning btn-sm">
-                + Buat Delivery Order
-            </a>
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <div class="fw-semibold small">
+            Delivery Order
         </div>
 
-        <div class="card-body p-0">
-            <table class="table table-bordered mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th>No DO</th>
-                        <th width="150">Tanggal</th>
-                        <th width="120">Status</th>
-                        <th width="140">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($poMasuk->deliveryOrders as $do)
-                        <tr>
-                            <td>{{ $do->no_do ?? '-' }}</td>
-                            <td>{{ \Carbon\Carbon::parse($do->tanggal_do)->format('d M Y') }}</td>
-                            <td>
-                                <span class="badge bg-info text-light">
-                                    {{ strtoupper($do->status) }}
-                                </span>
-                            </td>
-                            <td>
-                                <a href="{{ route('delivery-order.show', $do->id) }}"
-                                   class="btn btn-sm btn-primary">
-                                    Detail
-                                </a>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="4" class="text-center text-muted">
-                                Belum ada Delivery Order
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-
-    </div>
-
-{{-- ================= PENGELUARAN PO ================= --}}
-<div class="card mb-4 shadow-sm">
-
-    <div class="card-header d-flex justify-content-between align-items-center">
-        <strong>Pengeluaran Lain-Lain</strong>
-
-        {{-- TOMBOL REDIRECT KE HALAMAN CREATE --}}
-        <a href="{{ route('pengeluaran-po.create', $poMasuk->id) }}"
-           class="btn btn-primary btn-sm">
-            + Tambah Pengeluaran
+        <a href="{{ route('delivery-order.create', $poMasuk->id) }}"
+           class="btn btn-success btn-sm">
+            + Buat Delivery Order
         </a>
     </div>
 
-    <div class="card-body">
+    <div class="card-body p-0">
 
         <div class="table-responsive">
-            <table class="table table-bordered">
-                <thead class="table-light">
+            <table class="table table-bordered table-hover table-supplier mb-0">
+
+                <thead class="table-light text-center">
                     <tr>
-                        <th>Item</th>
-                        <th width="80">Qty</th>
-                        <th width="120">Harga</th>
-                        <th width="150">Amount</th>
+                        <th>No DO</th>
+                        <th width="150">Tanggal</th>
+                        <th width="130">Status</th>
                         <th width="120">Aksi</th>
                     </tr>
                 </thead>
+
                 <tbody>
-
-                    @php
-                        $totalPengeluaran = $poMasuk->pengeluaran->sum('amount');
-                    @endphp
-
-                    @forelse ($poMasuk->pengeluaran as $exp)
+                @forelse ($poMasuk->deliveryOrders as $do)
                     <tr>
-                        <td>{{ $exp->item }}</td>
-                        <td>{{ $exp->qty }}</td>
-                        <td>Rp {{ number_format($exp->price,0,',','.') }}</td>
-                        <td>Rp {{ number_format($exp->amount,0,',','.') }}</td>
-                        <td>
-                            {{-- DETAIL BUTTON --}}
-                            <a href="{{ route('pengeluaran-po.show',$exp->id) }}"
-                               class="btn btn-sm btn-info">
+                        <td>{{ $do->no_do ?? '-' }}</td>
+
+                        <td class="text-center">
+                            {{ \Carbon\Carbon::parse($do->tanggal_do)->format('d M Y') }}
+                        </td>
+
+                        <td class="text-center">
+                            <span class="badge bg-info text-light px-3 py-2">
+                                {{ strtoupper($do->status) }}
+                            </span>
+                        </td>
+
+                        <td class="text-center">
+                            <a href="{{ route('delivery-order.show', $do->id) }}"
+                               class="btn btn-sm btn-primary">
                                 Detail
                             </a>
                         </td>
                     </tr>
-                    @empty
+                @empty
                     <tr>
-                        <td colspan="5" class="text-center text-muted">
-                            Belum ada pengeluaran
+                        <td colspan="4"
+                            class="text-center text-muted py-4 small">
+                            Belum ada Delivery Order
                         </td>
                     </tr>
-                    @endforelse
-
+                @endforelse
                 </tbody>
+
             </table>
         </div>
 
     </div>
 
-    <div class="card-footer text-end fw-bold">
-        Total Pengeluaran :
-        Rp {{ number_format($totalPengeluaran ?? 0,0,',','.') }}
+</div>
+
+{{-- ================= PENGELUARAN PO ================= --}}
+<div class="card shadow-sm border-0 mb-5">
+
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <div class="fw-semibold small">
+            Pengeluaran Lain-Lain
+        </div>
+
+        <a href="{{ route('pengeluaran-po.create', $poMasuk->id) }}"
+           class="btn btn-success btn-sm">
+            + Tambah Pengeluaran
+        </a>
+    </div>
+
+    @php
+        $totalPengeluaran = $poMasuk->pengeluaran->sum('amount');
+    @endphp
+
+    <div class="card-body p-0">
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover table-supplier mb-0">
+
+                <thead class="table-light text-center">
+                    <tr>
+                        <th>Item</th>
+                        <th width="80">Qty</th>
+                        <th width="150">Harga</th>
+                        <th width="150">Amount</th>
+                        <th width="170">Aksi</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                @forelse ($poMasuk->pengeluaran as $exp)
+                    <tr>
+                        <td>{{ $exp->item }}</td>
+
+                        <td class="text-center">
+                            {{ $exp->qty }}
+                        </td>
+
+                        <td class="text-end fw-semibold">
+                            Rp {{ number_format($exp->price,0,',','.') }}
+                        </td>
+
+                        <td class="text-end fw-semibold">
+                            Rp {{ number_format($exp->amount,0,',','.') }}
+                        </td>
+
+                        <td class="text-center">
+                            <div class="d-flex justify-content-center gap-2">
+
+                                <a href="{{ route('pengeluaran-po.show',$exp->id) }}"
+                                   class="btn btn-sm btn-primary" style="margin-right: 7px">
+                                    Detail
+                                </a>
+
+                                <a href="{{ route('pengeluaran-po.edit',$exp->id) }}"
+                                   class="btn btn-sm btn-warning">
+                                    Edit
+                                </a>
+
+                            </div>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="5"
+                            class="text-center text-muted py-4 small">
+                            Belum ada pengeluaran
+                        </td>
+                    </tr>
+                @endforelse
+                </tbody>
+
+            </table>
+        </div>
+
+    </div>
+
+    <div class="card-footer bg-white text-end">
+
+        <div class="supplier-footer-label">
+            Total Pengeluaran
+        </div>
+
+        <div class="supplier-footer-value text-danger">
+            Rp {{ number_format($totalPengeluaran ?? 0,0,',','.') }}
+        </div>
+
     </div>
 
 </div>
 
 {{-- ================= INVOICE PO ================= --}}
-<div class="card mb-4 shadow-sm">
+<div class="card shadow-sm border-0 mb-5">
 
-    <div class="card-header d-flex justify-content-between align-items-center">
-        <strong>Invoice PO</strong>
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <div class="fw-semibold small">
+            Invoice PO
+        </div>
 
         <a href="{{ route('invoice-po.create', $poMasuk->id) }}"
            class="btn btn-success btn-sm">
@@ -333,42 +532,45 @@
         </a>
     </div>
 
+    @php
+        $totalInvoice = $poMasuk->invoicePos->sum('grand_total');
+    @endphp
+
     <div class="card-body p-0">
-        <table class="table table-bordered mb-0">
-            <thead class="table-light">
-                <tr>
-                    <th>No Invoice</th>
-                    <th width="140">Tanggal</th>
-                    <th width="120">Periode</th>
-                    <th width="160">Grand Total</th>
-                    <th width="120">Status</th>
-                    <th width="140">Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
 
-                @php
-                    $totalInvoice = $poMasuk->invoicePos->sum('grand_total');
-                @endphp
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover table-supplier mb-0">
 
+                <thead class="table-light text-center">
+                    <tr>
+                        <th>No Invoice</th>
+                        <th width="140">Tanggal</th>
+                        <th width="120">Periode</th>
+                        <th width="160">Grand Total</th>
+                        <th width="120">Status</th>
+                        <th width="120">Aksi</th>
+                    </tr>
+                </thead>
+
+                <tbody>
                 @forelse($poMasuk->invoicePos as $inv)
                     <tr>
                         <td>{{ $inv->no_invoice }}</td>
 
-                        <td>
+                        <td class="text-center">
                             {{ \Carbon\Carbon::parse($inv->tanggal_invoice)->format('d M Y') }}
                         </td>
 
-                        <td>
+                        <td class="text-center">
                             {{ $inv->periode ?? '-' }}
                         </td>
 
-                        <td>
+                        <td class="text-end fw-semibold">
                             Rp {{ number_format($inv->grand_total,0,',','.') }}
                         </td>
 
-                        <td>
-                            <span class="badge text-light
+                        <td class="text-center">
+                            <span class="badge text-light px-3 py-2
                                 @if($inv->status == 'draft') bg-secondary
                                 @elseif($inv->status == 'issued') bg-primary
                                 @elseif($inv->status == 'paid') bg-success
@@ -378,7 +580,7 @@
                             </span>
                         </td>
 
-                        <td>
+                        <td class="text-center">
                             <a href="{{ route('invoice-po.show',$inv->id) }}"
                                class="btn btn-sm btn-primary">
                                 Detail
@@ -387,71 +589,83 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="text-center text-muted">
+                        <td colspan="6"
+                            class="text-center text-muted py-4 small">
                             Belum ada Invoice
                         </td>
                     </tr>
                 @endforelse
+                </tbody>
 
-            </tbody>
-        </table>
+            </table>
+        </div>
+
     </div>
 
-    <div class="card-footer text-end fw-bold">
-        Total Invoice :
-        Rp {{ number_format($totalInvoice ?? 0,0,',','.') }}
-    </div>
+    <div class="card-footer bg-white text-end">
 
-    
+        <div class="supplier-footer-label">
+            Total Invoice
+        </div>
+
+        <div class="supplier-footer-value text-success">
+            Rp {{ number_format($totalInvoice ?? 0,0,',','.') }}
+        </div>
+
+    </div>
 
 </div>
 
 {{-- ================= TIMESHEET ================= --}}
-<div class="card mb-4 shadow-sm">
+<div class="card shadow-sm border-0 mb-5">
 
-    <div class="card-header d-flex justify-content-between align-items-center">
-        <strong>Timesheet</strong>
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <div class="fw-semibold small">
+            Timesheet
+        </div>
 
         <a href="{{ route('timesheet.create', $poMasuk->id) }}"
-           class="btn btn-primary btn-sm">
+           class="btn btn-success btn-sm">
             + Buat Timesheet
         </a>
     </div>
 
+    @php
+        $totalHours = $poMasuk->timesheets->sum('total_hours');
+    @endphp
+
     <div class="card-body p-0">
 
-        <table class="table table-bordered mb-0">
-            <thead class="table-light">
-                <tr>
-                    <th>Project</th>
-                    <th width="150">Manpower</th>
-                    <th width="120">Total Hours</th>
-                    <th width="120">Status</th>
-                    <th width="140">Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover table-supplier mb-0">
 
-                @php
-                    $totalHours = $poMasuk->timesheets->sum('total_hours');
-                @endphp
+                <thead class="table-light text-center">
+                    <tr>
+                        <th>Project</th>
+                        <th width="150">Manpower</th>
+                        <th width="140">Total Jam</th>
+                        <th width="120">Status</th>
+                        <th width="120">Aksi</th>
+                    </tr>
+                </thead>
 
+                <tbody>
                 @forelse($poMasuk->timesheets as $ts)
                     <tr>
-                        <td>
-                            <strong>{{ $ts->project }}</strong>
+                        <td class="fw-semibold">
+                            {{ $ts->project }}
                         </td>
 
-                        <td>
+                        <td class="text-center">
                             {{ $ts->manpower }}
                         </td>
 
-                        <td>
+                        <td class="text-end fw-semibold">
                             {{ number_format($ts->total_hours,2) }} Jam
                         </td>
 
-                        <td>
-                            <span class="badge text-light
+                        <td class="text-center">
+                            <span class="badge text-light px-3 py-2
                                 @if($ts->status == 'draft') bg-secondary
                                 @elseif($ts->status == 'approved') bg-primary
                                 @elseif($ts->status == 'completed') bg-success
@@ -460,139 +674,159 @@
                             </span>
                         </td>
 
-                        <td>
+                        <td class="text-center">
                             <a href="{{ route('timesheet.show', $ts->id) }}"
-                               class="btn btn-sm btn-info">
+                               class="btn btn-sm btn-primary">
                                 Detail
                             </a>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="text-center text-muted">
+                        <td colspan="5"
+                            class="text-center text-muted py-4 small">
                             Belum ada Timesheet
                         </td>
                     </tr>
                 @endforelse
+                </tbody>
 
-            </tbody>
-        </table>
+            </table>
+        </div>
 
     </div>
 
-    <div class="card-footer text-end fw-bold">
-        Total Jam Kerja :
-        {{ number_format($totalHours ?? 0,2) }} Jam
+    <div class="card-footer bg-white text-end">
+
+        <div class="supplier-footer-label">
+            Total Jam Kerja
+        </div>
+
+        <div class="supplier-footer-value text-primary">
+            {{ number_format($totalHours ?? 0,2) }} Jam
+        </div>
+
     </div>
 
 </div>
 
 {{-- ================= WORKING REPORT ================= --}}
-<div class="card mb-4 shadow-sm">
+<div class="card shadow-sm border-0 mb-5">
 
-    <div class="card-header d-flex justify-content-between align-items-center">
-        <strong>Working Report</strong>
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <div class="fw-semibold small">
+            Working Report
+        </div>
 
         <a href="{{ route('working-report.create', $poMasuk->id) }}"
-           class="btn btn-dark btn-sm">
+           class="btn btn-success btn-sm">
             + Buat Working Report
         </a>
     </div>
 
     <div class="card-body p-0">
 
-        <table class="table table-bordered mb-0">
-            <thead class="table-light">
-                <tr>
-                    <th>Project</th>
-                    <th width="150">Periode</th>
-                    <th width="140">Total Item</th>
-                    <th width="160">Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover table-supplier mb-0">
 
+                <thead class="table-light text-center">
+                    <tr>
+                        <th>Project</th>
+                        <th width="150">Periode</th>
+                        <th width="140">Total Kolom</th>
+                        <th width="120">Aksi</th>
+                    </tr>
+                </thead>
+
+                <tbody>
                 @forelse($poMasuk->workingReports as $wr)
                     <tr>
-                        <td>
-                            <strong>{{ $wr->project }}</strong>
-                        </td>
-
-                        <td>
-                            {{ $wr->periode }}
+                        <td class="fw-semibold">
+                            {{ $wr->project }}
                         </td>
 
                         <td class="text-center">
+                            {{ $wr->periode }}
+                        </td>
+
+                        <td class="text-center fw-semibold">
                             {{ $wr->items->count() }}
                         </td>
 
-                        <td>
+                        <td class="text-center">
                             <a href="{{ route('working-report.show', $wr->id) }}"
                                class="btn btn-sm btn-primary">
                                 Detail
-                            </a>
-
-                            <a href="{{ route('working-report.print', $wr->id) }}"
-                               class="btn btn-sm btn-info"
-                               target="_blank">
-                                Print
                             </a>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="4" class="text-center text-muted">
+                        <td colspan="4"
+                            class="text-center text-muted py-4 small">
                             Belum ada Working Report
                         </td>
                     </tr>
                 @endforelse
+                </tbody>
 
-            </tbody>
-        </table>
+            </table>
+        </div>
 
     </div>
 
 </div>
 
-    {{-- ================= MARGIN ================= --}}
-    <div class="card shadow-sm">
+{{-- ================= MARGIN ================= --}}
 
-        <div class="card-header fw-bold">
-           <strong>Summary</strong> 
+<div class="card shadow-sm border-0 mb-5">
+
+    <div class="card-header bg-white">
+        <div class="fw-semibold small">
+            Summary
         </div>
+    </div>
 
-        <div class="card-body">
+    @php
+        $totalBeli = $poMasuk->poSuppliers->sum('grand_total');
+        $totalPengeluaran = $poMasuk->pengeluaran->sum('amount');
+        $margin = $poMasuk->total_jual - $totalBeli - $totalPengeluaran;
+    @endphp
 
-           @php
-    $totalBeli = $poMasuk->poSuppliers->sum('grand_total');
-    $totalPengeluaran = $poMasuk->pengeluaran->sum('amount');
-    $margin = $poMasuk->total_jual - $totalBeli - $totalPengeluaran;
-@endphp
+    <div class="card-body p-0">
 
-            <table class="table table-bordered">
-                <tr>
-                    <th width="200">Nilai PO Klien</th>
-                    <td>Rp {{ number_format($poMasuk->total_jual,0,',','.') }}</td>
-                </tr>
-                <tr>
-                    <th>Nilai PO Kita</th>
-                    <td>Rp {{ number_format($totalBeli,0,',','.') }}</td>
-                </tr>
-                <tr>
-    <th>Total Pengeluaran</th>
-    <td>Rp {{ number_format($totalPengeluaran,0,',','.') }}</td>
-</tr>
+        <table class="table table-bordered table-supplier mb-0">
 
-                <tr>
-                    <th>Margin</th>
-                    <td class="fw-bold 
-                        {{ $margin > 0 ? 'text-success' : ($margin < 0 ? 'text-danger' : '') }}">
-                        Rp {{ number_format($margin,0,',','.') }}
-                    </td>
-                </tr>
-            </table>
+            <tr>
+                <th width="250">Nilai PO Klien</th>
+                <td class="text-end fw-semibold">
+                    Rp {{ number_format($poMasuk->total_jual,0,',','.') }}
+                </td>
+            </tr>
 
-        </div>
+            <tr>
+                <th>Nilai PO Kita</th>
+                <td class="text-end fw-semibold">
+                    Rp {{ number_format($totalBeli,0,',','.') }}
+                </td>
+            </tr>
+
+            <tr>
+                <th>Total Pengeluaran</th>
+                <td class="text-end fw-semibold">
+                    Rp {{ number_format($totalPengeluaran,0,',','.') }}
+                </td>
+            </tr>
+
+            <tr class="table-light">
+                <th>Margin</th>
+                <td class="text-end fw-bold
+                    {{ $margin > 0 ? 'text-success' : ($margin < 0 ? 'text-danger' : '') }}">
+                    Rp {{ number_format($margin,0,',','.') }}
+                </td>
+            </tr>
+
+        </table>
 
     </div>
 

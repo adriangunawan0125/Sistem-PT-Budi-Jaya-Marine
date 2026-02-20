@@ -2,229 +2,199 @@
 
 @section('content')
 
-<style>
-.soa-paper {
-    background:#ffffff;
-    padding:30px;
-    font-size:12px;
-    font-family: Arial, Helvetica, sans-serif;
-}
+<div class="container py-4">
 
-.soa-title {
-    text-align:center;
-    font-weight:600;
-}
+    {{-- ================= HEADER ================= --}}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h5 class="mb-0 fw-semibold">Statement of Account</h5>
 
-.soa-title h4 {
-    margin:0;
-}
+        <div class="d-flex gap-2">
 
-.soa-subtitle {
-    text-align:center;
-    margin-top:10px;
-    margin-bottom:20px;
-    font-weight:600;
-    text-decoration: underline;
-}
+              <a href="{{route('soa.index')}}" class="btn btn-sm btn-secondary" >
+        Kembali</a>
 
-.header-info {
-    width:100%;
-    margin-bottom:20px;
-}
+         <a href="{{ route('soa.print', $soa->id) }}"
+               target="_blank"
+               class="btn btn-danger btn-sm" style="margin-left: 4px">
+                Print
+            </a>
+            <a href="{{ route('soa.edit', $soa->id) }}" 
+               class="btn btn-warning btn-sm" style="margin-left: 4px">
+                Edit
+            </a>
 
-.header-info td {
-    padding:4px 6px;
-    vertical-align:top;
-}
+            <form action="{{ route('soa.destroy', $soa->id) }}" 
+                  method="POST"
+                  onsubmit="return confirm('Yakin hapus SOA ini?')">
+                @csrf
+                @method('DELETE')
+                <button class="btn btn-danger btn-sm" style="margin-left: 4px">
+                    Hapus SOA
+                </button>
+            </form>
 
-.table-wrapper {
-    overflow-x:auto;
-}
-
-.main-table {
-    min-width:1200px;
-    width:100%;
-    border-collapse:collapse;
-}
-
-/* gunakan border default bootstrap */
-.main-table th,
-.main-table td {
-    border:1px solid #dee2e6;
-    padding:6px;
-}
-
-.main-table thead th {
-    text-align:center;
-    font-weight:600;
-}
-
-.text-center { text-align:center; }
-.text-right { text-align:right; }
-
-.total-row td {
-    font-weight:600;
-}
-</style>
-
-
-<div class="soa-paper">
-
-{{-- ACTION --}}
-<div class="mb-3 text-end">
-
-    <a href="{{ route('soa.print', $soa->id) }}" 
-       target="_blank"
-       class="btn btn-success btn-sm">
-        <i class="fa fa-print"></i> Print
-    </a>
-
-    <a href="{{ route('soa.edit', $soa->id) }}" 
-       class="btn btn-primary btn-sm">
-        Edit SOA
-    </a>
-
-    <form action="{{ route('soa.destroy', $soa->id) }}" 
-          method="POST" 
-          class="d-inline">
-        @csrf
-        @method('DELETE')
-        <button type="submit"
-                class="btn btn-danger btn-sm"
-                onclick="return confirm('Yakin hapus SOA ini?')">
-            Hapus SOA
-        </button>
-    </form>
-
-</div>
-
-
-{{-- COMPANY --}}
-<div class="soa-title">
-    <h4>PT. BUDI JAYA MARINE</h4>
-    <div>
-        Ruko Sentra Bisnis, Jl. Harapan Indah No. 3 Blok SS 2,
-        Pejuang, Medan Satria, Bekasi 17132
+        </div>
     </div>
-</div>
 
-<div class="soa-subtitle">
-    STATEMENT OF ACCOUNT (SOA)
-</div>
+    {{-- ================= INFO CARD ================= --}}
+    <div class="card shadow-sm mb-4">
+        <div class="card-body small">
 
+            <div class="row g-3">
 
-{{-- HEADER --}}
-<table class="header-info">
-<tr>
-    <td width="15%"><b>DEBTOR</b></td>
-    <td width="35%">: {{ $soa->debtor }}</td>
+                <div class="col-md-4 mb-3">
+                    <div class="text-muted">Debtor</div>
+                    <div class="fw-semibold">{{ $soa->debtor }}</div>
+                </div>
 
-    <td width="20%" class="text-right"><b>STATEMENT DATE</b></td>
-    <td width="30%">: {{ \Carbon\Carbon::parse($soa->statement_date)->format('d F Y') }}</td>
-</tr>
+                <div class="col-md-4">
+                    <div class="text-muted">Statement Date</div>
+                    <div class="fw-semibold">
+                        {{ \Carbon\Carbon::parse($soa->statement_date)->format('d M Y') }}
+                    </div>
+                </div>
 
-<tr>
-    <td><b>ADDRESS</b></td>
-    <td>: {{ $soa->address }}</td>
+                <div class="col-md-4">
+                    <div class="text-muted">Termin</div>
+                    <div class="fw-semibold">{{ $soa->termin }}</div>
+                </div>
 
-    <td class="text-right"><b>TERMIN</b></td>
-    <td>: {{ $soa->termin }}</td>
-</tr>
+                <div class="col-md-12">
+                    <div class="text-muted">Address</div>
+                    <div>{{ $soa->address }}</div>
+                </div>
 
-<tr>
-    <td></td>
-    <td></td>
+            </div>
 
-    <td class="text-right"><b>Page</b></td>
-    <td>: 1 of 1</td>
-</tr>
-</table>
+        </div>
+    </div>
 
+    {{-- ================= TABLE ================= --}}
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
 
-{{-- TABLE --}}
-<div class="table-wrapper">
-<table class="main-table">
-    <thead class="table-light">
-        <tr>
-            <th>No.</th>
-            <th>Customer Name</th>
-            <th>Name Vessel</th>
-            <th>Job Details</th>
-            <th>PO Number</th>
-            <th>Invoice Date</th>
-            <th>Invoice No.</th>
-            <th>PENDING PAYMENT</th>
-            <th>ACCEPTED DATE</th>
-            <th>Days</th>
-            <th>REMARKS</th>
-        </tr>
-    </thead>
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered mb-0 align-middle">
 
-    <tbody>
-@php $total = 0; @endphp
+                    <thead class="table-light small text-center">
+                        <tr>
+                            <th width="5%">No</th>
+                            <th>Customer</th>
+                            <th>Vessel</th>
+                            <th width="18%">Job Details</th>
+                            <th>PO No</th>
+                            <th>Invoice Date</th>
+                            <th>Invoice No</th>
+                            <th class="text-end">Amount</th>
+                            <th>Accepted Date</th>
+                            <th width="5%">Days</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
 
-@foreach($soa->items as $i => $item)
+                    <tbody class="small">
 
-@php
-$invoice = $item->invoice;
-$po = $invoice->poMasuk ?? null;
+                        @php 
+                            $total = 0;
+                            $statementDate = \Carbon\Carbon::parse($soa->statement_date);
+                        @endphp
 
-$statementDate = \Carbon\Carbon::parse($soa->statement_date);
-$days = $item->acceptment_date
-    ? \Carbon\Carbon::parse($item->acceptment_date)->diffInDays($statementDate)
-    : 0;
+                        @foreach($soa->items as $i => $item)
 
-$total += $invoice->grand_total;
+                        @php
+                            $invoice = $item->invoice;
+                            $po = $invoice->poMasuk ?? null;
 
-$remark = $days > 30 ? 'OVER DUE TIME' : ($item->remarks ?? '');
-@endphp
+                            $days = $item->acceptment_date
+                                ? \Carbon\Carbon::parse($item->acceptment_date)
+                                    ->diffInDays($statementDate)
+                                : 0;
 
-<tr>
-    <td class="text-center">{{ $i+1 }}</td>
-    <td>{{ $po->mitra_marine ?? '-' }}</td>
-    <td class="text-center">{{ $po->vessel ?? '-' }}</td>
-<td style="white-space: pre-line;">
-    {{ $item->job_details ?? '-' }}
-</td>
+                            $amount = $invoice->grand_total ?? 0;
+                            $total += $amount;
 
-    <td class="text-center">{{ $po->no_po_klien ?? '-' }}</td>
-    <td class="text-center">{{ \Carbon\Carbon::parse($invoice->tanggal_invoice)->format('d/m/Y') }}</td>
-    <td class="text-center">{{ $invoice->no_invoice }}</td>
-    <td class="text-right">{{ number_format($invoice->grand_total,0,',','.') }}</td>
-    <td class="text-center">
-        {{ $item->acceptment_date
-            ? \Carbon\Carbon::parse($item->acceptment_date)->format('d/m/Y')
-            : '-' }}
-    </td>
-    <td class="text-center">
-        @if($days > 30)
-            <span class="text-danger fw-semibold">{{ $days }}</span>
-        @else
-            {{ $days }}
-        @endif
-    </td>
-    <td>
-        @if($days > 30)
-            <span class="text-danger fw-semibold">{{ $remark }}</span>
-        @else
-            {{ $remark }}
-        @endif
-    </td>
-</tr>
+                            $remark = $days > 30 ? 'OVER DUE' : ($item->remarks ?? '');
+                        @endphp
 
-@endforeach
+                        <tr>
+                            <td class="text-center">{{ $i+1 }}</td>
 
-<tr class="total-row">
-    <td colspan="7" class="text-center">TOTAL</td>
-    <td class="text-right">{{ number_format($total,0,',','.') }}</td>
-    <td></td>
-    <td></td>
-    <td></td>
-</tr>
+                            <td>{{ $po->mitra_marine ?? '-' }}</td>
 
-    </tbody>
-</table>
-</div>
+                            <td class="text-center">
+                                {{ $po->vessel ?? '-' }}
+                            </td>
+
+                            <td>
+                                <div class="text-wrap">
+                                    {{ $item->job_details ?? '-' }}
+                                </div>
+                            </td>
+
+                            <td class="text-center">
+                                {{ $po->no_po_klien ?? '-' }}
+                            </td>
+
+                            <td class="text-center">
+                                {{ \Carbon\Carbon::parse($invoice->tanggal_invoice)->format('d/m/Y') }}
+                            </td>
+
+                            <td class="text-center">
+                                {{ $invoice->no_invoice }}
+                            </td>
+
+                            <td class="text-end fw-semibold">
+                                {{ number_format($amount,0,',','.') }}
+                            </td>
+
+                            <td class="text-center">
+                                {{ $item->acceptment_date
+                                    ? \Carbon\Carbon::parse($item->acceptment_date)->format('d/m/Y')
+                                    : '-' }}
+                            </td>
+
+                            <td class="text-center">
+                                @if($days > 30)
+                                    <span class="text-danger fw-semibold">{{ $days }}</span>
+                                @else
+                                    {{ $days }}
+                                @endif
+                            </td>
+
+                            <td>
+                                @if($days > 30)
+                                    <span class="text-danger fw-semibold">
+                                        {{ $remark }}
+                                    </span>
+                                @else
+                                    {{ $remark }}
+                                @endif
+                            </td>
+
+                        </tr>
+
+                        @endforeach
+
+                        {{-- TOTAL --}}
+                        <tr class="fw-bold">
+                            <td colspan="7" class="text-end">
+                                TOTAL
+                            </td>
+
+                            <td class="text-end">
+                                {{ number_format($total,0,',','.') }}
+                            </td>
+
+                            <td colspan="3"></td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+    </div>
 
 </div>
 

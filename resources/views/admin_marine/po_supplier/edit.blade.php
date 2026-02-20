@@ -8,7 +8,7 @@
         <h4 class="mb-0">Edit PO Supplier</h4>
 
         <a href="{{ route('po-supplier.show', $poSupplier->id) }}"
-           class="btn btn-secondary btn-sm">
+           class="btn btn-secondary btn-sm px-3">
             Kembali
         </a>
     </div>
@@ -20,48 +20,48 @@
 
         {{-- ================= INFO SUPPLIER ================= --}}
         <div class="card mb-4 shadow-sm">
-            <div class="card-header fw-bold">
+            <div class="card-header fw-semibold">
                 Informasi Supplier
             </div>
 
-            <div class="card-body">
+            <div class="card-body px-4 py-4">
 
-                <div class="row mb-3">
+                <div class="row g-3">
+
                     <div class="col-md-6">
-                        <label>Nama Perusahaan</label>
+                        <label class="form-label small">Nama Perusahaan</label>
                         <input type="text"
                                name="nama_perusahaan"
-                               class="form-control"
+                               class="form-control form-control-sm"
                                value="{{ $poSupplier->nama_perusahaan }}"
                                required>
                     </div>
 
                     <div class="col-md-6">
-                        <label>No PO Internal</label>
+                        <label class="form-label small">No PO Internal</label>
                         <input type="text"
                                name="no_po_internal"
-                               class="form-control"
+                               class="form-control form-control-sm"
                                value="{{ $poSupplier->no_po_internal }}"
                                required>
                     </div>
-                </div>
 
-                <div class="row mb-3">
                     <div class="col-md-6">
-                        <label>Tanggal PO</label>
+                        <label class="form-label small">Tanggal PO</label>
                         <input type="date"
                                name="tanggal_po"
-                               class="form-control"
+                               class="form-control form-control-sm"
                                value="{{ $poSupplier->tanggal_po }}"
                                required>
                     </div>
-                </div>
 
-                <div class="mb-3">
-                    <label>Alamat</label>
-                    <textarea name="alamat"
-                              class="form-control"
-                              rows="2">{{ $poSupplier->alamat }}</textarea>
+                    <div class="col-12">
+                        <label class="form-label small">Alamat</label>
+                        <textarea name="alamat"
+                                  class="form-control form-control-sm"
+                                  rows="2">{{ $poSupplier->alamat }}</textarea>
+                    </div>
+
                 </div>
 
             </div>
@@ -74,7 +74,7 @@
                 <strong>Item PO Supplier</strong>
 
                 <button type="button"
-                        class="btn btn-success btn-sm"
+                        class="btn btn-success btn-sm px-3"
                         onclick="addItem()">
                     + Tambah Item
                 </button>
@@ -82,8 +82,8 @@
 
             <div class="card-body p-0">
 
-                <table class="table table-bordered mb-0">
-                    <thead class="table-light">
+                <table class="table table-bordered mb-0 align-middle">
+                    <thead class="table-light text-center">
                         <tr>
                             <th>Item</th>
                             <th width="150">Harga Beli</th>
@@ -100,7 +100,7 @@
                             <td>
                                 <input type="text"
                                        name="items[{{ $i }}][item]"
-                                       class="form-control"
+                                       class="form-control form-control-sm"
                                        value="{{ $item->item }}"
                                        required>
                             </td>
@@ -108,7 +108,7 @@
                             <td>
                                 <input type="number"
                                        name="items[{{ $i }}][price_beli]"
-                                       class="form-control price"
+                                       class="form-control form-control-sm price"
                                        value="{{ $item->price_beli }}"
                                        step="0.01"
                                        oninput="calculateRow(this)"
@@ -118,7 +118,7 @@
                             <td>
                                 <input type="number"
                                        name="items[{{ $i }}][qty]"
-                                       class="form-control qty"
+                                       class="form-control form-control-sm qty"
                                        value="{{ $item->qty }}"
                                        step="0.01"
                                        oninput="calculateRow(this)"
@@ -128,18 +128,18 @@
                             <td>
                                 <input type="text"
                                        name="items[{{ $i }}][unit]"
-                                       class="form-control"
+                                       class="form-control form-control-sm"
                                        value="{{ $item->unit }}">
                             </td>
 
                             <td>
                                 <input type="number"
-                                       class="form-control amount"
+                                       class="form-control form-control-sm amount"
                                        value="{{ $item->amount }}"
                                        readonly>
                             </td>
 
-                            <td>
+                            <td class="text-center">
                                 <button type="button"
                                         class="btn btn-danger btn-sm"
                                         onclick="this.closest('tr').remove();updateTotals();">
@@ -158,18 +158,19 @@
 
         {{-- ================= DISCOUNT ================= --}}
         <div class="card mb-4 shadow-sm">
-            <div class="card-header fw-bold">
+            <div class="card-header fw-semibold">
                 Discount
             </div>
 
-            <div class="card-body">
+            <div class="card-body px-4 py-4">
 
-                <div class="row">
+                <div class="row g-3">
+
                     <div class="col-md-4">
-                        <label>Jenis Discount</label>
+                        <label class="form-label small">Jenis Discount</label>
                         <select name="discount_type"
                                 id="discount_type"
-                                class="form-control"
+                                class="form-control form-control-sm filter-control"
                                 onchange="updateTotals()">
                             <option value="">Tanpa Discount</option>
                             <option value="percent"
@@ -184,15 +185,16 @@
                     </div>
 
                     <div class="col-md-4">
-                        <label>Nilai Discount</label>
+                        <label class="form-label small">Nilai Discount</label>
                         <input type="number"
                                name="discount_value"
                                id="discount_value"
-                               class="form-control"
+                               class="form-control form-control-sm"
                                value="{{ $poSupplier->discount_value }}"
                                step="0.01"
                                oninput="updateTotals()">
                     </div>
+
                 </div>
 
             </div>
@@ -201,18 +203,22 @@
 
         {{-- ================= TOTAL ================= --}}
         <div class="card mb-4 shadow-sm">
-            <div class="card-body text-end">
+            <div class="card-body text-end px-4 py-4">
 
-                <h6>Total Beli:
-                    Rp <span id="total_beli">0</span>
-                </h6>
+                <div class="mb-2">
+                    <span class="text-muted">Total Beli :</span>
+                    <strong>Rp <span id="total_beli">0</span></strong>
+                </div>
 
-                <h6>Discount:
-                    Rp <span id="discount_amount">0</span>
-                </h6>
+                <div class="mb-2">
+                    <span class="text-muted">Discount :</span>
+                    <strong>Rp <span id="discount_amount">0</span></strong>
+                </div>
+
+                <hr>
 
                 <h5 class="fw-bold">
-                    Grand Total:
+                    Grand Total :
                     Rp <span id="grand_total">0</span>
                 </h5>
 
@@ -222,15 +228,15 @@
 
         <div class="text-end">
             <button type="submit"
-                    class="btn btn-primary">
+                    class="btn btn-primary px-4">
                 Update PO Supplier
             </button>
+            
         </div>
 
     </form>
 
 </div>
-
 
 {{-- ================= JAVASCRIPT ================= --}}
 <script>

@@ -8,8 +8,8 @@
     <h4 class="mb-0">Buat Delivery Order</h4>
 
     <a href="{{ route('po-masuk.show', $poMasuk->id) }}"
-       class="btn btn-secondary btn-sm">
-        ← Kembali ke PO
+       class="btn btn-secondary btn-sm px-3">
+        Kembali 
     </a>
 </div>
 
@@ -20,30 +20,32 @@
 
 {{-- ================= INFO DO ================= --}}
 <div class="card mb-4 shadow-sm">
-    <div class="card-body">
+    <div class="card-body px-4 py-4">
 
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label>No Delivery Order</label>
+        <div class="row g-3">
+
+            <div class="col-md-6">
+                <label class="form-label small">No Delivery Order</label>
                 <input type="text"
                        name="no_do"
-                       class="form-control"
+                       class="form-control form-control-sm"
                        required>
             </div>
 
-            <div class="col-md-6 mb-3">
-                <label>Tanggal DO</label>
+            <div class="col-md-6">
+                <label class="form-label small">Tanggal DO</label>
                 <input type="date"
                        name="tanggal_do"
-                       class="form-control"
+                       class="form-control form-control-sm"
                        value="{{ date('Y-m-d') }}"
                        required>
             </div>
-        </div>
 
-        <div>
-            <strong>PO Klien :</strong>
-            {{ $poMasuk->no_po_klien }}
+            <div class="col-12 mt-3">
+                <div class="text-muted small">PO Klien</div>
+                <strong>{{ $poMasuk->no_po_klien }}</strong>
+            </div>
+
         </div>
 
     </div>
@@ -56,15 +58,15 @@
         <strong>Items Delivery</strong>
 
         <button type="button"
-                class="btn btn-sm btn-primary"
+                class="btn btn-primary btn-sm px-3"
                 onclick="addItem()">
             + Add Item
         </button>
     </div>
 
     <div class="card-body p-0">
-        <table class="table table-bordered mb-0">
-            <thead class="table-light">
+        <table class="table table-bordered mb-0 align-middle">
+            <thead class="table-light text-center">
                 <tr>
                     <th>Item</th>
                     <th width="120">Qty</th>
@@ -80,7 +82,7 @@
                     <td>
                         <input type="text"
                                name="items[{{ $i }}][item]"
-                               class="form-control"
+                               class="form-control form-control-sm"
                                value="{{ $item->item }}"
                                required>
                     </td>
@@ -89,19 +91,19 @@
                         <input type="number"
                                step="0.01"
                                name="items[{{ $i }}][qty]"
-                               class="form-control"
+                               class="form-control form-control-sm text-center"
                                required>
                     </td>
 
                     <td>
                         <input type="text"
                                name="items[{{ $i }}][unit]"
-                               class="form-control"
+                               class="form-control form-control-sm text-center"
                                value="{{ $item->unit }}"
                                required>
                     </td>
 
-                    <td>
+                    <td class="text-center">
                         <button type="button"
                                 class="btn btn-danger btn-sm"
                                 onclick="removeRow(this)">
@@ -118,7 +120,7 @@
 
 
 <div class="text-end">
-    <button class="btn btn-success">
+    <button class="btn btn-success px-4">
         Simpan Delivery Order
     </button>
 </div>
@@ -141,7 +143,7 @@ function addItem(){
         <td>
             <input type="text"
                    name="items[${itemIndex}][item]"
-                   class="form-control"
+                   class="form-control form-control-sm"
                    required>
         </td>
 
@@ -149,18 +151,18 @@ function addItem(){
             <input type="number"
                    step="0.01"
                    name="items[${itemIndex}][qty]"
-                   class="form-control"
+                   class="form-control form-control-sm text-center"
                    required>
         </td>
 
         <td>
             <input type="text"
                    name="items[${itemIndex}][unit]"
-                   class="form-control"
+                   class="form-control form-control-sm text-center"
                    required>
         </td>
 
-        <td>
+        <td class="text-center">
             <button type="button"
                     class="btn btn-danger btn-sm"
                     onclick="removeRow(this)">

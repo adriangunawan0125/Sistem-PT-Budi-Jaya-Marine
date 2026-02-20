@@ -11,14 +11,30 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class SoaController extends Controller
 {
-    public function index()
-    {
-        $soas = Soa::withCount('items')
-            ->latest()
-            ->get();
+   public function index(Request $request)
+{
+    $query = Soa::with('items.invoice')
+                ->latest();
 
-        return view('admin_marine.soa.index', compact('soas'));
+    // SEARCH (Debtor)
+    if ($request->search) {
+        $query->where('debtor', 'like', '%' . $request->search . '%');
     }
+
+    // FILTER BULAN
+    if ($request->month) {
+        $query->whereMonth('statement_date', $request->month);
+    }
+
+    // FILTER TAHUN
+    if ($request->year) {
+        $query->whereYear('statement_date', $request->year);
+    }
+
+    $soas = $query->paginate(10);
+
+    return view('admin_marine.soa.index', compact('soas'));
+}
 
     public function create()
     {

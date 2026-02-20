@@ -1,109 +1,170 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
 
-    {{-- ================= PAGE TITLE ================= --}}
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="mb-0">Daftar Pengeluaran PO</h4>
+<style>
+.table-pengeluaran th,
+.table-pengeluaran td{
+    font-size:13px;
+    padding:10px 12px;
+    vertical-align:middle;
+}
 
-        <a href="{{ route('po-masuk.index') }}"
+.table-hover tbody tr:hover{
+    background-color:#f5f7fa;
+}
+
+.filter-control{
+    font-size:12px;
+    height:32px;
+    border-radius:6px;
+}
+
+.aksi-wrapper{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:6px;
+}
+
+.btn-sm{
+    font-size:12px;
+    padding:5px 12px;
+}
+</style>
+
+<div class="container py-4">
+
+{{-- ================= HEADER ================= --}}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h5 class="mb-0 fw-semibold">Daftar Pengeluaran PO</h5>
+</div>
+
+{{-- ================= FILTER ================= --}}
+<div class="card shadow-sm mb-4">
+<div class="card-body py-3 small">
+
+<form method="GET" action="{{ route('pengeluaran-po.index') }}">
+
+<div class="row g-3 align-items-end">
+
+    <div class="col-md-6">
+        <label class="form-label small mb-1">Search</label>
+        <input type="text"
+               name="search"
+               value="{{ request('search') }}"
+               class="form-control form-control-sm"
+               placeholder="No PO / Company / Vessel">
+    </div>
+
+    <div class="col-md-3">
+        <button class="btn btn-primary btn-sm px-3">
+            Filter
+        </button>
+
+        <a href="{{ route('pengeluaran-po.index') }}"
            class="btn btn-secondary btn-sm">
-            ← Kembali ke PO
+            Reset
         </a>
     </div>
 
-    {{-- ================= SEARCH ================= --}}
-    <div class="card mb-3 shadow-sm">
-        <div class="card-body">
+</div>
 
-            <form method="GET" action="{{ route('pengeluaran-po.index') }}">
-                <div class="row g-2">
-
-                    <div class="col-md-10">
-                        <input type="text"
-                               name="search"
-                               value="{{ request('search') }}"
-                               class="form-control"
-                               placeholder="Cari berdasarkan item atau No PO Klien...">
-                    </div>
-
-                    <div class="col-md-2">
-                        <button class="btn btn-primary w-100">
-                            Search
-                        </button>
-                    </div>
-
-                </div>
-            </form>
-
-        </div>
-    </div>
-
-    {{-- ================= TABLE ================= --}}
-    <div class="card shadow-sm">
-        <div class="card-body p-0">
-
-            <div class="table-responsive">
-                <table class="table table-bordered mb-0">
-                    <thead class="table-dark">
-                        <tr>
-                            <th width="5%">No</th>
-                            <th>No PO Klien</th>
-                            <th>Item</th>
-                            <th width="80">Qty</th>
-                            <th width="120">Harga</th>
-                            <th width="150">Amount</th>
-                            <th width="120">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-
-                        @forelse($pengeluaran as $index => $exp)
-                        <tr>
-                            <td>{{ $index + 1 }}</td>
-
-                            <td>
-                                <strong>
-                                    {{ $exp->poMasuk->no_po_klien ?? '-' }}
-                                </strong>
-                            </td>
-
-                            <td>{{ $exp->item }}</td>
-
-                            <td>{{ $exp->qty }}</td>
-
-                            <td>
-                                Rp {{ number_format($exp->price,0,',','.') }}
-                            </td>
-
-                            <td class="fw-bold">
-                                Rp {{ number_format($exp->amount,0,',','.') }}
-                            </td>
-
-                            <td>
-                                <a href="{{ route('po-masuk.show',$exp->po_masuk_id) }}"
-                                   class="btn btn-sm btn-info">
-                                    Detail PO
-                                </a>
-                            </td>
-                        </tr>
-
-                        @empty
-                        <tr>
-                            <td colspan="7"
-                                class="text-center text-muted p-4">
-                                Belum ada data pengeluaran
-                            </td>
-                        </tr>
-                        @endforelse
-
-                    </tbody>
-                </table>
-            </div>
-
-        </div>
-    </div>
+</form>
 
 </div>
+</div>
+
+
+{{-- ================= TABLE ================= --}}
+<div class="card shadow-sm">
+<div class="card-body p-0">
+
+<div class="table-responsive">
+<table class="table table-bordered table-hover align-middle table-pengeluaran mb-0">
+
+<thead class="table-light text-center">
+<tr>
+<th width="50">No</th>
+<th width="180">No PO</th>
+<th>Company</th>
+<th>Vessel</th>
+<th width="180">jumlah pengeluaran</th>
+<th width="180">Total Pengeluaran</th>
+<th width="150">Action</th>
+</tr>
+</thead>
+
+<tbody>
+
+@forelse($poMasuk as $index => $po)
+
+@php
+    $totalItem = $po->pengeluaran->count();
+    $totalAmount = $po->pengeluaran->sum('amount');
+@endphp
+
+<tr>
+
+<td class="text-center">
+    {{ $poMasuk->firstItem() + $index }}
+</td>
+
+<td class="fw-semibold">
+    {{ $po->no_po_klien }}
+</td>
+
+<td>
+    {{ $po->mitra_marine }}
+</td>
+
+<td>
+    {{ $po->vessel }}
+</td>
+
+<td class="text-center">
+    {{ $totalItem }} item
+</td>
+
+<td class="text-end fw-semibold">
+    Rp {{ number_format($totalAmount,0,',','.') }}
+</td>
+
+<td>
+<div class="aksi-wrapper">
+
+    <a href="{{ route('po-masuk.show',$po->id) }}"
+       class="btn btn-info btn-sm">
+        Detail
+    </a>
+
+</div>
+</td>
+
+</tr>
+
+@empty
+<tr>
+<td colspan="7" class="text-center text-muted py-4">
+Belum ada data pengeluaran
+</td>
+</tr>
+@endforelse
+
+</tbody>
+</table>
+</div>
+
+</div>
+
+@if($poMasuk->hasPages())
+<div class="card-footer small">
+    {{ $poMasuk->withQueryString()->links() }}
+</div>
+@endif
+
+</div>
+
+</div>
+
 @endsection

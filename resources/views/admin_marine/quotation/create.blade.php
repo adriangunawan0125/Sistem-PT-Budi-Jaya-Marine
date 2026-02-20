@@ -23,6 +23,17 @@
 <div class="card-header"><strong>Quotation Header</strong></div>
 <div class="card-body">
 
+    <div class="row mb-3">
+<div class="col-md-6">
+<label>Quote No</label>
+<input type="text"
+       name="quote_no"
+       class="form-control"
+       value="{{ old('quote_no') }}"
+       required>
+</div>
+</div>
+
 <div class="row mb-3">
 <div class="col-md-6">
 <label>Mitra</label>
@@ -92,6 +103,47 @@ value="{{ date('Y-m-d') }}" required>
 <button type="button" class="btn btn-primary mb-3" onclick="addSubItem()">
 + Add Sub Item
 </button>
+
+{{-- ================= DISCOUNT ================= --}}
+<div class="card mt-3">
+<div class="card-body">
+
+<div class="row align-items-end">
+    
+    <div class="col-md-3">
+        <label>Discount Type</label>
+        <select name="discount_type"
+                id="discount-type"
+                class="form-control"
+                onchange="updateGrandTotal()">
+            <option value="">No Discount</option>
+            <option value="percent">Percent (%)</option>
+            <option value="nominal">Nominal (Rp)</option>
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <label>Discount Value</label>
+        <input type="number"
+               name="discount_value"
+               id="discount-value"
+               class="form-control"
+               value="0"
+               oninput="updateGrandTotal()">
+    </div>
+
+</div>
+
+<div class="text-end mt-3">
+    <strong>Discount Amount: Rp 
+        <span id="discount-amount">0</span>
+    </strong>
+</div>
+
+</div>
+</div>
+
+
 
 {{-- ================= GRAND TOTAL ================= --}}
 <div class="card mt-4">
@@ -300,12 +352,38 @@ updateGrandTotal();
 
 /* ================= GRAND TOTAL ================= */
 function updateGrandTotal(){
+
 let totals = document.querySelectorAll('.total');
-let grand = 0;
-totals.forEach(t=> grand += parseFloat(t.value)||0);
-document.getElementById('grand-total')
-.innerText = grand.toLocaleString('id-ID');
+let subtotal = 0;
+
+totals.forEach(t=>{
+    subtotal += parseFloat(t.value)||0;
+});
+
+let discountType = document.getElementById('discount-type')?.value;
+let discountValue = parseFloat(document.getElementById('discount-value')?.value)||0;
+
+let discountAmount = 0;
+
+if(discountType === 'percent'){
+    discountAmount = subtotal * discountValue / 100;
 }
+
+if(discountType === 'nominal'){
+    discountAmount = discountValue;
+}
+
+let grand = subtotal - discountAmount;
+
+if(grand < 0) grand = 0;
+
+document.getElementById('discount-amount').innerText =
+discountAmount.toLocaleString('id-ID');
+
+document.getElementById('grand-total').innerText =
+grand.toLocaleString('id-ID');
+}
+
 
 /* ================= TERMS ================= */
 function addTerm(){

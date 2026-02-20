@@ -16,19 +16,41 @@ class QuotationController extends Controller
 {
 
     /* ================= INDEX ================= */
-    public function index()
-    {
-        $quotations = Quotation::latest()->get();
+public function index(Request $request)
+{
+    $query = Quotation::query();
 
-        return view('admin_marine.quotation.index', compact('quotations'));
+    // 🔎 Search
+    if ($request->filled('search')) {
+        $search = $request->search;
+
+        $query->where(function ($q) use ($search) {
+            $q->where('quote_no', 'like', "%{$search}%")
+              ->orWhere('mitra_name', 'like', "%{$search}%")
+              ->orWhere('vessel_name', 'like', "%{$search}%")
+              ->orWhere('project', 'like', "%{$search}%");
+        });
     }
 
+    // 📅 Filter Bulan
+    if ($request->filled('month')) {
+        $query->whereMonth('date', $request->month);
+    }
+
+    // 📆 Filter Tahun
+    if ($request->filled('year')) {
+        $query->whereYear('date', $request->year);
+    }
+
+    $quotations = $query->latest()->paginate(10);
+
+    return view('admin_marine.quotation.index', compact('quotations'));
+}
 
     /* ================= CREATE ================= */
     public function create()
     {
         $quotation = new Quotation();
-
         return view('admin_marine.quotation.create', compact('quotation'));
     }
 
@@ -41,16 +63,19 @@ class QuotationController extends Controller
         try {
 
             $request->validate([
-                'mitra_name'  => 'required|string|max:255',
-                'vessel_name' => 'required|string|max:255',
-                'date'        => 'required|date',
+                'quote_no'      => 'required|string|max:255|unique:quotations,quote_no',
+                'mitra_name'    => 'required|string|max:255',
+                'vessel_name'   => 'required|string|max:255',
+                'date'          => 'required|date',
+                'discount_type' => 'nullable|in:nominal,percent',
+                'discount_value'=> 'nullable|numeric|min:0',
             ]);
 
             $quotation = Quotation::create([
+                'quote_no'    => $request->quote_no, // MANUAL
                 'mitra_name'  => $request->mitra_name,
                 'vessel_name' => $request->vessel_name,
                 'attention'   => $request->attention,
-                'quote_no'    => $this->generateQuoteNumber(),
                 'date'        => $request->date,
                 'project'     => $request->project,
                 'place'       => $request->place,
@@ -61,6 +86,8 @@ class QuotationController extends Controller
                 $request->input('sub_items', []),
                 $request->input('terms', [])
             );
+
+            $this->calculateDiscount($quotation, $request);
 
             DB::commit();
 
@@ -80,7 +107,6 @@ class QuotationController extends Controller
     public function edit(Quotation $quotation)
     {
         $quotation->load('subItems.items','termsConditions');
-
         return view('admin_marine.quotation.edit', compact('quotation'));
     }
 
@@ -93,12 +119,16 @@ class QuotationController extends Controller
         try {
 
             $request->validate([
-                'mitra_name'  => 'required|string|max:255',
-                'vessel_name' => 'required|string|max:255',
-                'date'        => 'required|date',
+                'quote_no'      => 'required|string|max:255|unique:quotations,quote_no,' . $quotation->id,
+                'mitra_name'    => 'required|string|max:255',
+                'vessel_name'   => 'required|string|max:255',
+                'date'          => 'required|date',
+                'discount_type' => 'nullable|in:nominal,percent',
+                'discount_value'=> 'nullable|numeric|min:0',
             ]);
 
             $quotation->update([
+                'quote_no'    => $request->quote_no, // MANUAL EDITABLE
                 'mitra_name'  => $request->mitra_name,
                 'vessel_name' => $request->vessel_name,
                 'attention'   => $request->attention,
@@ -107,7 +137,6 @@ class QuotationController extends Controller
                 'date'        => $request->date,
             ]);
 
-            // Hapus detail lama
             foreach ($quotation->subItems as $sub) {
                 $sub->items()->delete();
             }
@@ -120,6 +149,8 @@ class QuotationController extends Controller
                 $request->input('sub_items', []),
                 $request->input('terms', [])
             );
+
+            $this->calculateDiscount($quotation, $request);
 
             DB::commit();
 
@@ -139,7 +170,6 @@ class QuotationController extends Controller
     public function show(Quotation $quotation)
     {
         $quotation->load('subItems.items','termsConditions');
-
         return view('admin_marine.quotation.show', compact('quotation'));
     }
 
@@ -153,12 +183,17 @@ class QuotationController extends Controller
             ? Carbon::parse($quotation->date)
             : Carbon::parse($quotation->created_at);
 
-        $grandTotal = $quotation->subItems
+        $subtotal = $quotation->subItems
             ->sum(fn($s) => $s->items->sum('total'));
+
+        $discountAmount = $quotation->discount_amount ?? 0;
+        $grandTotal     = $subtotal - $discountAmount;
 
         $pdf = Pdf::loadView('admin_marine.quotation.print', [
             'quotation'     => $quotation,
             'quotationDate' => $quotationDate,
+            'subtotal'      => $subtotal,
+            'discount'      => $discountAmount,
             'grandTotal'    => $grandTotal,
         ])->setPaper('A4','portrait');
 
@@ -195,7 +230,43 @@ class QuotationController extends Controller
     }
 
 
-    /* ================= HELPER SAVE DETAIL ================= */
+    /* ================= DISCOUNT ================= */
+  private function calculateDiscount($quotation, $request)
+{
+    // 🔥 WAJIB refresh supaya ambil data terbaru
+    $quotation->load('subItems.items');
+
+    $subtotal = $quotation->subItems
+        ->sum(fn($s) => $s->items->sum('total'));
+
+    $discountType  = $request->discount_type;
+    $discountValue = (float) ($request->discount_value ?? 0);
+
+    $discountAmount = 0;
+
+    if ($discountType === 'percent') {
+        $discountAmount = ($subtotal * $discountValue) / 100;
+    }
+
+    if ($discountType === 'nominal') {
+        $discountAmount = $discountValue;
+    }
+
+    // 🔥 Prevent minus
+    if ($discountAmount > $subtotal) {
+        $discountAmount = $subtotal;
+    }
+
+    $quotation->update([
+        'discount_type'   => $discountType,
+        'discount_value'  => $discountValue,
+        'discount_amount' => $discountAmount,
+    ]);
+}
+
+
+
+    /* ================= SAVE DETAIL ================= */
     private function saveDetail($quotation, $subItems = [], $terms = [])
     {
         if (!empty($subItems)) {
@@ -267,28 +338,6 @@ class QuotationController extends Controller
                 }
             }
         }
-    }
-
-
-    /* ================= GENERATE QUOTE NO ================= */
-    private function generateQuoteNumber()
-    {
-        $year  = date('Y');
-        $month = date('n');
-
-        $count  = Quotation::whereYear('created_at',$year)->count()+1;
-        $number = str_pad($count,3,'0',STR_PAD_LEFT);
-
-        return $number.'/BJM/'.$this->romawi($month).'/'.$year;
-    }
-
-    private function romawi($bulan)
-    {
-        $map = [
-            1=>'I',2=>'II',3=>'III',4=>'IV',5=>'V',6=>'VI',
-            7=>'VII',8=>'VIII',9=>'IX',10=>'X',11=>'XI',12=>'XII'
-        ];
-        return $map[$bulan];
     }
 
 }

@@ -6,8 +6,8 @@
 <h4 class="mb-4">Edit PO Masuk</h4>
 
 @if ($errors->any())
-<div class="alert alert-danger">
-<ul class="mb-0">
+<div class="alert alert-danger py-2">
+<ul class="mb-0 small">
 @foreach ($errors->all() as $error)
 <li>{{ $error }}</li>
 @endforeach
@@ -20,64 +20,74 @@
 @method('PUT')
 
 {{-- ================= HEADER ================= --}}
-<div class="card mb-4">
-<div class="card-header"><strong>Header PO</strong></div>
+<div class="card mb-4 shadow-sm">
+<div class="card-header bg-light">
+<strong>Header PO</strong>
+</div>
 <div class="card-body">
 
-<div class="row mb-3">
+<div class="row g-3 mb-3">
 <div class="col-md-6">
-<label>Mitra</label>
+<label class="form-label small mb-1">Mitra</label>
 <input type="text"
 name="mitra_marine"
-class="form-control"
+class="form-control form-control-sm"
 value="{{ old('mitra_marine', $poMasuk->mitra_marine) }}"
 required>
 </div>
 
 <div class="col-md-6">
-<label>Vessel</label>
+<label class="form-label small mb-1">Vessel</label>
 <input type="text"
 name="vessel"
-class="form-control"
+class="form-control form-control-sm"
 value="{{ old('vessel', $poMasuk->vessel) }}"
 required>
 </div>
 </div>
 
-<div class="row mb-3">
+<div class="row g-3 mb-3">
 <div class="col-md-6">
-<label>No PO Klien</label>
+<label class="form-label small mb-1">No PO Klien</label>
 <input type="text"
 name="no_po_klien"
-class="form-control"
+class="form-control form-control-sm"
 value="{{ old('no_po_klien', $poMasuk->no_po_klien) }}"
 required>
 </div>
 
 <div class="col-md-6">
-<label>Tanggal PO</label>
+<label class="form-label small mb-1">Tanggal PO</label>
 <input type="date"
 name="tanggal_po"
-class="form-control"
+class="form-control form-control-sm"
 value="{{ old('tanggal_po', $poMasuk->tanggal_po) }}"
 required>
 </div>
 </div>
 
-<div class="row mb-3">
+<div class="row g-3 mb-3"> 
 <div class="col-md-6">
-<label>Type</label>
-<select name="type" class="form-control" required>
-<option value="sparepart" {{ $poMasuk->type == 'sparepart' ? 'selected' : '' }}>Sparepart</option>
-<option value="manpower" {{ $poMasuk->type == 'manpower' ? 'selected' : '' }}>Manpower</option>
+<label class="form-label small mb-1">Type</label>
+<select name="type"
+        class="form-control form-control-sm filter-control"
+        required>
+    <option value="sparepart"
+        {{ $poMasuk->type == 'sparepart' ? 'selected' : '' }}>
+        Sparepart
+    </option>
+    <option value="manpower"
+        {{ $poMasuk->type == 'manpower' ? 'selected' : '' }}>
+        Manpower
+    </option>
 </select>
 </div>
 </div>
 
 <div class="mb-3">
-<label>Alamat Project / Delivery</label>
+<label class="form-label small mb-1">Alamat Project / Delivery</label>
 <textarea name="alamat"
-class="form-control"
+class="form-control form-control-sm"
 rows="3">{{ old('alamat', $poMasuk->alamat) }}</textarea>
 </div>
 
@@ -85,22 +95,23 @@ rows="3">{{ old('alamat', $poMasuk->alamat) }}</textarea>
 </div>
 
 {{-- ================= ITEMS ================= --}}
-<div class="card mb-4">
-<div class="card-header d-flex justify-content-between">
+<div class="card mb-4 shadow-sm">
+<div class="card-header bg-light d-flex justify-content-between align-items-center">
 <strong>Item PO</strong>
 <button type="button"
-class="btn btn-sm btn-primary"
+class="btn btn-primary btn-sm px-3"
 onclick="addItem()">
 + Add Item
 </button>
 </div>
 
 <div class="card-body p-0">
-<table class="table table-bordered mb-0">
-<thead class="table-dark">
+<div class="table-responsive">
+<table class="table table-bordered table-hover align-middle mb-0 po-table">
+<thead class="table-light text-center">
 <tr>
 <th>Item</th>
-<th width="15%">Price Jual</th>
+<th width="15%">Price</th>
 <th width="10%">Qty</th>
 <th width="12%">Unit</th>
 <th width="15%">Amount</th>
@@ -115,14 +126,14 @@ onclick="addItem()">
 <td>
 <input type="text"
 name="items[{{ $i }}][item]"
-class="form-control"
+class="form-control form-control-sm"
 value="{{ $item->item }}" required>
 </td>
 
 <td>
 <input type="number"
 name="items[{{ $i }}][price_jual]"
-class="form-control price"
+class="form-control form-control-sm price text-end"
 value="{{ $item->price_jual }}"
 oninput="calculateRow(this)" required>
 </td>
@@ -130,7 +141,7 @@ oninput="calculateRow(this)" required>
 <td>
 <input type="number"
 name="items[{{ $i }}][qty]"
-class="form-control qty"
+class="form-control form-control-sm qty text-center"
 value="{{ $item->qty }}"
 oninput="calculateRow(this)" required>
 </td>
@@ -138,18 +149,18 @@ oninput="calculateRow(this)" required>
 <td>
 <input type="text"
 name="items[{{ $i }}][unit]"
-class="form-control"
+class="form-control form-control-sm text-center"
 value="{{ $item->unit }}">
 </td>
 
 <td>
 <input type="number"
-class="form-control amount"
+class="form-control form-control-sm amount text-end"
 value="{{ $item->amount }}"
 readonly>
 </td>
 
-<td>
+<td class="text-center">
 <button type="button"
 class="btn btn-danger btn-sm"
 onclick="this.closest('tr').remove();updateTotal();">
@@ -163,33 +174,67 @@ X
 </table>
 </div>
 </div>
+</div>
 
 {{-- ================= TOTAL ================= --}}
-<div class="card mb-4">
+<div class="card mb-4 shadow-sm">
 <div class="card-body text-end">
-<h4>
-Total Jual: Rp
-<span id="grand-total">
+<h5 class="mb-0">
+Total Jual: 
+<span class="fw-bold text-primary">
+Rp <span id="grand-total">
 {{ number_format($poMasuk->total_jual,0,',','.') }}
 </span>
-</h4>
+</span>
+</h5>
 </div>
 </div>
 
 <div class="text-end">
-<a href="{{ route('po-masuk.index') }}"
-class="btn btn-secondary">
-Cancel
-</a>
+
+        <a href="{{ route('po-masuk.show', $poMasuk->id) }}"
+           class="btn btn-secondary btn-sm px-3" style="margin-left: 4px">
+            Kembali
+        </a>
 
 <button type="submit"
-class="btn btn-success">
+class="btn btn-success btn-sm px-3">
 Update PO
 </button>
 </div>
 
 </form>
 </div>
+
+<style>
+
+.po-table th,
+.po-table td{
+    font-size:13px;
+    padding:10px 12px;
+    vertical-align:middle;
+}
+
+.table-hover tbody tr:hover{
+    background-color:#f5f7fa;
+}
+
+.form-control-sm{
+    font-size:13px;
+}
+
+.filter-control {
+    height: 38px;
+    border-radius: 6px;
+}
+
+.filter-control:focus {
+    box-shadow: 0 0 0 0.15rem rgba(13,110,253,.25);
+}
+
+
+</style>
+
 
 <script>
 

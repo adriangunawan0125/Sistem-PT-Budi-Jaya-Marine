@@ -11,22 +11,26 @@ use Illuminate\Support\Facades\DB;
 class PengeluaranPoController extends Controller
 {
     /* ================= INDEX ================= */
-   public function index(Request $request)
+ public function index(Request $request)
 {
-    $query = PengeluaranPo::with('poMasuk')->latest();
+    $query = \App\Models\PoMasuk::with('pengeluaran')->latest();
 
     if ($request->search) {
-        $query->where('item', 'like', '%' . $request->search . '%')
-              ->orWhereHas('poMasuk', function($q) use ($request){
-                  $q->where('no_po_klien', 'like', '%' . $request->search . '%');
-              });
+        $search = $request->search;
+
+        $query->where(function($q) use ($search){
+            $q->where('no_po_klien','like',"%$search%")
+              ->orWhere('mitra_marine','like',"%$search%")
+              ->orWhere('vessel','like',"%$search%");
+        });
     }
 
-    $pengeluaran = $query->get();
+    $poMasuk = $query->paginate(10);
 
     return view('admin_marine.pengeluaran_po.index',
-        compact('pengeluaran'));
+        compact('poMasuk'));
 }
+
 
 
     /* ================= CREATE ================= */
@@ -50,22 +54,31 @@ class PengeluaranPoController extends Controller
 
         try {
 
-            $request->validate([
-                'po_masuk_id' => 'required|exists:po_masuk,id',
-                'item'        => 'required|string',
-                'qty'         => 'required|numeric|min:0',
-                'price'       => 'required|numeric|min:0',
-            ]);
+          $request->validate([
+    'po_masuk_id' => 'required|exists:po_masuk,id',
+    'item'        => 'required|string',
+    'qty'         => 'required|numeric|min:0',
+    'price'       => 'required|numeric|min:0',
+    'bukti_gambar'=> 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+]);
 
             $amount = $request->qty * $request->price;
 
-            $pengeluaran = PengeluaranPo::create([
-                'po_masuk_id' => $request->po_masuk_id,
-                'item'        => $request->item,
-                'qty'         => $request->qty,
-                'price'       => $request->price,
-                'amount'      => $amount,
-            ]);
+            $buktiPath = null;
+
+if ($request->hasFile('bukti_gambar')) {
+    $buktiPath = $request->file('bukti_gambar')
+                    ->store('bukti_pengeluaran', 'public');
+}
+
+        $pengeluaran = PengeluaranPo::create([
+    'po_masuk_id' => $request->po_masuk_id,
+    'item'        => $request->item,
+    'qty'         => $request->qty,
+    'price'       => $request->price,
+    'amount'      => $amount,
+    'bukti_gambar'=> $buktiPath,
+]);
 
             $this->updateMargin($pengeluaran->poMasuk);
 
@@ -95,20 +108,35 @@ class PengeluaranPoController extends Controller
 
         try {
 
-            $request->validate([
-                'item'  => 'required|string',
-                'qty'   => 'required|numeric|min:0',
-                'price' => 'required|numeric|min:0',
-            ]);
+           $request->validate([
+    'item'  => 'required|string',
+    'qty'   => 'required|numeric|min:0',
+    'price' => 'required|numeric|min:0',
+    'bukti_gambar'=> 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+]);
 
             $amount = $request->qty * $request->price;
 
+            $buktiPath = $pengeluaranPo->bukti_gambar;
+
+if ($request->hasFile('bukti_gambar')) {
+
+    // hapus file lama
+    if ($pengeluaranPo->bukti_gambar) {
+        Storage::disk('public')->delete($pengeluaranPo->bukti_gambar);
+    }
+
+    $buktiPath = $request->file('bukti_gambar')
+                    ->store('bukti_pengeluaran', 'public');
+}
+
             $pengeluaranPo->update([
-                'item'   => $request->item,
-                'qty'    => $request->qty,
-                'price'  => $request->price,
-                'amount' => $amount,
-            ]);
+    'item'   => $request->item,
+    'qty'    => $request->qty,
+    'price'  => $request->price,
+    'amount' => $amount,
+    'bukti_gambar' => $buktiPath,
+]);
 
             $this->updateMargin($pengeluaranPo->poMasuk);
 

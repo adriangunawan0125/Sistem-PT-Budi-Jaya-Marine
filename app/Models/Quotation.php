@@ -7,14 +7,18 @@ use Illuminate\Database\Eloquent\Model;
 class Quotation extends Model
 {
    protected $fillable = [
+    'quote_no',
     'mitra_name',
     'vessel_name',
     'attention',
-    'quote_no',
     'date',
     'project',
     'place',
+    'discount_type',
+    'discount_value',
+    'discount_amount',
 ];
+
 
 
     public function subItems()
@@ -25,6 +29,16 @@ class Quotation extends Model
    public function termsConditions()
 {
     return $this->hasMany(QuotationTermsCondition::class);
+}
+public function getSubtotalAttribute()
+{
+    return $this->subItems
+        ->sum(fn($sub) => $sub->items->sum('total'));
+}
+
+public function getGrandTotalAttribute()
+{
+    return $this->subtotal - ($this->discount_amount ?? 0);
 }
 
 }

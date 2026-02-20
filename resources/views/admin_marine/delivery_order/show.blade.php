@@ -7,44 +7,56 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h4 class="mb-0">Detail Delivery Order</h4>
 
-    <div class="d-flex gap-2">
+    <div class="d-flex flex-wrap gap-2">
+
+        <form action="{{ route('delivery-order.update-status', $deliveryOrder->id) }}"
+      method="POST"
+      class="mb-0">
+    @csrf
+    @method('PATCH')
+
+    <select name="status"
+            class="form-control form-control-sm"
+            onchange="this.form.submit()">
+
+        <option value="draft"
+            {{ $deliveryOrder->status == 'draft' ? 'selected' : '' }}>
+            Draft
+        </option>
+
+        <option value="delivered"
+            {{ $deliveryOrder->status == 'delivered' ? 'selected' : '' }}>
+            Delivered
+        </option>
+
+    </select>
+</form>
 
         <a href="{{ route('delivery-order.print',$deliveryOrder->id) }}"
            target="_blank"
-           class="btn btn-danger btn-sm">
+           class="btn btn-danger btn-sm px-3" style="margin-left: 4px">
             Print PDF
         </a>
 
-        <a style="margin-left:6px;" href="{{ route('delivery-order.edit', $deliveryOrder->id) }}"
-           class="btn btn-warning btn-sm">
+        <a href="{{ route('delivery-order.edit', $deliveryOrder->id) }}"
+           class="btn btn-warning btn-sm px-3" style="margin-left: 4px">
             Edit
         </a>
 
-        <form style="margin-left:6px;" action="{{ route('delivery-order.destroy', $deliveryOrder->id) }}"
+        <form action="{{ route('delivery-order.destroy', $deliveryOrder->id) }}"
               method="POST"
               onsubmit="return confirm('Yakin ingin menghapus DO ini?')">
             @csrf
             @method('DELETE')
-            <button class="btn btn-danger btn-sm">
+            <button class="btn btn-danger btn-sm px-3" style="margin-left: 4px">
                 Hapus
             </button>
         </form>
 
-        <a style="margin-left:6px;" href="{{ route('po-masuk.show', $deliveryOrder->po_masuk_id) }}"
-           class="btn btn-secondary btn-sm">
+        <a href="{{ route('po-masuk.show', $deliveryOrder->po_masuk_id) }}"
+           class="btn btn-secondary btn-sm px-3" style="margin-left: 4px">
             ← Kembali
         </a>
-        @if($deliveryOrder->status == 'draft')
-<form action="{{ route('delivery-order.deliver',$deliveryOrder->id) }}"
-      method="POST">
-    @csrf
-    @method('PATCH')
-    <button class="btn btn-success btn-sm">
-        tandai DO
-    </button>
-</form>
-@endif
-
 
     </div>
 </div>
@@ -52,41 +64,46 @@
 
 {{-- ================= INFO CARD ================= --}}
 <div class="card mb-4 shadow-sm">
-    <div class="card-body">
+    <div class="card-body px-4 py-4">
 
-        <div class="row mb-4">
-
-            <div class="col-md-6 mb-3">
-                <strong>No DO</strong><br>
-                {{ $deliveryOrder->no_do }}
-            </div>
-
-            <div class="col-md-6 mb-3 text-md-end">
-                <strong>Tanggal</strong><br>
-                {{ \Carbon\Carbon::parse($deliveryOrder->tanggal_do)->format('d M Y') }}
-            </div>
+        <div class="row g-4">
 
             <div class="col-md-6 mb-3">
-                <strong>Perusahaan (Client)</strong><br>
-                {{ $deliveryOrder->poMasuk->mitra_marine ?? '-' }}
+                <div class="text-muted small mb-1">No Delivery Order</div>
+                <div class="fw-semibold">{{ $deliveryOrder->no_do }}</div>
+            </div>
+
+            <div class="col-md-6 text-md-end">
+                <div class="text-muted small mb-1">Tanggal</div>
+                <div>{{ \Carbon\Carbon::parse($deliveryOrder->tanggal_do)->format('d M Y') }}</div>
             </div>
 
             <div class="col-md-6 mb-3">
-                <strong>Vessel</strong><br>
-                {{ $deliveryOrder->poMasuk->vessel ?? '-' }}
+                <div class="text-muted small mb-1">Perusahaan (Client)</div>
+                <div>{{ $deliveryOrder->poMasuk->mitra_marine ?? '-' }}</div>
             </div>
 
-            <div class="col-md-6 mb-3">
-                <strong>No PO Klien</strong><br>
-                {{ $deliveryOrder->poMasuk->no_po_klien ?? '-' }}
+            <div class="col-md-6 text-md-end">
+                <div class="text-muted small mb-1">Vessel</div>
+                <div>{{ $deliveryOrder->poMasuk->vessel ?? '-' }}</div>
             </div>
 
-            <div class="col-md-6 mb-3">
-                <strong>Status</strong><br>
+            <div class="col-md-6">
+                <div class="text-muted small mb-1">No PO Klien</div>
+                <div>{{ $deliveryOrder->poMasuk->no_po_klien ?? '-' }}</div>
+            </div>
+
+            <div class="col-md-6 text-md-end">
+                <div class="text-muted small mb-2">Status</div>
+
                 @if($deliveryOrder->status === 'draft')
-                    <span class="badge text-light bg-secondary">DRAFT</span>
+                    <span class="badge text-light bg-secondary px-4 py-2">
+                        DRAFT
+                    </span>
                 @elseif($deliveryOrder->status === 'delivered')
-                    <span class="badge text-light bg-success">DELIVERED</span>
+                    <span class="badge text-light bg-success px-4 py-2">
+                        DELIVERED
+                    </span>
                 @endif
             </div>
 
@@ -98,13 +115,13 @@
 
 {{-- ================= ITEMS ================= --}}
 <div class="card shadow-sm">
-    <div class="card-header fw-bold">
+    <div class="card-header fw-semibold">
         Item Delivery
     </div>
 
     <div class="card-body p-0">
-        <table class="table table-bordered mb-0">
-            <thead class="table-light">
+        <table class="table table-bordered mb-0 align-middle">
+            <thead class="table-light text-center">
                 <tr>
                     <th width="60">No</th>
                     <th>Item</th>
@@ -122,7 +139,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="4" class="text-center text-muted">
+                    <td colspan="4" class="text-center text-muted py-4">
                         Tidak ada item
                     </td>
                 </tr>

@@ -3,7 +3,15 @@
 @section('content')
 <div class="container">
 
-<h4 class="mb-4">Edit Delivery Order</h4>
+{{-- ================= HEADER ================= --}}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0">Edit Delivery Order</h4>
+
+    <a href="{{ route('delivery-order.show', $deliveryOrder->id) }}"
+       class="btn btn-secondary btn-sm px-3">
+        Kembali
+    </a>
+</div>
 
 <form action="{{ route('delivery-order.update', $deliveryOrder->id) }}"
       method="POST">
@@ -12,40 +20,43 @@
 
 {{-- ================= INFO ================= --}}
 <div class="card mb-4 shadow-sm">
-    <div class="card-body">
+    <div class="card-body px-4 py-4">
 
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label>No DO</label>
+        <div class="row g-3">
+
+            <div class="col-md-6">
+                <label class="form-label small">No Delivery Order</label>
                 <input type="text"
                        name="no_do"
                        value="{{ $deliveryOrder->no_do }}"
-                       class="form-control"
+                       class="form-control form-control-sm"
                        required>
             </div>
 
-            <div class="col-md-6 mb-3">
-                <label>Tanggal DO</label>
+            <div class="col-md-6">
+                <label class="form-label small">Tanggal DO</label>
                 <input type="date"
                        name="tanggal_do"
                        value="{{ $deliveryOrder->tanggal_do }}"
-                       class="form-control"
+                       class="form-control form-control-sm"
                        required>
             </div>
-        </div>
 
-        <div class="mb-3">
-            <label>Status</label>
-            <select name="status" class="form-control">
-                <option value="draft"
-                    {{ $deliveryOrder->status=='draft'?'selected':'' }}>
-                    Draft
-                </option>
-                <option value="delivered"
-                    {{ $deliveryOrder->status=='delivered'?'selected':'' }}>
-                    Delivered
-                </option>
-            </select>
+            <div class="col-md-4 mt-3">
+                <label class="form-label small">Status</label>
+                <select name="status"
+                        class="form-control form-control-sm filter-control">
+                    <option value="draft"
+                        {{ $deliveryOrder->status=='draft'?'selected':'' }}>
+                        Draft
+                    </option>
+                    <option value="delivered"
+                        {{ $deliveryOrder->status=='delivered'?'selected':'' }}>
+                        Delivered
+                    </option>
+                </select>
+            </div>
+
         </div>
 
     </div>
@@ -53,19 +64,19 @@
 
 {{-- ================= ITEMS ================= --}}
 <div class="card mb-4 shadow-sm">
-    <div class="card-header d-flex justify-content-between">
-        <strong>Items</strong>
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>Items Delivery</strong>
 
         <button type="button"
-                class="btn btn-sm btn-primary"
+                class="btn btn-primary btn-sm px-3"
                 onclick="addItem()">
             + Add Item
         </button>
     </div>
 
     <div class="card-body p-0">
-        <table class="table table-bordered mb-0">
-            <thead class="table-light">
+        <table class="table table-bordered mb-0 align-middle">
+            <thead class="table-light text-center">
                 <tr>
                     <th>Item</th>
                     <th width="120">Qty</th>
@@ -81,7 +92,7 @@
                         <input type="text"
                                name="items[{{ $i }}][item]"
                                value="{{ $item->item }}"
-                               class="form-control"
+                               class="form-control form-control-sm"
                                required>
                     </td>
 
@@ -90,7 +101,7 @@
                                step="0.01"
                                name="items[{{ $i }}][qty]"
                                value="{{ $item->qty }}"
-                               class="form-control"
+                               class="form-control form-control-sm text-center"
                                required>
                     </td>
 
@@ -98,11 +109,11 @@
                         <input type="text"
                                name="items[{{ $i }}][unit]"
                                value="{{ $item->unit }}"
-                               class="form-control"
+                               class="form-control form-control-sm text-center"
                                required>
                     </td>
 
-                    <td>
+                    <td class="text-center">
                         <button type="button"
                                 class="btn btn-danger btn-sm"
                                 onclick="removeRow(this)">
@@ -118,7 +129,7 @@
 </div>
 
 <div class="text-end">
-    <button class="btn btn-success">
+    <button class="btn btn-success px-4">
         Update Delivery Order
     </button>
 </div>
@@ -126,6 +137,7 @@
 </form>
 </div>
 
+{{-- ================= SCRIPT ================= --}}
 <script>
 let itemIndex = {{ $deliveryOrder->items->count() }};
 
@@ -138,7 +150,7 @@ function addItem(){
         <td>
             <input type="text"
                    name="items[${itemIndex}][item]"
-                   class="form-control"
+                   class="form-control form-control-sm"
                    required>
         </td>
 
@@ -146,18 +158,18 @@ function addItem(){
             <input type="number"
                    step="0.01"
                    name="items[${itemIndex}][qty]"
-                   class="form-control"
+                   class="form-control form-control-sm text-center"
                    required>
         </td>
 
         <td>
             <input type="text"
                    name="items[${itemIndex}][unit]"
-                   class="form-control"
+                   class="form-control form-control-sm text-center"
                    required>
         </td>
 
-        <td>
+        <td class="text-center">
             <button type="button"
                     class="btn btn-danger btn-sm"
                     onclick="removeRow(this)">

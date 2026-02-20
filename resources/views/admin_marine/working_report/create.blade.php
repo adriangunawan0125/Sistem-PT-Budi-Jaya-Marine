@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
+<div class="container py-4">
 
-<h4 class="mb-4">Buat Working Report</h4>
+<h5 class="mb-4 fw-semibold">Buat Working Report</h5>
 
 <form action="{{ route('working-report.store') }}" 
       method="POST" 
@@ -12,43 +12,41 @@
 
 <input type="hidden" name="po_masuk_id" value="{{ $poMasuk->id }}">
 
-{{-- ================= INFO PO ================= --}}
-<div class="card mb-4 shadow-sm">
-<div class="card-body">
+{{-- ================= INFO ================= --}}
+<div class="card shadow-sm mb-4">
+<div class="card-body small">
 
-<div class="row mb-3">
+<div class="row g-3">
     <div class="col-md-4">
-        <strong>Company :</strong><br>
-        {{ $poMasuk->mitra_marine }}
+        <div class="text-muted">Company</div>
+        <div class="fw-semibold">{{ $poMasuk->mitra_marine }}</div>
     </div>
-
     <div class="col-md-4">
-        <strong>Vessel :</strong><br>
-        {{ $poMasuk->vessel }}
+        <div class="text-muted">Vessel</div>
+        <div class="fw-semibold">{{ $poMasuk->vessel }}</div>
     </div>
-
     <div class="col-md-4">
-        <strong>PO No :</strong><br>
-        {{ $poMasuk->no_po_klien }}
+        <div class="text-muted">PO No</div>
+        <div class="fw-semibold">{{ $poMasuk->no_po_klien }}</div>
     </div>
 </div>
 
-<hr>
+<hr class="my-3">
 
-<div class="row">
+<div class="row g-3">
     <div class="col-md-4">
-        <label>Project</label>
-        <input type="text" name="project" class="form-control" required>
+        <label class="form-label small">Project</label>
+        <input type="text" name="project" class="form-control form-control-sm" required>
     </div>
 
     <div class="col-md-4">
-        <label>Place</label>
-        <input type="text" name="place" class="form-control">
+        <label class="form-label small">Place</label>
+        <input type="text" name="place" class="form-control form-control-sm">
     </div>
 
     <div class="col-md-4">
-        <label>Periode</label>
-        <input type="text" name="periode" class="form-control" required>
+        <label class="form-label small">Periode</label>
+        <input type="text" name="periode" class="form-control form-control-sm" required>
     </div>
 </div>
 
@@ -57,188 +55,256 @@
 
 {{-- ================= ITEMS ================= --}}
 <div class="card shadow-sm">
+<div class="card-header d-flex justify-content-between align-items-center small">
+    <strong>Working Report Items</strong>
+    <button type="button"
+            class="btn btn-outline-primary btn-sm"
+            onclick="addItem()">
+        + Add Item
+    </button>
+</div>
+
 <div class="card-body">
-
-<h5>Working Report Items</h5>
-
 <div id="items-wrapper">
 
-{{-- DEFAULT ITEM --}}
-<div class="item-row border rounded p-3 mb-4">
+<div class="item-row border rounded p-3 mb-4 bg-light small">
 
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h6 class="mb-0">Item 1</h6>
-
-        <button type="button" 
-                class="btn btn-danger btn-sm remove-item"
-                style="display:none;">
-            Hapus Item
-        </button>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-md-3">
-            <label>Date</label>
-            <input type="date"
-                   name="items[0][work_date]"
-                   class="form-control"
-                   required>
-        </div>
+        <strong>Item 1</strong>
     </div>
 
     <div class="mb-3">
-        <label>Detail</label>
+        <label class="form-label small">Date</label>
+        <input type="date"
+               name="items[0][work_date]"
+               class="form-control form-control-sm"
+               required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label small">Detail</label>
         <textarea name="items[0][detail]"
-                  class="form-control"
-                  rows="4"
+                  class="form-control form-control-sm"
+                  rows="3"
                   required></textarea>
     </div>
 
-    <div class="image-area">
-        <label>Upload Images</label>
+   <div class="image-area">
+    <label class="form-label small">Images</label>
 
-        <div class="image-input-wrapper mb-2">
+    <div class="image-input-wrapper">
+        <div class="image-input-block mb-2 d-flex gap-2 align-items-center"
+             data-input-id="img-input-0">
+
             <input type="file"
                    name="items[0][images][]"
-                   class="form-control">
-        </div>
+                   class="form-control form-control-sm image-input"
+                   data-preview-id="img-input-0"
+                   accept="image/*"
+                   multiple>
 
-        <button type="button"
-                class="btn btn-outline-secondary btn-sm add-image-btn">
-            + Tambah Gambar
-        </button>
+            <button type="button"
+                    class="btn btn-sm btn-outline-danger remove-image">
+                X
+            </button>
+        </div>
     </div>
 
+    <div class="image-preview d-flex flex-wrap gap-2 mt-2"></div>
+
+    <button type="button"
+            class="btn btn-sm btn-outline-secondary add-image-btn">
+        + Add Image
+    </button>
 </div>
 
 </div>
 
-<button type="button" 
-        class="btn btn-secondary btn-sm mt-2"
-        onclick="addItem()">
-    + Tambah Item
-</button>
-
+</div>
 </div>
 </div>
 
-<button class="btn btn-success mt-3">
-    Simpan Working Report
-</button>
+<div class="mt-4 text-end">
+    <button class="btn btn-success btn-sm px-4">
+        Simpan Working Report
+    </button>
+    <a href="{{ route('po-masuk.show', $poMasuk->id) }}" 
+       class="btn btn-sm btn-secondary" 
+       style="margin-left: 4px">
+        Kembali
+    </a>
+</div>
 
 </form>
-
 </div>
 
+{{-- ================= SCRIPT ================= --}}
 <script>
 
 let index = 1;
+let imageInputCounter = 0;
 
-/* ================= TAMBAH ITEM ================= */
-function addItem() {
+function addItem(){
 
-    let wrapper = document.getElementById('items-wrapper');
+    const wrapper = document.getElementById('items-wrapper');
 
     wrapper.insertAdjacentHTML('beforeend', `
-        <div class="item-row border rounded p-3 mb-4">
+        <div class="item-row border rounded p-3 mb-4 bg-light small">
 
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h6 class="mb-0">Item ${index + 1}</h6>
-
-                <button type="button" 
-                        class="btn btn-danger btn-sm remove-item">
-                    Hapus Item
+                <strong>Item ${index + 1}</strong>
+                <button type="button"
+                        class="btn btn-sm btn-outline-danger remove-item">
+                    Remove
                 </button>
-            </div>
-
-            <div class="row mb-3">
-                <div class="col-md-3">
-                    <label>Date</label>
-                    <input type="date"
-                           name="items[${index}][work_date]"
-                           class="form-control"
-                           required>
-                </div>
             </div>
 
             <div class="mb-3">
-                <label>Detail</label>
+                <label class="form-label small">Date</label>
+                <input type="date"
+                       name="items[${index}][work_date]"
+                       class="form-control form-control-sm"
+                       required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label small">Detail</label>
                 <textarea name="items[${index}][detail]"
-                          class="form-control"
-                          rows="4"
+                          class="form-control form-control-sm"
+                          rows="3"
                           required></textarea>
             </div>
 
-            <div class="image-area">
-                <label>Upload Images</label>
+         <div class="image-area">
+    <label class="form-label small">Images</label>
 
-                <div class="image-input-wrapper mb-2">
-                    <input type="file"
-                           name="items[${index}][images][]"
-                           class="form-control">
-                </div>
+    <div class="image-input-wrapper">
+        <div class="image-input-block mb-2 d-flex gap-2 align-items-center"
+             data-input-id="img-input-0">
 
-                <button type="button"
-                        class="btn btn-outline-secondary btn-sm add-image-btn">
-                    + Tambah Gambar
-                </button>
-            </div>
+            <input type="file"
+                   name="items[0][images][]"
+                   class="form-control form-control-sm image-input"
+                   data-preview-id="img-input-0"
+                   accept="image/*"
+                   multiple>
+
+            <button type="button"
+                    class="btn btn-sm btn-outline-danger remove-image">
+                X
+            </button>
+        </div>
+    </div>
+
+    <div class="image-preview d-flex flex-wrap gap-2 mt-2"></div>
+
+    <button type="button"
+            class="btn btn-sm btn-outline-secondary add-image-btn">
+        + Add Image
+    </button>
+</div>
 
         </div>
     `);
 
     index++;
-    attachEvents();
 }
 
-/* ================= EVENTS ================= */
-function attachEvents() {
+// Generate input with unique ID
+function generateImageInput(itemIndex){
+
+    const uniqueId = 'img-input-' + imageInputCounter++;
+
+    return `
+        <div class="image-input-block mb-2 d-flex gap-2 align-items-center"
+             data-input-id="${uniqueId}">
+
+            <input type="file"
+                   name="items[${itemIndex}][images][]"
+                   class="form-control form-control-sm image-input"
+                   data-preview-id="${uniqueId}"
+                   accept="image/*"
+                   multiple>
+
+            <button type="button"
+                    class="btn btn-sm btn-outline-danger remove-image">
+                X
+            </button>
+        </div>
+    `;
+}
+
+document.addEventListener('click', function(e){
 
     // REMOVE ITEM
-    document.querySelectorAll('.remove-item').forEach(btn => {
-        btn.onclick = function() {
-            this.closest('.item-row').remove();
-        }
+    if(e.target.classList.contains('remove-item')){
+        e.target.closest('.item-row').remove();
+    }
+
+    // ADD IMAGE INPUT
+    if(e.target.classList.contains('add-image-btn')){
+
+        const itemRow = e.target.closest('.item-row');
+        const dateInput = itemRow.querySelector('input[type="date"]');
+        const itemIndex = dateInput.name.match(/items\[(\d+)\]/)[1];
+        const wrapper = itemRow.querySelector('.image-input-wrapper');
+
+        wrapper.insertAdjacentHTML('beforeend', generateImageInput(itemIndex));
+    }
+
+    // REMOVE IMAGE INPUT + RELATED PREVIEW
+    if(e.target.classList.contains('remove-image')){
+
+        const block = e.target.closest('.image-input-block');
+        const previewId = block.getAttribute('data-input-id');
+        const itemRow = block.closest('.item-row');
+        const previewContainer = itemRow.querySelector('.image-preview');
+
+        // Remove preview images linked to this input
+        previewContainer
+            .querySelectorAll(`[data-preview-id="${previewId}"]`)
+            .forEach(img => img.remove());
+
+        block.remove();
+    }
+
+});
+
+
+// ================= PREVIEW SYSTEM =================
+document.addEventListener('change', function(e){
+
+    if(!e.target.classList.contains('image-input')) return;
+
+    const input = e.target;
+    const previewId = input.getAttribute('data-preview-id');
+    const itemRow = input.closest('.item-row');
+    const previewContainer = itemRow.querySelector('.image-preview');
+
+    if(!input.files) return;
+
+    Array.from(input.files).forEach(file => {
+
+        if(!file.type.startsWith('image/')) return;
+
+        const reader = new FileReader();
+
+        reader.onload = function(ev){
+
+            const img = document.createElement('img');
+            img.src = ev.target.result;
+            img.style.height = '100px';
+            img.style.objectFit = 'cover';
+            img.classList.add('img-thumbnail');
+            img.setAttribute('data-preview-id', previewId);
+
+            previewContainer.appendChild(img);
+        };
+
+        reader.readAsDataURL(file);
     });
 
-    // ADD IMAGE
-    document.querySelectorAll('.add-image-btn').forEach(btn => {
-        btn.onclick = function() {
-
-            let wrapper = this.closest('.image-area')
-                              .querySelector('.image-input-wrapper');
-
-            let itemRow = this.closest('.item-row');
-            let dateInput = itemRow.querySelector('input[type="date"]');
-            let itemIndex = dateInput.name.match(/items\[(\d+)\]/)[1];
-
-            wrapper.insertAdjacentHTML('beforeend', `
-                <div class="mb-2 d-flex gap-2 align-items-center">
-                    <input type="file"
-                           name="items[${itemIndex}][images][]"
-                           class="form-control">
-
-                    <button type="button"
-                            class="btn btn-danger btn-sm remove-image">
-                        X
-                    </button>
-                </div>
-            `);
-
-            attachEvents();
-        }
-    });
-
-    // REMOVE IMAGE
-    document.querySelectorAll('.remove-image').forEach(btn => {
-        btn.onclick = function() {
-            this.closest('div').remove();
-        }
-    });
-}
-
-attachEvents();
-
+});
 </script>
 
 @endsection

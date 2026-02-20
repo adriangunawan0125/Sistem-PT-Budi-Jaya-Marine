@@ -1,31 +1,36 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
+<div class="container py-4">
 
     {{-- ================= HEADER ================= --}}
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="mb-0">Detail Working Report</h4>
+        <h5 class="mb-0 fw-semibold">Detail Working Report</h5>
 
         <div class="d-flex gap-2">
 
+            
+            <a href="{{ route('po-masuk.show', $workingReport->poMasuk->id) }}"
+               class="btn btn-sm btn-secondary">
+                kembali
+            </a>
+            <a href="{{ route('working-report.print', $workingReport->id) }}"
+               style="margin-left: 4px" class="btn btn-sm btn-danger"
+               target="_blank">
+                Print pdf
+            </a>
             <a href="{{ route('working-report.edit', $workingReport->id) }}"
-               class="btn btn-warning btn-sm">
+               class="btn btn-sm btn-warning" style="margin-left: 4px">
                 Edit
             </a>
 
-            <a href="{{ route('working-report.print', $workingReport->id) }}"
-               class="btn btn-info btn-sm"
-               target="_blank">
-                Print
-            </a>
 
             <form action="{{ route('working-report.destroy', $workingReport->id) }}"
                   method="POST"
                   onsubmit="return confirm('Yakin ingin menghapus working report ini?')">
                 @csrf
                 @method('DELETE')
-                <button class="btn btn-danger btn-sm">
+                <button class="btn btn-sm btn-danger" style="margin-left: 4px">
                     Hapus
                 </button>
             </form>
@@ -35,39 +40,51 @@
 
 
     {{-- ================= INFO CARD ================= --}}
-    <div class="card mb-4 shadow-sm">
-        <div class="card-body">
+    <div class="card shadow-sm mb-4">
+        <div class="card-body small">
 
-            <div class="row">
+            <div class="row g-3">
 
-                <div class="col-md-6 mb-3">
-                    <strong>Company</strong><br>
-                    {{ $workingReport->poMasuk->mitra_marine }}
+                <div class="col-md-4 mb-3">
+                    <div class="text-muted ">Company</div>
+                    <div class="fw-semibold">
+                        {{ $workingReport->poMasuk->mitra_marine }}
+                    </div>
                 </div>
 
-                <div class="col-md-6 mb-3">
-                    <strong>Project</strong><br>
-                    {{ $workingReport->project }}
+                <div class="col-md-4">
+                    <div class="text-muted">Project</div>
+                    <div class="fw-semibold">
+                        {{ $workingReport->project }}
+                    </div>
                 </div>
 
-                <div class="col-md-6 mb-3">
-                    <strong>Vessel</strong><br>
-                    {{ $workingReport->poMasuk->vessel }}
+                <div class="col-md-4">
+                    <div class="text-muted">Vessel</div>
+                    <div>
+                        {{ $workingReport->poMasuk->vessel }}
+                    </div>
                 </div>
 
-                <div class="col-md-6 mb-3">
-                    <strong>Place</strong><br>
-                    {{ $workingReport->place ?? '-' }}
+                <div class="col-md-4">
+                    <div class="text-muted">Place</div>
+                    <div>
+                        {{ $workingReport->place ?? '-' }}
+                    </div>
                 </div>
 
-                <div class="col-md-6 mb-3">
-                    <strong>PO No</strong><br>
-                    {{ $workingReport->poMasuk->no_po_klien }}
+                <div class="col-md-4">
+                    <div class="text-muted">PO No</div>
+                    <div>
+                        {{ $workingReport->poMasuk->no_po_klien }}
+                    </div>
                 </div>
 
-                <div class="col-md-6 mb-3">
-                    <strong>Periode</strong><br>
-                    {{ $workingReport->periode }}
+                <div class="col-md-4">
+                    <div class="text-muted">Periode</div>
+                    <div>
+                        {{ $workingReport->periode }}
+                    </div>
                 </div>
 
             </div>
@@ -79,36 +96,34 @@
     {{-- ================= ITEMS ================= --}}
     @forelse($workingReport->items as $item)
 
-    <div class="card mb-4 shadow-sm">
-        <div class="card-header">
-            <strong>
-                Tanggal :
-                {{ \Carbon\Carbon::parse($item->work_date)->format('d M Y') }}
-            </strong>
+    <div class="card shadow-sm mb-4">
+        <div class="card-header small fw-semibold">
+           tanggal : {{ \Carbon\Carbon::parse($item->work_date)->format('d M Y') }}
         </div>
 
-        <div class="card-body">
+        <div class="card-body small">
 
             {{-- DETAIL --}}
             <div class="mb-3">
-                <strong>Detail Pekerjaan :</strong>
-                <div style="white-space: pre-line;">
+                <div class="text-muted mb-1">Detail Pekerjaan</div>
+                <div class="border rounded p-3 bg-light"
+                     style="white-space: pre-line;">
                     {{ $item->detail }}
                 </div>
             </div>
 
             {{-- IMAGES --}}
-            @if($item->images->count() > 0)
+            @if($item->images->count())
             <div>
-                <strong>Dokumentasi :</strong>
+                <div class="text-muted mb-2">Dokumentasi</div>
 
-                <div class="row mt-2">
+                <div class="row g-3">
                     @foreach($item->images as $image)
-                        <div class="col-md-3 mb-3">
-                            <div class="border rounded p-2 text-center">
+                        <div class="col-md-3">
+                            <div class="border rounded p-2 bg-white text-center shadow-sm">
                                 <img src="{{ asset('storage/'.$image->image_path) }}"
                                      class="img-fluid rounded"
-                                     style="max-height:180px;">
+                                     style="max-height:160px; object-fit:cover;">
                             </div>
                         </div>
                     @endforeach
@@ -121,12 +136,11 @@
 
     @empty
         <div class="card shadow-sm">
-            <div class="card-body text-center text-muted">
+            <div class="card-body text-center text-muted small">
                 Belum ada item working report
             </div>
         </div>
     @endforelse
-
 
 </div>
 @endsection

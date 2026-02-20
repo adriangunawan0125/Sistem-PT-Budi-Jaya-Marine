@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\PemasukanMarine;
 
 class PoMasuk extends Model
 {
@@ -64,8 +65,9 @@ public function workingReports()
     return $this->hasMany(\App\Models\WorkingReport::class);
 }
 
-
-
-
+public function pemasukanMarine()
+{
+    return $this->hasMany(PemasukanMarine::class);
+}
 
 }

@@ -20,8 +20,12 @@
 <div class="row mb-3">
 <div class="col-md-6">
 <label>Quote No</label>
-<input type="text" class="form-control"
-value="{{ $quotation->quote_no }}" readonly>
+<input type="text"
+       name="quote_no"
+       class="form-control"
+       value="{{ old('quote_no', $quotation->quote_no) }}"
+       required>
+
 </div>
 
 <div class="col-md-6">
@@ -230,6 +234,50 @@ onclick="addSubItem()">
 </button>
 
 
+{{-- ================= DISCOUNT ================= --}}
+<div class="card mt-3 mb-4">
+<div class="card-body">
+
+<div class="row align-items-end">
+    
+    <div class="col-md-3">
+        <label>Discount Type</label>
+        <select name="discount_type"
+                id="discount-type"
+                class="form-control"
+                onchange="recalculateAll()">
+            <option value="">No Discount</option>
+            <option value="percent"
+                {{ $quotation->discount_type=='percent'?'selected':'' }}>
+                Percent (%)
+            </option>
+            <option value="nominal"
+                {{ $quotation->discount_type=='nominal'?'selected':'' }}>
+                Nominal (Rp)
+            </option>
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <label>Discount Value</label>
+        <input type="number"
+               name="discount_value"
+               id="discount-value"
+               class="form-control"
+               value="{{ $quotation->discount_value ?? 0 }}"
+               oninput="recalculateAll()">
+    </div>
+
+</div>
+
+<div class="text-end mt-3">
+    <strong>Discount Amount: Rp 
+        <span id="discount-amount">0</span>
+    </strong>
+</div>
+
+</div>
+</div>
 
 {{-- ================= GRAND TOTAL ================= --}}
 <div class="card mt-4 mb-4">
@@ -258,198 +306,236 @@ let subIndex = {{ $quotation->subItems->count() }};
 
 /* ================= CHANGE GLOBAL TYPE ================= */
 document.getElementById('global-type').addEventListener('change', function(){
-applyTypeToAll();
-recalculateAll();
+    applyTypeToAll();
+    recalculateAll();
 });
 
 function applyTypeToAll(){
 
-let type = document.getElementById('global-type').value;
+    let type = document.getElementById('global-type').value;
 
-document.querySelectorAll('.sub-type-hidden').forEach(i=>{
-i.value = type;
-});
+    document.querySelectorAll('.sub-type-hidden').forEach(i=>{
+        i.value = type;
+    });
 
-document.querySelectorAll('.col-day').forEach(c=>c.style.display='');
-document.querySelectorAll('.col-hour').forEach(c=>c.style.display='');
+    document.querySelectorAll('.col-day').forEach(c=>c.style.display='');
+    document.querySelectorAll('.col-hour').forEach(c=>c.style.display='');
 
-if(type==='basic'){
-document.querySelectorAll('.col-day').forEach(c=>c.style.display='none');
-document.querySelectorAll('.col-hour').forEach(c=>c.style.display='none');
-}
-if(type==='day'){
-document.querySelectorAll('.col-hour').forEach(c=>c.style.display='none');
-}
-if(type==='hour'){
-document.querySelectorAll('.col-day').forEach(c=>c.style.display='none');
-}
-
+    if(type==='basic'){
+        document.querySelectorAll('.col-day').forEach(c=>c.style.display='none');
+        document.querySelectorAll('.col-hour').forEach(c=>c.style.display='none');
+    }
+    if(type==='day'){
+        document.querySelectorAll('.col-hour').forEach(c=>c.style.display='none');
+    }
+    if(type==='hour'){
+        document.querySelectorAll('.col-day').forEach(c=>c.style.display='none');
+    }
 }
 
 /* ================= ADD SUB ================= */
 function addSubItem(){
 
-let type = document.getElementById('global-type').value;
+    let type = document.getElementById('global-type').value;
 
-let html = `
-<div class="card mb-4 sub-block" data-index="${subIndex}">
-<div class="card-header d-flex justify-content-between">
-<div class="w-75">
-<input type="text"
-name="sub_items[${subIndex}][name]"
-class="form-control"
-placeholder="Sub Item Name">
-<input type="hidden"
-name="sub_items[${subIndex}][item_type]"
-value="${type}"
-class="sub-type-hidden">
-</div>
-<button type="button"
-class="btn btn-danger btn-sm"
-onclick="this.closest('.sub-block').remove();recalculateAll();">
-Delete
-</button>
-</div>
-<div class="card-body">
-<table class="table table-bordered">
-<thead>
-<tr>
-<th>Item</th>
-<th>Price</th>
-<th>Qty</th>
-<th>Unit</th>
-<th class="col-day">Day</th>
-<th class="col-hour">Hour</th>
-<th>Total</th>
-<th></th>
-</tr>
-</thead>
-<tbody></tbody>
-</table>
-<button type="button"
-class="btn btn-sm btn-success"
-onclick="addItemRow(this)">
-+ Add Item
-</button>
-<div class="text-end mt-3">
-<strong>Subtotal: Rp <span class="sub-total">0</span></strong>
-</div>
-</div>
-</div>`;
+    let html = `
+    <div class="card mb-4 sub-block" data-index="${subIndex}">
+        <div class="card-header d-flex justify-content-between">
+            <div class="w-75">
+                <input type="text"
+                name="sub_items[${subIndex}][name]"
+                class="form-control"
+                placeholder="Sub Item Name">
 
-document.getElementById('sub-container')
-.insertAdjacentHTML('beforeend', html);
+                <input type="hidden"
+                name="sub_items[${subIndex}][item_type]"
+                value="${type}"
+                class="sub-type-hidden">
+            </div>
 
-subIndex++;
-applyTypeToAll();
+            <button type="button"
+            class="btn btn-danger btn-sm"
+            onclick="this.closest('.sub-block').remove();recalculateAll();">
+            Delete
+            </button>
+        </div>
+
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Price</th>
+                        <th>Qty</th>
+                        <th>Unit</th>
+                        <th class="col-day">Day</th>
+                        <th class="col-hour">Hour</th>
+                        <th>Total</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+
+            <button type="button"
+            class="btn btn-sm btn-success"
+            onclick="addItemRow(this)">
+            + Add Item
+            </button>
+
+            <div class="text-end mt-3">
+                <strong>Subtotal: Rp <span class="sub-total">0</span></strong>
+            </div>
+        </div>
+    </div>`;
+
+    document.getElementById('sub-container')
+        .insertAdjacentHTML('beforeend', html);
+
+    subIndex++;
+    applyTypeToAll();
 }
 
 /* ================= ADD ITEM ================= */
 function addItemRow(btn){
 
-let block = btn.closest('.sub-block');
-let sIndex = block.getAttribute('data-index');
-let tbody = block.querySelector('tbody');
-let iIndex = tbody.children.length;
+    let block = btn.closest('.sub-block');
+    let sIndex = block.getAttribute('data-index');
+    let tbody = block.querySelector('tbody');
+    let iIndex = tbody.children.length;
 
-let row = `
-<tr>
-<td><input type="text"
-name="sub_items[${sIndex}][items][${iIndex}][item]"
-class="form-control item-name"></td>
+    let row = `
+    <tr>
+        <td><input type="text"
+        name="sub_items[${sIndex}][items][${iIndex}][item]"
+        class="form-control item-name"></td>
 
-<td><input type="number"
-name="sub_items[${sIndex}][items][${iIndex}][price]"
-class="form-control price"
-oninput="calculateRow(this)"></td>
+        <td><input type="number"
+        name="sub_items[${sIndex}][items][${iIndex}][price]"
+        class="form-control price"
+        oninput="calculateRow(this)"></td>
 
-<td><input type="number"
-name="sub_items[${sIndex}][items][${iIndex}][qty]"
-class="form-control qty"
-oninput="calculateRow(this)"></td>
+        <td><input type="number"
+        name="sub_items[${sIndex}][items][${iIndex}][qty]"
+        class="form-control qty"
+        oninput="calculateRow(this)"></td>
 
-<td><input type="text"
-name="sub_items[${sIndex}][items][${iIndex}][unit]"
-class="form-control unit"></td>
+        <td><input type="text"
+        name="sub_items[${sIndex}][items][${iIndex}][unit]"
+        class="form-control unit"></td>
 
-<td class="col-day">
-<input type="number"
-name="sub_items[${sIndex}][items][${iIndex}][day]"
-class="form-control day"
-oninput="calculateRow(this)">
-</td>
+        <td class="col-day">
+        <input type="number"
+        name="sub_items[${sIndex}][items][${iIndex}][day]"
+        class="form-control day"
+        oninput="calculateRow(this)">
+        </td>
 
-<td class="col-hour">
-<input type="number"
-name="sub_items[${sIndex}][items][${iIndex}][hour]"
-class="form-control hour"
-oninput="calculateRow(this)">
-</td>
+        <td class="col-hour">
+        <input type="number"
+        name="sub_items[${sIndex}][items][${iIndex}][hour]"
+        class="form-control hour"
+        oninput="calculateRow(this)">
+        </td>
 
-<td>
-<input type="number"
-class="form-control total" readonly>
-</td>
+        <td>
+        <input type="number"
+        class="form-control total" readonly>
+        </td>
 
-<td>
-<button type="button"
-class="btn btn-danger btn-sm"
-onclick="this.closest('tr').remove();recalculateAll();">
-X
-</button>
-</td>
-</tr>`;
+        <td>
+        <button type="button"
+        class="btn btn-danger btn-sm"
+        onclick="this.closest('tr').remove();recalculateAll();">
+        X
+        </button>
+        </td>
+    </tr>`;
 
-tbody.insertAdjacentHTML('beforeend', row);
-applyTypeToAll();
+    tbody.insertAdjacentHTML('beforeend', row);
+    applyTypeToAll();
 }
 
-/* ================= CALCULATE ================= */
+/* ================= CALCULATE ROW ================= */
 function calculateRow(input){
 
-let type = document.getElementById('global-type').value;
+    let type = document.getElementById('global-type').value;
 
-let row = input.closest('tr');
-let price = parseFloat(row.querySelector('.price').value)||0;
-let qty = parseFloat(row.querySelector('.qty').value)||0;
-let day = parseFloat(row.querySelector('.day')?.value)||0;
-let hour = parseFloat(row.querySelector('.hour')?.value)||0;
+    let row = input.closest('tr');
+    let price = parseFloat(row.querySelector('.price').value) || 0;
+    let qty = parseFloat(row.querySelector('.qty').value) || 0;
+    let day = parseFloat(row.querySelector('.day')?.value) || 0;
+    let hour = parseFloat(row.querySelector('.hour')?.value) || 0;
 
-let total = 0;
+    let total = 0;
 
-switch(type){
-case 'day': total = price * qty * day; break;
-case 'hour': total = price * qty * hour; break;
-case 'day_hour': total = hour>0 ? price*qty*day*hour : price*qty*day; break;
-default: total = price * qty;
+    switch(type){
+        case 'day': total = price * qty * day; break;
+        case 'hour': total = price * qty * hour; break;
+        case 'day_hour': total = hour>0 ? price*qty*day*hour : price*qty*day; break;
+        default: total = price * qty;
+    }
+
+    row.querySelector('.total').value = total;
+    recalculateAll();
 }
 
-row.querySelector('.total').value = total;
-recalculateAll();
-}
-
-/* ================= GRAND ================= */
+/* ================= RECALCULATE ALL ================= */
 function recalculateAll(){
 
-let grand = 0;
+    let subtotal = 0;
 
-document.querySelectorAll('.sub-block').forEach(block=>{
-let subTotal = 0;
-block.querySelectorAll('.total').forEach(t=>{
-subTotal += parseFloat(t.value)||0;
-});
-block.querySelector('.sub-total').innerText =
-subTotal.toLocaleString('id-ID');
-grand += subTotal;
-});
+    document.querySelectorAll('.sub-block').forEach(block=>{
+        let subTotal = 0;
 
-document.getElementById('grand-total')
-.innerText = grand.toLocaleString('id-ID');
+        block.querySelectorAll('.total').forEach(t=>{
+            subTotal += parseFloat(t.value) || 0;
+        });
+
+        let subLabel = block.querySelector('.sub-total');
+        if(subLabel){
+            subLabel.innerText = subTotal.toLocaleString('id-ID');
+        }
+
+        subtotal += subTotal;
+    });
+
+    // ===== DISCOUNT =====
+    let discountType = document.getElementById('discount-type')?.value;
+    let discountValue = parseFloat(document.getElementById('discount-value')?.value) || 0;
+
+    let discountAmount = 0;
+
+    if(discountType === 'percent'){
+        discountAmount = subtotal * discountValue / 100;
+    }
+
+    if(discountType === 'nominal'){
+        discountAmount = discountValue;
+    }
+
+    if(discountAmount > subtotal){
+        discountAmount = subtotal;
+    }
+
+    let grand = subtotal - discountAmount;
+
+    // Update Discount
+    if(document.getElementById('discount-amount')){
+        document.getElementById('discount-amount').innerText =
+            discountAmount.toLocaleString('id-ID');
+    }
+
+    // Update Grand
+    document.getElementById('grand-total').innerText =
+        grand.toLocaleString('id-ID');
 }
 
+/* ================= INIT ================= */
 applyTypeToAll();
 recalculateAll();
 
 </script>
+
 
 @endsection

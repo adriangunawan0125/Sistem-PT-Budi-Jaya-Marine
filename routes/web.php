@@ -40,6 +40,7 @@ use App\Http\Controllers\AdminMarine\PengeluaranPoController;
 use App\Http\Controllers\AdminMarine\InvoicePoController;
 use App\Http\Controllers\AdminMarine\WorkingReportController;
 use App\Http\Controllers\AdminMarine\SoaController;
+use App\Http\Controllers\AdminMarine\PemasukanMarineController;
 
 //PUBLIC 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -283,7 +284,7 @@ Route::resource('pemasukan', PemasukanController::class);
 Route::middleware(['auth', 'role:admin_marine'])->group(function () {
     Route::get('/admin-marine', function () {
   return view('admin_marine.dashboard');
-    })->name('admin.marine.dashboard');
+    })->name('admin_marine.dashboard');
 
 
 Route::get('/mitra-marine', [MitraMarineController::class, 'index'])->name('mitra-marine.index');
@@ -341,6 +342,9 @@ Route::delete('term/{term}',
     
 
 Route::resource('po-masuk', PoMasukController::class);
+Route::patch('/po-masuk/{poMasuk}/update-status',
+    [PoMasukController::class, 'updateStatus']
+)->name('po-masuk.update-status');
 
 /* ================= PO SUPPLIER ================= */
 /* ================= PO SUPPLIER ================= */
@@ -376,45 +380,46 @@ Route::get('po-supplier/{poSupplier}/print',
 )->name('po-supplier.print');
 
 /* ================= DELIVERY ORDER ================= */
-
-// List DO per PO
-Route::get('po-masuk/{poMasuk}/delivery-orders', 
+// INDEX - Semua Delivery Order
+Route::get('delivery-orders', 
     [DeliveryOrderController::class, 'index']
 )->name('delivery-order.index');
 
-// Form create DO
+// Create tetap dari PO
 Route::get('po-masuk/{poMasuk}/delivery-orders/create', 
     [DeliveryOrderController::class, 'create']
 )->name('delivery-order.create');
 
-// Store DO
+// Store
 Route::post('delivery-orders', 
     [DeliveryOrderController::class, 'store']
 )->name('delivery-order.store');
 
-// Show DO
+// Show
 Route::get('delivery-orders/{deliveryOrder}', 
     [DeliveryOrderController::class, 'show']
 )->name('delivery-order.show');
 
-// Edit DO
+// Edit
 Route::get('delivery-orders/{deliveryOrder}/edit', 
     [DeliveryOrderController::class, 'edit']
 )->name('delivery-order.edit');
 
-// Update DO
+// Update
 Route::put('delivery-orders/{deliveryOrder}', 
     [DeliveryOrderController::class, 'update']
 )->name('delivery-order.update');
 
-// Delete DO
+// Delete
 Route::delete('delivery-orders/{deliveryOrder}', 
     [DeliveryOrderController::class, 'destroy']
 )->name('delivery-order.destroy');
 
-Route::get('delivery-order/{deliveryOrder}/print',
+// Print
+Route::get('delivery-orders/{deliveryOrder}/print',
     [DeliveryOrderController::class, 'print']
 )->name('delivery-order.print');
+
 
 // PO Masuk Status
 Route::patch('po-masuk/{poMasuk}/approve', [PoMasukController::class,'approve'])
@@ -424,16 +429,16 @@ Route::patch('po-masuk/{poMasuk}/close', [PoMasukController::class,'close'])
     ->name('po-masuk.close');
 
 // Delivery Order Status
-Route::patch('delivery-order/{deliveryOrder}/deliver', [DeliveryOrderController::class,'markDelivered'])
-    ->name('delivery-order.deliver');
-Route::patch('po-supplier/{poSupplier}/approve',
-    [PoSupplierController::class,'approve'])
-    ->name('po-supplier.approve');
+Route::patch(
+    'delivery-order/{deliveryOrder}/update-status',
+    [DeliveryOrderController::class, 'updateStatus']
+)->name('delivery-order.update-status');
 
-Route::patch('po-supplier/{poSupplier}/cancel',
-    [PoSupplierController::class,'cancel'])
-    ->name('po-supplier.cancel');
-Route::resource('pengeluaran-po', PengeluaranPoController::class);
+Route::patch('/po-supplier/{poSupplier}/update-status',
+    [PoSupplierController::class, 'updateStatus']
+)->name('po-supplier.update-status');
+
+    Route::resource('pengeluaran-po', PengeluaranPoController::class);
     Route::get('pengeluaran-po/create/{poMasuk}', 
     [PengeluaranPoController::class,'create'])
     ->name('pengeluaran-po.create');
@@ -536,7 +541,7 @@ Route::get('timesheet/{timesheet}/print',
 
 /* ================= WORKING REPORT ================= */
 
-Route::get('working-report/index',
+Route::get('working-report',
     [WorkingReportController::class, 'index']
 )->name('working-report.index');
 
@@ -568,7 +573,7 @@ Route::get('working-report/{workingReport}/print',
     [WorkingReportController::class, 'print']
 )->name('working-report.print');
 
-Route::get('soa/index', [App\Http\Controllers\AdminMarine\SoaController::class, 'index'])
+Route::get('soa', [App\Http\Controllers\AdminMarine\SoaController::class, 'index'])
     ->name('soa.index');
 
 Route::get('soa/create/{poMasukId?}',
@@ -594,6 +599,12 @@ Route::delete('soa/{soa}', [App\Http\Controllers\AdminMarine\SoaController::clas
 Route::get('soa/{soa}/print', [App\Http\Controllers\AdminMarine\SoaController::class, 'print'])
     ->name('soa.print');
 
+
+
+Route::resource(
+    'pemasukan-marine',
+    PemasukanMarineController::class
+);
 
     });
 

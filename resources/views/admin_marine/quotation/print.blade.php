@@ -104,26 +104,39 @@ table{ width:100%; border-collapse:collapse; }
 <br>
 
 <!-- ================= HEADER INFO ================= -->
-<table width="100%">
+<table width="100%" style="margin-top:10px;">
 <tr>
-<td width="60%">
-To<br>
-Attn<br>
-Quote No<br>
-Project<br>
-Vessel Name<br>
-Place
-</td>
-<td width="40%">
-: {{ $quotation->mitra_name ?? '-' }}<br>
-: {{ $quotation->attention ?? '-' }}<br>
-: {{ $quotation->quote_no }}<br>
-: {{ $quotation->project ?? '-' }}<br>
-: {{ $quotation->vessel_name ?? '-' }}<br>
-: {{ $quotation->place ?? '-' }}
-</td>
+    <td width="25%">To</td>
+    <td width="3%">:</td>
+    <td>{{ $quotation->mitra_name ?? '-' }}</td>
+</tr>
+<tr>
+    <td>Attn</td>
+    <td>:</td>
+    <td>{{ $quotation->attention ?? '-' }}</td>
+</tr>
+<tr>
+    <td>Quote No</td>
+    <td>:</td>
+    <td>{{ $quotation->quote_no }}</td>
+</tr>
+<tr>
+    <td>Project</td>
+    <td>:</td>
+    <td>{{ $quotation->project ?? '-' }}</td>
+</tr>
+<tr>
+    <td>Vessel Name</td>
+    <td>:</td>
+    <td>{{ $quotation->vessel_name ?? '-' }}</td>
+</tr>
+<tr>
+    <td>Place</td>
+    <td>:</td>
+    <td>{{ $quotation->place ?? '-' }}</td>
 </tr>
 </table>
+
 
 <br>
 
@@ -191,13 +204,48 @@ In compliance with your inquiry, we are pleased to offer you this quotation as f
 
 @endforeach
 
+@php
+    $subtotal = $subtotal ?? $grandTotal; // kalau dikirim dari controller
+    $discountAmount = $discount ?? ($quotation->discount_amount ?? 0);
+    $finalTotal = $subtotal - $discountAmount;
+@endphp
+
+{{-- SUBTOTAL --}}
 <tr class="total-row">
-    <td colspan="5" class="right">TOTAL</td>
+    <td colspan="5" class="right">SUBTOTAL</td>
     <td>
         <table class="money">
         <tr>
             <td class="rp">Rp</td>
-            <td class="val">{{ number_format($grandTotal,0,',','.') }}</td>
+            <td class="val">{{ number_format($subtotal,0,',','.') }}</td>
+        </tr>
+        </table>
+    </td>
+</tr>
+
+{{-- DISCOUNT (MUNCUL HANYA JIKA ADA) --}}
+@if($discountAmount > 0)
+<tr class="total-row">
+    <td colspan="5" class="right">DISCOUNT</td>
+    <td>
+        <table class="money">
+        <tr>
+            <td class="rp">Rp</td>
+            <td class="val"> {{ number_format($discountAmount,0,',','.') }}</td>
+        </tr>
+        </table>
+    </td>
+</tr>
+@endif
+
+{{-- GRAND TOTAL --}}
+<tr class="total-row">
+    <td colspan="5" class="right bold">GRAND TOTAL</td>
+    <td>
+        <table class="money">
+        <tr>
+            <td class="rp">Rp</td>
+            <td class="val bold">{{ number_format($finalTotal,0,',','.') }}</td>
         </tr>
         </table>
     </td>

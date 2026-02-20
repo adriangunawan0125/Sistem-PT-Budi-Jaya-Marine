@@ -3,73 +3,222 @@
 @section('content')
 <div class="container">
 
-{{-- ================= HEADER ================= --}}
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h4 class="mb-0">
-        Delivery Order - PO {{ $poMasuk->no_po_klien }}
-    </h4>
+    <h4 class="mb-0">Delivery Order (All PO)</h4>
+</div>
 
-    <div>
-        <a href="{{ route('po-masuk.show', $poMasuk->id) }}"
-           class="btn btn-secondary btn-sm">
-            ← Kembali ke PO
-        </a>
+{{-- ================= FILTER ================= --}}
+<div class="card mb-3 shadow-sm">
+    <div class="card-body py-3">
 
-        <a href="{{ route('delivery-order.create', $poMasuk->id) }}"
-           class="btn btn-warning btn-sm ms-2">
-            + Buat DO
-        </a>
+        <form method="GET" action="{{ route('delivery-order.index') }}">
+            <div class="row align-items-end g-3">
+
+                {{-- SEARCH --}}
+                <div class="col-md-4">
+                    <label class="form-label small mb-1">Search</label>
+                    <input type="text"
+                           name="search"
+                           value="{{ request('search') }}"
+                           class="form-control form-control-sm"
+                           placeholder="No DO / No PO / Vessel / Company">
+                </div>
+
+                {{-- BULAN --}}
+                <div class="col-md-2">
+                    <select name="month"
+                            class="form-control form-control-sm">
+                        <option value="">Semua Bulan</option>
+                        @for($m=1;$m<=12;$m++)
+                            <option value="{{ $m }}"
+                                {{ request('month') == $m ? 'selected' : '' }}>
+                                {{ \Carbon\Carbon::create()->month($m)->translatedFormat('F') }}
+                            </option>
+                        @endfor
+                    </select>
+                </div>
+
+                {{-- TAHUN --}}
+                <div class="col-md-2">
+                    <select name="year"
+                            class="form-control form-control-sm">
+                        <option value="">Semua Tahun</option>
+                        @for($y = date('Y'); $y >= 2020; $y--)
+                            <option value="{{ $y }}"
+                                {{ request('year') == $y ? 'selected' : '' }}>
+                                {{ $y }}
+                            </option>
+                        @endfor
+                    </select>
+                </div>
+
+                {{-- BUTTON --}}
+                <div class="col-md-4 d-flex gap-2">
+                    <button type="submit"
+                            class="btn btn-primary btn-sm px-3" style="margin-right: 4px">
+                        Filter
+                    </button>
+
+                    <a href="{{ route('delivery-order.index') }}"
+                       class="btn btn-secondary btn-sm">
+                        Reset
+                    </a>
+                </div>
+
+            </div>
+        </form>
+
     </div>
 </div>
+
 
 {{-- ================= TABLE ================= --}}
 <div class="card shadow-sm">
-    <div class="card-body p-0">
+<div class="card-body p-0">
 
-        <table class="table table-bordered mb-0">
-            <thead class="table-light">
-                <tr>
-                    <th width="60">No</th>
-                    <th>No DO</th>
-                    <th width="150">Tanggal</th>
-                    <th width="120">Status</th>
-                    <th width="120">Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($deliveryOrders as $index => $do)
-                <tr>
-                    <td class="text-center">{{ $index + 1 }}</td>
-                    <td>{{ $do->no_do }}</td>
-                    <td>
-                        {{ \Carbon\Carbon::parse($do->tanggal_do)->format('d M Y') }}
-                    </td>
-                    <td>
-                        @if($do->status == 'draft')
-                            <span class="badge bg-secondary">Draft</span>
-                        @else
-                            <span class="badge bg-success">Delivered</span>
-                        @endif
-                    </td>
-                    <td>
-                        <a href="{{ route('delivery-order.show', $do->id) }}"
-                           class="btn btn-sm btn-primary">
-                            Detail
-                        </a>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="5" class="text-center text-muted">
-                        Belum ada Delivery Order
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
+<div class="table-responsive">
+<table class="table table-bordered table-hover align-middle do-table mb-0">
 
-    </div>
+<thead class="table-light text-center">
+<tr>
+<th width="50">No</th>
+<th width="150">No DO</th>
+<th width="170">No PO</th>
+<th width="200">Company</th>
+<th width="160">Vessel</th>
+<th width="130">Tanggal DO</th>
+<th width="140">Status</th>
+<th width="200">Action</th>
+</tr>
+</thead>
+
+<tbody>
+
+@forelse($deliveryOrders as $index => $do)
+
+<tr>
+
+<td class="text-center">
+    {{ $deliveryOrders->firstItem() + $index }}
+</td>
+
+<td class="fw-semibold text-center">
+    {{ $do->no_do }}
+</td>
+
+<td class="text-center">
+    {{ $do->poMasuk->no_po_klien ?? '-' }}
+</td>
+
+<td>
+    {{ $do->poMasuk->mitra_marine ?? '-' }}
+</td>
+
+<td>
+    {{ $do->poMasuk->vessel ?? '-' }}
+</td>
+
+<td class="text-center">
+    {{ \Carbon\Carbon::parse($do->tanggal_do)->format('d-m-Y') }}
+</td>
+
+<td class="text-center">
+    <span class="badge text-light
+        @if($do->status == 'draft') bg-secondary
+        @elseif($do->status == 'approved') bg-primary
+        @elseif($do->status == 'delivered') bg-success
+        @elseif($do->status == 'cancelled') bg-danger
+        @endif">
+        {{ strtoupper($do->status) }}
+    </span>
+</td>
+
+<td>
+<div class="aksi-wrapper">
+
+    <a href="{{ route('delivery-order.show',$do->id) }}"
+       class="btn btn-info btn-sm">
+       Detail
+    </a>
+
+    <a href="{{ route('delivery-order.edit',$do->id) }}"
+       class="btn btn-warning btn-sm">
+       Edit
+    </a>
+
+    <a href="{{ route('delivery-order.print',$do->id) }}"
+       target="_blank"
+       class="btn btn-secondary btn-sm">
+       Print
+    </a>
+
+    <form action="{{ route('delivery-order.destroy',$do->id) }}"
+          method="POST"
+          onsubmit="return confirm('Yakin ingin hapus DO ini?')">
+        @csrf
+        @method('DELETE')
+        <button type="submit"
+                class="btn btn-danger btn-sm">
+            Delete
+        </button>
+    </form>
+
+</div>
+</td>
+
+</tr>
+
+@empty
+<tr>
+<td colspan="8" class="text-center text-muted py-4">
+Belum ada Delivery Order
+</td>
+</tr>
+@endforelse
+
+</tbody>
+</table>
 </div>
 
 </div>
+</div>
+
+{{-- PAGINATION --}}
+<div class="mt-3">
+    {{ $deliveryOrders->withQueryString()->links() }}
+</div>
+
+</div>
+
+<style>
+
+.do-table th,
+.do-table td{
+    font-size:13px;
+    padding:10px 12px;
+    vertical-align:middle;
+}
+
+.table-hover tbody tr:hover{
+    background-color:#f5f7fa;
+}
+
+.aksi-wrapper{
+    display:flex;
+    gap:6px;
+    justify-content:center;
+    align-items:center;
+}
+
+.aksi-wrapper form{
+    margin:0;
+}
+
+.btn-sm{
+    font-size:12px;
+    padding:5px 12px;
+}
+
+</style>
+
 @endsection

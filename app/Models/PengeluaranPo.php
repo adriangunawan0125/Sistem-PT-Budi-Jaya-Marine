@@ -14,6 +14,7 @@ class PengeluaranPo extends Model
         'qty',
         'price',
         'amount',
+        'bukti_gambar',
     ];
 
     public function poMasuk()
