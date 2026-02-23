@@ -48,9 +48,9 @@
                 </div>
 
                 <div class="col-md-4">
-                    <label class="fw-bold">Nominal</label>
-                    <p>{{ number_format($pemasukanMarine->nominal, 2, ',', '.') }}</p>
-                </div>
+    <label class="fw-bold">Nominal</label>
+    <p>Rp {{ number_format($pemasukanMarine->nominal, 0, ',', '.') }}</p>
+</div>
 
                 <div class="col-md-12">
                     <label class="fw-bold">Keterangan</label>

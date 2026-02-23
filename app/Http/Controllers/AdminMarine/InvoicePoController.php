@@ -198,8 +198,8 @@ class InvoicePoController extends Controller
 
             DB::commit();
 
-            return redirect()
-                ->route('invoice-po.index')
+                return redirect()
+                ->route('po-masuk.show', $invoice->po_masuk_id)
                 ->with('success','Invoice berhasil dihapus');
 
         } catch (\Exception $e) {

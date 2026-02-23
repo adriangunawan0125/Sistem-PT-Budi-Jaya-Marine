@@ -158,7 +158,7 @@
 </td>
 
 <td class="text-center">
-<span class="badge text-light
+<span class="badge text-light px-3 py-2
 @if($po->status == 'draft') bg-secondary
 @elseif($po->status == 'approved') bg-primary
 @elseif($po->status == 'processing') bg-warning text-light

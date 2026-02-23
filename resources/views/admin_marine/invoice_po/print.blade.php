@@ -208,10 +208,12 @@ Date: {{ $invoiceDate->format('d F Y') }}
 @foreach($invoice->items as $index => $item)
 <tr>
     <td class="center">{{ $index+1 }}</td>
-    <td>
-        {{ $item->description }}
-    </td>
-    <td class="center">{{ $item->qty }}</td>
+    <td style="vertical-align:top;">
+    {!! nl2br(e(trim($item->description))) !!}
+</td>
+  <td class="center">
+    {{ rtrim(rtrim(number_format($item->qty,2,'.',''),'0'),'.') }}
+</td>
     <td class="center">{{ $item->unit }}</td>
     <td class="right">
         Rp {{ number_format($item->price,0,',','.') }}
@@ -234,9 +236,9 @@ Date: {{ $invoiceDate->format('d F Y') }}
 <tr>
     <td colspan="5" class="right">
         DISCOUNT
-        @if($invoice->discount_type == 'percent')
-            ({{ $invoice->discount_value }}%)
-        @endif
+      @if($invoice->discount_type == 'percent')
+    ({{ rtrim(rtrim(number_format($invoice->discount_value,2,'.',''),'0'),'.') }}%)
+@endif
     </td>
     <td class="right">
         - Rp {{ number_format($invoice->discount_amount,0,',','.') }}

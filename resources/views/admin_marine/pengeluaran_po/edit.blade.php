@@ -45,23 +45,27 @@
                     <div class="col-md-6">
                         <label class="form-label small">Qty</label>
                         <input type="number"
-                               step="0.01"
-                               name="qty"
-                               value="{{ old('qty', $pengeluaranPo->qty) }}"
-                               class="form-control form-control-sm text-center"
-                               required>
+       step="0.01"
+       name="qty"
+       value="{{ old('qty') ?? rtrim(rtrim(number_format($pengeluaranPo->qty,2,'.',''),'0'),'.') }}"
+       class="form-control form-control-sm text-center"
+       required>
                     </div>
 
-                    {{-- HARGA --}}
-                    <div class="col-md-6">
-                        <label class="form-label small">Harga</label>
-                        <input type="number"
-                               step="0.01"
-                               name="price"
-                               value="{{ old('price', $pengeluaranPo->price) }}"
-                               class="form-control form-control-sm text-end"
-                               required>
-                    </div>
+                   <div class="col-md-6">
+    <label class="form-label small">Harga</label>
+
+    <input type="text"
+           class="form-control form-control-sm text-end rupiah"
+           data-hidden="price_hidden"
+           value="Rp {{ number_format(old('price', $pengeluaranPo->price),0,',','.') }}"
+           required>
+
+    <input type="hidden"
+           name="price"
+           id="price_hidden"
+           value="{{ old('price', $pengeluaranPo->price) }}">
+</div>
 
                     {{-- GAMBAR LAMA --}}
                     @if($pengeluaranPo->bukti_gambar)
@@ -176,5 +180,38 @@ document.addEventListener("DOMContentLoaded", function(){
     });
 
 });
+</script>
+
+<script>
+
+function formatRupiah(angka){
+    let number_string = angka.replace(/\D/g,''),
+        sisa = number_string.length % 3,
+        rupiah = number_string.substr(0, sisa),
+        ribuan = number_string.substr(sisa).match(/\d{3}/g);
+
+    if(ribuan){
+        let separator = sisa ? '.' : '';
+        rupiah += separator + ribuan.join('.');
+    }
+
+    return rupiah ? 'Rp ' + rupiah : '';
+}
+
+document.querySelectorAll('.rupiah').forEach(el => {
+
+    el.addEventListener('input', function(){
+
+        let raw = this.value.replace(/\D/g,'');
+        raw = raw.replace(/^0+/,'');
+
+        this.value = raw ? formatRupiah(raw) : '';
+
+        let hiddenId = this.dataset.hidden;
+        document.getElementById(hiddenId).value = raw || 0;
+    });
+
+});
+
 </script>
 @endsection

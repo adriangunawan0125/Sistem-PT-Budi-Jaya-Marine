@@ -1,3 +1,4 @@
+<!-- Topbar Full Fixed -->
 <nav class="navbar navbar-expand navbar-light bg-white topbar shadow"
      style="position: fixed; top:0; left:224px; right:0; z-index:1030;">
 
@@ -15,7 +16,7 @@
                    placeholder="Search..."
                    aria-label="Search">
             <div class="input-group-append">
-                <button class="btn btn-primary" type="button">
+                <button class="btn btn-primary" style="margin-left:5px" type="button">
                     <i class="fas fa-search fa-sm"></i>
                 </button>
             </div>
@@ -41,7 +42,6 @@
                 @endif
             </a>
 
-            <!-- DROPDOWN FIXED -->
             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                  aria-labelledby="alertsDropdown"
                  style="width:360px; max-height:320px; overflow-y:auto; position:absolute; top:calc(100% + 5px); right:0; z-index:1055;">
@@ -51,11 +51,7 @@
                 @forelse($adminNotifs as $notif)
                     <a class="dropdown-item d-flex align-items-start text-truncate"
                        title="{{ $notif->message }}"
-                       href="{{ $notif->type === 'unit'
-                            ? url('/admin-transport/unit/edit/'.$notif->data_id)
-                            : ($notif->type === 'contact'
-                                ? route('contact.show', $notif->data_id)
-                                : route('calonmitra.show', $notif->data_id)) }}">
+                       href="#">
 
                         <div class="mr-3">
                             <div class="icon-circle {{ $notif->type === 'unit' ? 'bg-danger' : 'bg-warning' }}">
@@ -89,18 +85,59 @@
             </span>
         </li>
 
-        <!-- LOGOUT -->
+        <!-- LOGOUT BUTTON (Sama seperti Transport) -->
         <li class="nav-item">
-            <a href="#"
-               class="btn btn-danger btn-sm"
+            <a href="#" class="btn btn-danger btn-sm"
                data-toggle="modal"
                data-target="#logoutModal">
                 <i class="fas fa-sign-out-alt fa-sm fa-fw mr-1"></i>
                 Logout
             </a>
         </li>
+
     </ul>
 </nav>
 
-<!-- Biar konten nggak ketutup topbar -->
+
+<!-- Logout Modal (Sama seperti Transport) -->
+<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog"
+     aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="logoutModalLabel">Konfirmasi Logout</h5>
+                <button type="button" class="close"
+                        data-dismiss="modal"
+                        aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                Apakah kamu yakin ingin keluar dari Sistem?
+            </div>
+
+            <div class="modal-footer">
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-dismiss="modal">
+                    Batal
+                </button>
+
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit"
+                            class="btn btn-danger">
+                        Logout
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- Spacer supaya konten nggak ketutup -->
 <div style="height:70px;"></div>

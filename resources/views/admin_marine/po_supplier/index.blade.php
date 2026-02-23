@@ -148,7 +148,7 @@
                         </td>
 
                         <td>
-                            <span class="badge text-light {{ $badge }}">
+                            <span class="badge text-light px-3 py-2 {{ $badge }}">
                                 {{ ucfirst($po->status) }}
                             </span>
                         </td>

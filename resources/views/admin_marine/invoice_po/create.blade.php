@@ -98,9 +98,16 @@
 
 <div class="col-md-3">
 <label class="form-label small">Price</label>
-<input type="number" step="0.01" 
-       name="items[0][price]" 
-       class="form-control price">
+<input type="text"
+       class="form-control rupiah"
+       data-hidden="price_hidden_0"
+       placeholder="Rp 0">
+
+<input type="hidden"
+       name="items[0][price]"
+       value="0"
+       id="price_hidden_0"
+       class="price-hidden">
 </div>
 
 <div class="col-md-3">
@@ -152,7 +159,18 @@ Hapus Item
        placeholder="0">
 </div>
 
+
+
 </div>
+
+</div>
+<hr class="my-3">
+
+<div class="text-end">
+    <h5>
+        Grand Total: Rp 
+        <span id="grandTotalText">0</span>
+    </h5>
 </div>
 
 </div>
@@ -222,138 +240,188 @@ OK
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function(){
-
-const form = document.getElementById("createInvoiceForm");
-if(!form) return;
-
-const loadingModal = new bootstrap.Modal(
-    document.getElementById("loadingModal")
-);
-
-const warningModal = new bootstrap.Modal(
-    document.getElementById("warningModal")
-);
-
-form.addEventListener("submit", function(e){
-
-e.preventDefault();
-
-if(!form.checkValidity()){
-    form.reportValidity();
-    return;
-}
-
-const items = document.querySelectorAll('.item-row');
-
-if(items.length === 0){
-    warningModal.show();
-    return;
-}
-
-loadingModal.show();
-
-setTimeout(function(){
-    form.submit();
-}, 400);
-
-});
-
-});
-</script>
-
-<script>
 
 let index = 1;
 
-function addItem(){
+/* ================= FORMAT RUPIAH ================= */
+function formatRupiah(angka){
+    let number_string = angka.replace(/\D/g,''),
+        sisa = number_string.length % 3,
+        rupiah = number_string.substr(0, sisa),
+        ribuan = number_string.substr(sisa).match(/\d{3}/g);
 
-let wrapper = document.getElementById('items-wrapper');
+    if(ribuan){
+        let separator = sisa ? '.' : '';
+        rupiah += separator + ribuan.join('.');
+    }
 
-wrapper.insertAdjacentHTML('beforeend', `
-<div class="card mb-3 item-row shadow-sm">
-<div class="card-body">
-
-<div class="mb-3">
-<label class="form-label small">Description</label>
-<textarea name="items[${index}][description]" 
-          class="form-control" 
-          rows="3"
-          placeholder="Deskripsi item..."></textarea>
-</div>
-
-<div class="row align-items-end">
-<div class="col-md-2">
-<label class="form-label small">Qty</label>
-<input type="number" step="0.01" 
-       name="items[${index}][qty]" 
-       class="form-control qty">
-</div>
-
-<div class="col-md-2">
-<label class="form-label small">Unit</label>
-<input type="text" 
-       name="items[${index}][unit]" 
-       class="form-control">
-</div>
-
-<div class="col-md-3">
-<label class="form-label small">Price</label>
-<input type="number" step="0.01" 
-       name="items[${index}][price]" 
-       class="form-control price">
-</div>
-
-<div class="col-md-3">
-<label class="form-label small">Amount</label>
-<input type="text" 
-       class="form-control amount bg-light" 
-       readonly>
-</div>
-
-<div class="col-md-2 text-end">
-<button type="button" 
-        class="btn btn-danger btn-sm"
-        onclick="removeItem(this)">
-Delete
-</button>
-</div>
-</div>
-
-</div>
-</div>
-`);
-
-index++;
-attachEvents();
+    return rupiah ? 'Rp ' + rupiah : '';
 }
 
-function removeItem(btn){
-btn.closest('.item-row').remove();
+/* ================= GRAND TOTAL ================= */
+function updateGrandTotal(){
+
+    let subtotal = 0;
+
+    document.querySelectorAll('.item-row').forEach(row => {
+
+        let qty = parseFloat(row.querySelector('.qty')?.value) || 0;
+        let price = parseFloat(row.querySelector('.price-hidden')?.value) || 0;
+
+        let amountField = row.querySelector('.amount');
+
+        let amount = qty * price;
+        subtotal += amount;
+
+        if(amountField){
+            amountField.value = amount.toLocaleString('id-ID');
+        }
+    });
+
+    let discountType = document.querySelector('[name="discount_type"]').value;
+    let discountValue = parseFloat(document.querySelector('[name="discount_value"]').value) || 0;
+
+    let discountAmount = 0;
+
+    if(discountType === 'percent'){
+        discountAmount = subtotal * discountValue / 100;
+    }
+
+    if(discountType === 'nominal'){
+        discountAmount = discountValue;
+    }
+
+    let grandTotal = subtotal - discountAmount;
+    if(grandTotal < 0) grandTotal = 0;
+
+    document.getElementById('grandTotalText').innerText =
+        grandTotal.toLocaleString('id-ID');
 }
 
+/* ================= ATTACH EVENTS ================= */
 function attachEvents(){
 
-document.querySelectorAll('.item-row').forEach(row => {
+    document.querySelectorAll('.item-row').forEach(row => {
 
-let qty = row.querySelector('.qty');
-let price = row.querySelector('.price');
-let amount = row.querySelector('.amount');
+        let qty = row.querySelector('.qty');
+        let rupiahInput = row.querySelector('.rupiah');
+        let hiddenPrice = row.querySelector('.price-hidden');
 
-function calculate(){
-let q = parseFloat(qty.value) || 0;
-let p = parseFloat(price.value) || 0;
-amount.value = (q * p).toLocaleString('id-ID');
+        if(qty){
+            qty.oninput = function(){
+                updateGrandTotal();
+            };
+        }
+
+        if(rupiahInput){
+            rupiahInput.addEventListener('input', function(){
+
+                let raw = this.value.replace(/\D/g,'');
+                raw = raw.replace(/^0+/,'');
+
+                this.value = raw ? formatRupiah(raw) : '';
+                hiddenPrice.value = raw || 0;
+
+                updateGrandTotal();
+            });
+        }
+
+    });
+
+    let discountValue = document.querySelector('[name="discount_value"]');
+    let discountType = document.querySelector('[name="discount_type"]');
+
+    if(discountValue){
+        discountValue.addEventListener('input', updateGrandTotal);
+    }
+
+    if(discountType){
+        discountType.addEventListener('change', updateGrandTotal);
+    }
 }
 
-qty.oninput = calculate;
-price.oninput = calculate;
+/* ================= ADD ITEM ================= */
+function addItem(){
 
+    let wrapper = document.getElementById('items-wrapper');
+
+    wrapper.insertAdjacentHTML('beforeend', `
+    <div class="card mb-3 item-row shadow-sm">
+    <div class="card-body">
+
+    <div class="mb-3">
+    <label class="form-label small">Description</label>
+    <textarea name="items[${index}][description]" 
+              class="form-control" 
+              rows="3"></textarea>
+    </div>
+
+    <div class="row align-items-end">
+    <div class="col-md-2">
+    <label class="form-label small">Qty</label>
+    <input type="number" step="0.01" 
+           name="items[${index}][qty]" 
+           class="form-control qty">
+    </div>
+
+    <div class="col-md-2">
+    <label class="form-label small">Unit</label>
+    <input type="text" 
+           name="items[${index}][unit]" 
+           class="form-control">
+    </div>
+
+    <div class="col-md-3">
+    <label class="form-label small">Price</label>
+
+    <input type="text"
+           class="form-control rupiah"
+           data-hidden="price_hidden_${index}"
+           placeholder="Rp 0">
+
+    <input type="hidden"
+           name="items[${index}][price]"
+           value="0"
+           id="price_hidden_${index}"
+           class="price-hidden">
+    </div>
+
+    <div class="col-md-3">
+    <label class="form-label small">Amount</label>
+    <input type="text" 
+           class="form-control amount bg-light" 
+           readonly>
+    </div>
+
+    <div class="col-md-2 text-end">
+    <button type="button" 
+            class="btn btn-danger btn-sm"
+            onclick="removeItem(this)">
+    Delete
+    </button>
+    </div>
+    </div>
+
+    </div>
+    </div>
+    `);
+
+    index++;
+    attachEvents();
+    updateGrandTotal();
+}
+
+/* ================= REMOVE ================= */
+function removeItem(btn){
+    btn.closest('.item-row').remove();
+    updateGrandTotal();
+}
+
+/* ================= INIT ================= */
+document.addEventListener("DOMContentLoaded", function(){
+    attachEvents();
+    updateGrandTotal();
 });
-
-}
-
-attachEvents();
 
 </script>
 

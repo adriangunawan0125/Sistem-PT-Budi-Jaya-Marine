@@ -77,14 +77,18 @@
 <!-- Sidebar -->
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
-    <!-- Sidebar Brand -->
-    <a class="sidebar-brand d-flex align-items-center justify-content-center py-4" href="/admin-transport">
-        <div class="sidebar-brand-text">
-            <div class="brand-title">
-                ADMIN<br>TRANSPORT
-            </div>
+   {{-- BRAND --}}
+<a class="sidebar-brand d-flex align-items-center justify-content-center py-4"
+   href="/admin-transport">
+
+    <div class="text-center">
+        <div class="fw-bold text-uppercase" style="font-size:14px; letter-spacing:1px;">
+            Admin Transport
         </div>
-    </a>
+        <small class="text-light">Management System</small>
+    </div>
+
+</a>
 
     <hr class="sidebar-divider my-0">
 

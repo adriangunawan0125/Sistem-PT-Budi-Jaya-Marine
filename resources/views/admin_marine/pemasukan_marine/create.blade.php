@@ -98,18 +98,20 @@
                required>
     </div>
 
-    <div class="col-md-6">
-        <label class="form-label small">Nominal</label>
-        <div class="input-group">
-            <span class="input-group-text">Rp</span>
-            <input type="text"
-                   id="nominalInput"
-                   class="form-control"
-                   placeholder="0"
-                   required>
-        </div>
-        <input type="hidden" name="nominal" id="nominalHidden">
-    </div>
+  <div class="col-md-6">
+    <label class="form-label small">Nominal</label>
+
+    <input type="text"
+           id="nominalInput"
+           class="form-control text-end"
+           placeholder="Rp 0"
+           required>
+
+    <input type="hidden"
+           name="nominal"
+           id="nominalHidden"
+           value="0">
+</div>
 
 </div>
 
@@ -198,19 +200,32 @@ document.addEventListener("DOMContentLoaded", function(){
             selected.getAttribute('data-vessel') ?? '';
     });
 
-    // FORMAT RUPIAH
-    const nominalInput = document.getElementById('nominalInput');
-    const nominalHidden = document.getElementById('nominalHidden');
+   // FORMAT RUPIAH
+function formatRupiah(angka){
+    let number_string = angka.replace(/\D/g,''),
+        sisa = number_string.length % 3,
+        rupiah = number_string.substr(0, sisa),
+        ribuan = number_string.substr(sisa).match(/\d{3}/g);
 
-    nominalInput.addEventListener('input', function() {
-        let value = this.value.replace(/\D/g, '');
-        if(value){
-            this.value = new Intl.NumberFormat('id-ID').format(value);
-        } else {
-            this.value = '';
-        }
-        nominalHidden.value = value;
-    });
+    if(ribuan){
+        let separator = sisa ? '.' : '';
+        rupiah += separator + ribuan.join('.');
+    }
+
+    return rupiah ? 'Rp ' + rupiah : '';
+}
+
+const nominalInput = document.getElementById('nominalInput');
+const nominalHidden = document.getElementById('nominalHidden');
+
+nominalInput.addEventListener('input', function(){
+
+    let raw = this.value.replace(/\D/g,'');
+    raw = raw.replace(/^0+/,'');
+
+    this.value = raw ? formatRupiah(raw) : '';
+    nominalHidden.value = raw || 0;
+});
 
     // PREVIEW IMAGE
     document.getElementById('buktiInput').addEventListener('change', function(event) {

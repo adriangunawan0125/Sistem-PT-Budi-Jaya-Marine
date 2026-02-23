@@ -92,7 +92,7 @@
             <input type="number"
                    step="0.01"
                    name="items[{{ $i }}][qty]"
-                   value="{{ $item->qty }}"
+                  value="{{ rtrim(rtrim(number_format($item->qty,2,'.',''),'0'),'.') }}"
                    class="form-control qty">
         </div>
 
@@ -103,16 +103,21 @@
                    value="{{ $item->unit }}"
                    class="form-control">
         </div>
+<div class="col-md-3">
+    <label class="form-label small">Price</label>
 
-        <div class="col-md-3">
-            <label class="form-label small">Price</label>
-            <input type="number"
-                   step="0.01"
-                   name="items[{{ $i }}][price]"
-                   value="{{ $item->price }}"
-                   class="form-control price">
-        </div>
+    <input type="text"
+           class="form-control rupiah"
+           data-hidden="price_hidden_{{ $i }}"
+           placeholder="Rp 0"
+           value="Rp {{ number_format($item->price,0,',','.') }}">
 
+    <input type="hidden"
+           name="items[{{ $i }}][price]"
+           value="{{ $item->price }}"
+           id="price_hidden_{{ $i }}"
+           class="price-hidden">
+</div>
         <div class="col-md-3">
             <label class="form-label small">Amount</label>
             <input type="text"
@@ -169,12 +174,19 @@
         <input type="number"
                step="0.01"
                name="discount_value"
-               value="{{ $invoicePo->discount_value }}"
+              value="{{ rtrim(rtrim(number_format($invoicePo->discount_value,2,'.',''),'0'),'.') }}"
                class="form-control form-control-sm">
     </div>
 
 </div>
+<hr class="my-4">
 
+<div class="text-end">
+    <h5>
+        Grand Total: Rp 
+        <span id="grandTotalText">0</span>
+    </h5>
+</div>
 </div>
 </div>
 
@@ -194,6 +206,8 @@
 </div>
 </form>
 </div>
+
+
 {{-- UPDATE LOADING MODAL --}}
 <div class="modal fade"
      id="updateModal"
@@ -247,7 +261,108 @@ OK
 
 let index = {{ $invoicePo->items->count() }};
 
-function addItem(){
+/* ================= FORMAT RUPIAH ================= */
+function formatRupiah(angka) {
+    let number_string = angka.replace(/\D/g, ''),
+        sisa = number_string.length % 3,
+        rupiah = number_string.substr(0, sisa),
+        ribuan = number_string.substr(sisa).match(/\d{3}/g);
+
+    if (ribuan) {
+        let separator = sisa ? '.' : '';
+        rupiah += separator + ribuan.join('.');
+    }
+
+    return rupiah ? 'Rp ' + rupiah : '';
+}
+
+/* ================= GRAND TOTAL ================= */
+function updateGrandTotal() {
+
+    let subtotal = 0;
+
+    document.querySelectorAll('.item-row').forEach(row => {
+
+        let qty = parseFloat(row.querySelector('.qty')?.value) || 0;
+        let price = parseFloat(row.querySelector('.price-hidden')?.value) || 0;
+
+        let amountField = row.querySelector('.amount');
+
+        let amount = qty * price;
+        subtotal += amount;
+
+        if (amountField) {
+            amountField.value = amount.toLocaleString('id-ID');
+        }
+    });
+
+    let discountType = document.querySelector('[name="discount_type"]').value;
+    let discountValue = parseFloat(document.querySelector('[name="discount_value"]').value) || 0;
+
+    let discountAmount = 0;
+
+    if (discountType === 'percent') {
+        discountAmount = subtotal * discountValue / 100;
+    }
+
+    if (discountType === 'nominal') {
+        discountAmount = discountValue;
+    }
+
+    let grandTotal = subtotal - discountAmount;
+    if (grandTotal < 0) grandTotal = 0;
+
+    document.getElementById('grandTotalText').innerText =
+        grandTotal.toLocaleString('id-ID');
+}
+
+/* ================= ATTACH EVENTS ================= */
+function attachEvents() {
+
+    document.querySelectorAll('.item-row').forEach(row => {
+
+        let qty = row.querySelector('.qty');
+        let rupiahInput = row.querySelector('.rupiah');
+        let hiddenPrice = row.querySelector('.price-hidden');
+
+        if (qty) {
+            qty.oninput = function () {
+                updateGrandTotal();
+            };
+        }
+
+        if (rupiahInput) {
+            rupiahInput.addEventListener('input', function () {
+
+                let raw = this.value.replace(/\D/g, '');
+                raw = raw.replace(/^0+/, '');
+
+                this.value = raw ? formatRupiah(raw) : '';
+
+                if (hiddenPrice) {
+                    hiddenPrice.value = raw || 0;
+                }
+
+                updateGrandTotal();
+            });
+        }
+
+    });
+
+    let discountValue = document.querySelector('[name="discount_value"]');
+    let discountType = document.querySelector('[name="discount_type"]');
+
+    if (discountValue) {
+        discountValue.addEventListener('input', updateGrandTotal);
+    }
+
+    if (discountType) {
+        discountType.addEventListener('change', updateGrandTotal);
+    }
+}
+
+/* ================= ADD ITEM ================= */
+function addItem() {
 
     let wrapper = document.getElementById('items-wrapper');
 
@@ -259,8 +374,7 @@ function addItem(){
             <label class="form-label small">Description</label>
             <textarea name="items[${index}][description]"
                       class="form-control"
-                      rows="3"
-                      placeholder="Deskripsi item..."></textarea>
+                      rows="3"></textarea>
         </div>
 
         <div class="row g-3 align-items-end">
@@ -282,10 +396,17 @@ function addItem(){
 
             <div class="col-md-3">
                 <label class="form-label small">Price</label>
-                <input type="number"
-                       step="0.01"
+
+                <input type="text"
+                       class="form-control rupiah"
+                       data-hidden="price_hidden_${index}"
+                       placeholder="Rp 0">
+
+                <input type="hidden"
                        name="items[${index}][price]"
-                       class="form-control price">
+                       value="0"
+                       id="price_hidden_${index}"
+                       class="price-hidden">
             </div>
 
             <div class="col-md-3">
@@ -297,9 +418,9 @@ function addItem(){
 
             <div class="col-md-2 text-end">
                 <button type="button"
-                        class="btn btn-danger btn-sm px-3"
+                        class="btn btn-danger btn-sm"
                         onclick="removeItem(this)">
-                    Hapus Item
+                    Hapus
                 </button>
             </div>
 
@@ -311,76 +432,20 @@ function addItem(){
 
     index++;
     attachEvents();
+    updateGrandTotal();
 }
 
-function removeItem(btn){
+/* ================= REMOVE ITEM ================= */
+function removeItem(btn) {
     btn.closest('.item-row').remove();
+    updateGrandTotal();
 }
 
-function attachEvents(){
-
-    document.querySelectorAll('.item-row').forEach(row => {
-
-        let qty = row.querySelector('.qty');
-        let price = row.querySelector('.price');
-        let amount = row.querySelector('.amount');
-
-        function calculate(){
-            let q = parseFloat(qty.value) || 0;
-            let p = parseFloat(price.value) || 0;
-            amount.value = (q * p);
-        }
-
-        qty.oninput = calculate;
-        price.oninput = calculate;
-    });
-}
-
-attachEvents();
-
-</script>
-<script>
-document.addEventListener("DOMContentLoaded", function(){
-
-    const form = document.getElementById("updateInvoiceForm");
-    if(!form) return;
-
-    const updateModal = new bootstrap.Modal(
-        document.getElementById("updateModal")
-    );
-
-    const warningModal = new bootstrap.Modal(
-        document.getElementById("warningModal")
-    );
-
-    form.addEventListener("submit", function(e){
-
-        e.preventDefault();
-
-        // Validasi HTML biasa
-        if(!form.checkValidity()){
-            form.reportValidity();
-            return;
-        }
-
-        // Cek apakah ada item
-        const items = document.querySelectorAll('.item-row');
-
-        if(items.length === 0){
-            warningModal.show();
-            return;
-        }
-
-        // Jika aman → tampilkan modal update
-        updateModal.show();
-
-        setTimeout(function(){
-            HTMLFormElement.prototype.submit.call(form);
-        }, 400);
-
-    });
-
+/* ================= INIT ================= */
+document.addEventListener("DOMContentLoaded", function () {
+    attachEvents();
+    updateGrandTotal();
 });
-</script>
 
+</script>
 @endsection

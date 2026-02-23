@@ -236,7 +236,9 @@ class PoSupplierController extends Controller
 
             DB::commit();
 
-            return back()->with('success','PO Supplier berhasil dihapus');
+             return redirect()
+                ->route('po-masuk.show', $poSupplier->po_masuk_id)
+                ->with('success','PO Supplier berhasil dihapus');
 
         } catch (\Exception $e) {
 

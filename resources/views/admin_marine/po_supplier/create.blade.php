@@ -68,7 +68,7 @@ onclick="addItem()">
 <thead class="table-light text-center">
 <tr>
 <th width="30%">Item</th>
-<th width="15%">Price Beli</th>
+<th width="15%">Price</th>
 <th width="10%">Qty</th>
 <th width="10%">Unit</th>
 <th width="20%">Amount</th>

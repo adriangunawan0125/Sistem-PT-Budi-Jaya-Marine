@@ -174,8 +174,12 @@ id="printBtn">
 
                     @foreach($invoicePo->items as $item)
                         <tr>
-                            <td>{{ $item->description }}</td>
-                            <td class="text-center">{{ $item->qty }}</td>
+                           <td>
+    {!! nl2br(e(trim($item->description))) !!}
+</td>
+                       <td class="text-center">
+    {{ rtrim(rtrim(number_format($item->qty,2,'.',''),'0'),'.') }}
+</td>
                             <td class="text-center">{{ $item->unit }}</td>
                             <td class="text-end">
                                 Rp {{ number_format($item->price,0,',','.') }}
@@ -205,13 +209,19 @@ id="printBtn">
                     </div>
 
                     @if($invoicePo->discount_amount > 0)
-                    <div class="d-flex justify-content-between text-danger mb-2">
-                        <span>Discount</span>
-                        <span>
-                            - Rp {{ number_format($invoicePo->discount_amount,0,',','.') }}
-                        </span>
-                    </div>
-                    @endif
+<div class="d-flex justify-content-between text-danger mb-2">
+    <span>
+        Discount
+        @if($invoicePo->discount_type == 'percent')
+            ({{ rtrim(rtrim(number_format($invoicePo->discount_value,2,'.',''),'0'),'.') }}%)
+        @endif
+    </span>
+
+    <span>
+        - Rp {{ number_format($invoicePo->discount_amount,0,',','.') }}
+    </span>
+</div>
+@endif
 
                     <hr>
 

@@ -81,69 +81,119 @@
             </div>
         </div>
     </div>
+{{-- ITEM TABLE --}}
+@php 
+    $grandTotal = 0; 
+    $no = 1;
+@endphp
 
-    {{-- ITEM TABLE --}}
-    @php 
-        $grandTotal = 0; 
-        $no = 1;
-    @endphp
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-light">
+        <strong>Item Details</strong>
+    </div>
 
-    <div class="card shadow-sm mb-4">
-        <div class="card-header bg-light">
-            <strong>Item Details</strong>
-        </div>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle mb-0 item-table">
+            <thead class="table-light text-center">
+                <tr>
+                    <th width="5%">No</th>
+                    <th>Item</th>
+                    <th width="15%">Price</th>
+                    <th width="8%">Qty</th>
+                    <th width="8%">Day</th>
+                    <th width="8%">Hour</th>
+                    <th width="10%">Unit</th>
+                    <th width="18%">Total</th>
+                </tr>
+            </thead>
 
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover align-middle mb-0 item-table">
-                <thead class="table-light text-center">
-                    <tr>
-                        <th width="5%">No</th>
-                        <th>Item</th>
-                        <th width="15%">Price</th>
-                        <th width="8%">Qty</th>
-                        <th width="10%">Unit</th>
-                        <th width="18%">Total</th>
-                    </tr>
-                </thead>
+            <tbody>
+            @foreach($quotation->subItems as $sub)
 
-                <tbody>
-                @foreach($quotation->subItems as $sub)
-
-                    <tr class="sub-row">
-                        <td></td>
-                        <td colspan="5">{{ $sub->name }}</td>
-                    </tr>
-
-                    @foreach($sub->items as $item)
-                        @php $grandTotal += $item->total; @endphp
-                        <tr>
-                            <td class="text-center">{{ $no++ }}</td>
-                            <td>{{ $item->item }}</td>
-                            <td class="text-end">
-                                Rp {{ number_format($item->price,0,',','.') }}
-                            </td>
-                            <td class="text-center">{{ $item->qty }}</td>
-                            <td class="text-center">{{ $item->unit }}</td>
-                            <td class="text-end">
-                                Rp {{ number_format($item->total,0,',','.') }}
-                            </td>
-                        </tr>
-                    @endforeach
-
-                @endforeach
-
-                <tr class="total-row">
-                    <td colspan="5" class="text-end fw-semibold">
-                        TOTAL
-                    </td>
-                    <td class="text-end fw-bold">
-                        Rp {{ number_format($grandTotal,0,',','.') }}
+                <tr class="sub-row">
+                    <td></td>
+                    <td colspan="7">
+                        {{ $sub->name }}
                     </td>
                 </tr>
-                </tbody>
-            </table>
-        </div>
+
+                @foreach($sub->items as $item)
+                    @php $grandTotal += $item->total; @endphp
+
+                    <tr>
+                        <td class="text-center">{{ $no++ }}</td>
+                        <td>{{ $item->item }}</td>
+
+                        <td class="text-end">
+                            Rp {{ number_format($item->price,0,',','.') }}
+                        </td>
+
+                        <td class="text-center">{{ $item->qty }}</td>
+
+                        <td class="text-center">
+                            {{ ($sub->item_type == 'day' || $sub->item_type == 'day_hour') ? ($item->day ?? '-') : '-' }}
+                        </td>
+
+                        <td class="text-center">
+                            {{ ($sub->item_type == 'hour' || $sub->item_type == 'day_hour') ? ($item->hour ?? '-') : '-' }}
+                        </td>
+
+                        <td class="text-center">{{ $item->unit }}</td>
+
+                        <td class="text-end fw-semibold">
+                            Rp {{ number_format($item->total,0,',','.') }}
+                        </td>
+                    </tr>
+                @endforeach
+
+            @endforeach
+
+            @php
+                $discountAmount = $quotation->discount_amount ?? 0;
+                $discountType   = $quotation->discount_type;
+                $discountValue  = $quotation->discount_value ?? 0;
+                $finalTotal     = $grandTotal - $discountAmount;
+            @endphp
+
+            {{-- SUBTOTAL --}}
+            <tr class="total-row">
+                <td colspan="7" class="text-end fw-semibold">
+                    SUBTOTAL
+                </td>
+                <td class="text-end fw-bold">
+                    Rp {{ number_format($grandTotal,0,',','.') }}
+                </td>
+            </tr>
+
+            {{-- DISCOUNT --}}
+            @if($discountAmount > 0)
+            <tr class="total-row">
+                <td colspan="7" class="text-end fw-semibold">
+                    DISCOUNT 
+                    @if($discountType == 'percent')
+                        ({{ $discountValue }}%)
+                    @endif
+                </td>
+                <td class="text-end fw-bold text-danger">
+                    - Rp {{ number_format($discountAmount,0,',','.') }}
+                </td>
+            </tr>
+            @endif
+
+            {{-- GRAND TOTAL --}}
+            <tr class="total-row">
+                <td colspan="7" class="text-end fw-semibold">
+                    GRAND TOTAL
+                </td>
+                <td class="text-end fw-bold">
+                    Rp {{ number_format($finalTotal,0,',','.') }}
+                </td>
+            </tr>
+
+            </tbody>
+        </table>
     </div>
+</div>
 
     {{-- TERMS --}}
     @if($quotation->termsConditions->count())

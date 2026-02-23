@@ -135,14 +135,14 @@
             <div class="col-md-6">
                 <div class="detail-label">Mitra</div>
                 <div class="detail-value">
-                    {{ $poMasuk->mitra->nama_mitra ?? '-' }}
+                    {{ $poMasuk->mitra_marine?? '-' }}
                 </div>
             </div>
 
             <div class="col-md-6">
                 <div class="detail-label">Vessel</div>
                 <div class="detail-value">
-                    {{ $poMasuk->vessel->nama_vessel ?? '-' }}
+                    {{ $poMasuk->vessel ?? '-' }}
                 </div>
             </div>
 

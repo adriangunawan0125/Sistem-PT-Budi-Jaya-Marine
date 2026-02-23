@@ -199,7 +199,39 @@
 
             </div>
         </div>
+{{-- ================= TERMS ================= --}}
+<div class="card mb-4 shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>Terms & Conditions</strong>
+        <button type="button"
+                class="btn btn-primary btn-sm px-3"
+                onclick="addTerm()">
+            + Add Term
+        </button>
+    </div>
 
+    <div class="card-body">
+        <div id="terms-container">
+
+            @foreach($poSupplier->terms ?? [] as $tIndex => $term)
+            <div class="input-group mb-2">
+                <input type="text"
+                       name="terms[{{ $tIndex }}]"
+                       class="form-control form-control-sm"
+                       value="{{ $term->description ?? $term }}"
+                       placeholder="Masukkan term...">
+
+                <button type="button"
+                        class="btn btn-danger btn-sm"
+                        onclick="this.closest('.input-group').remove()">
+                    X
+                </button>
+            </div>
+            @endforeach
+
+        </div>
+    </div>
+</div>
 
         {{-- ================= TOTAL ================= --}}
         <div class="card mb-4 shadow-sm">
@@ -390,6 +422,33 @@ document.addEventListener("DOMContentLoaded", function(){
     });
 
 });
+
+/* ================= TERMS ================= */
+
+let termIndex = {{ isset($poSupplier->terms) ? $poSupplier->terms->count() : 0 }};
+
+function addTerm(){
+
+    let container = document.getElementById('terms-container');
+
+    let html = `
+    <div class="input-group mb-2">
+        <input type="text"
+               name="terms[${termIndex}]"
+               class="form-control form-control-sm"
+               placeholder="Masukkan term...">
+
+        <button type="button"
+                class="btn btn-danger btn-sm"
+                onclick="this.closest('.input-group').remove()">
+            X
+        </button>
+    </div>
+    `;
+
+    container.insertAdjacentHTML('beforeend', html);
+    termIndex++;
+}
 </script>
 
 @endsection

@@ -134,7 +134,7 @@
                         <td>{{ $item->poMasuk->vessel ?? '-' }}</td>
                         <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}</td>
                         <td>{{ $item->nama_pengirim }}</td>
-                        <td>{{ number_format($item->nominal, 2, ',', '.') }}</td>
+                       <td>Rp {{ number_format($item->nominal, 0, ',', '.') }}</td>
                         <td>
                             @if($item->bukti)
                                 <a href="{{ asset('storage/'.$item->bukti) }}"

@@ -123,7 +123,7 @@
 </td>
 
 <td class="text-center">
-    <span class="badge text-light
+    <span class="badge text-light px-3 py-2
         @if($do->status == 'draft') bg-secondary
         @elseif($do->status == 'approved') bg-primary
         @elseif($do->status == 'delivered') bg-success

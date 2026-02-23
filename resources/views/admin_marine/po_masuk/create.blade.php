@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
 
-<h4 class="mb-4">Create PO Masuk (Client PO)</h4>
+<h4 class="mb-4">Tambah PO Masuk (Client PO)</h4>
 
 @if ($errors->any())
 <div class="alert alert-danger py-2">
@@ -21,7 +21,7 @@
 {{-- ================= HEADER ================= --}}
 <div class="card mb-4 shadow-sm">
 <div class="card-header bg-light">
-<strong>PO Client Information</strong>
+<strong>Informasi PO Klien</strong>
 </div>
 
 <div class="card-body">

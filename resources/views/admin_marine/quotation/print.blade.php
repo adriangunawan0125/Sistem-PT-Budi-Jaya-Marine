@@ -105,38 +105,13 @@ table{ width:100%; border-collapse:collapse; }
 
 <!-- ================= HEADER INFO ================= -->
 <table width="100%" style="margin-top:10px;">
-<tr>
-    <td width="25%">To</td>
-    <td width="3%">:</td>
-    <td>{{ $quotation->mitra_name ?? '-' }}</td>
-</tr>
-<tr>
-    <td>Attn</td>
-    <td>:</td>
-    <td>{{ $quotation->attention ?? '-' }}</td>
-</tr>
-<tr>
-    <td>Quote No</td>
-    <td>:</td>
-    <td>{{ $quotation->quote_no }}</td>
-</tr>
-<tr>
-    <td>Project</td>
-    <td>:</td>
-    <td>{{ $quotation->project ?? '-' }}</td>
-</tr>
-<tr>
-    <td>Vessel Name</td>
-    <td>:</td>
-    <td>{{ $quotation->vessel_name ?? '-' }}</td>
-</tr>
-<tr>
-    <td>Place</td>
-    <td>:</td>
-    <td>{{ $quotation->place ?? '-' }}</td>
-</tr>
+<tr><td width="25%">To</td><td width="3%">:</td><td>{{ $quotation->mitra_name ?? '-' }}</td></tr>
+<tr><td>Attn</td><td>:</td><td>{{ $quotation->attention ?? '-' }}</td></tr>
+<tr><td>Quote No</td><td>:</td><td>{{ $quotation->quote_no }}</td></tr>
+<tr><td>Project</td><td>:</td><td>{{ $quotation->project ?? '-' }}</td></tr>
+<tr><td>Vessel Name</td><td>:</td><td>{{ $quotation->vessel_name ?? '-' }}</td></tr>
+<tr><td>Place</td><td>:</td><td>{{ $quotation->place ?? '-' }}</td></tr>
 </table>
-
 
 <br>
 
@@ -145,31 +120,52 @@ In compliance with your inquiry, we are pleased to offer you this quotation as f
 
 <br><br>
 
+@php
+    $globalType = $quotation->subItems->first()->item_type ?? 'basic';
+@endphp
+
 <!-- ================= ITEM TABLE ================= -->
 <table class="item-table">
 <thead>
 <tr>
     <th width="5%">No</th>
     <th>Item</th>
-    <th width="15%">Price</th>
-    <th width="8%">Qty</th>
-    <th width="10%">Unit</th>
-    <th width="18%">Total</th>
+    <th width="14%">Price</th>
+    <th width="6%">Qty</th>
+
+    @if($globalType == 'day' || $globalType == 'day_hour')
+        <th width="6%">Day</th>
+    @endif
+
+    @if($globalType == 'hour' || $globalType == 'day_hour')
+        <th width="6%">Hour</th>
+    @endif
+
+    <th width="8%">Unit</th>
+    <th width="15%">Total</th>
 </tr>
 </thead>
+
 <tbody>
 
-@php 
-    $no = 1; 
-@endphp
+@php $no = 1; @endphp
 
 @foreach($quotation->subItems as $sub)
 
 <tr class="sub-row">
     <td></td>
-    <td class="bold">{{ $sub->name }}</td>
+    <td>{{ $sub->name }} ({{ strtoupper($sub->item_type) }})</td>
     <td></td>
     <td></td>
+
+    @if($globalType == 'day' || $globalType == 'day_hour')
+        <td></td>
+    @endif
+
+    @if($globalType == 'hour' || $globalType == 'day_hour')
+        <td></td>
+    @endif
+
     <td></td>
     <td></td>
 </tr>
@@ -188,7 +184,22 @@ In compliance with your inquiry, we are pleased to offer you this quotation as f
         </table>
     </td>
 
-    <td class="center">{{ $item->qty }}</td>
+    <td class="center">
+        {{ rtrim(rtrim(number_format($item->qty,2,'.',''),'0'),'.') }}
+    </td>
+
+    @if($globalType == 'day' || $globalType == 'day_hour')
+    <td class="center">
+        {{ rtrim(rtrim(number_format($item->day,2,'.',''),'0'),'.') }}
+    </td>
+    @endif
+
+    @if($globalType == 'hour' || $globalType == 'day_hour')
+    <td class="center">
+        {{ rtrim(rtrim(number_format($item->hour,2,'.',''),'0'),'.') }}
+    </td>
+    @endif
+
     <td class="center">{{ $item->unit }}</td>
 
     <td>
@@ -205,14 +216,20 @@ In compliance with your inquiry, we are pleased to offer you this quotation as f
 @endforeach
 
 @php
-    $subtotal = $subtotal ?? $grandTotal; // kalau dikirim dari controller
+    $subtotal = $subtotal ?? 0;
     $discountAmount = $discount ?? ($quotation->discount_amount ?? 0);
     $finalTotal = $subtotal - $discountAmount;
+
+    // hitung colspan otomatis
+    $colspan = 4; // No, Item, Price, Qty
+    if($globalType == 'day') $colspan += 1;
+    if($globalType == 'hour') $colspan += 1;
+    if($globalType == 'day_hour') $colspan += 2;
+    $colspan += 1; // Unit
 @endphp
 
-{{-- SUBTOTAL --}}
 <tr class="total-row">
-    <td colspan="5" class="right">SUBTOTAL</td>
+    <td colspan="{{ $colspan }}" class="right">SUBTOTAL</td>
     <td>
         <table class="money">
         <tr>
@@ -223,24 +240,22 @@ In compliance with your inquiry, we are pleased to offer you this quotation as f
     </td>
 </tr>
 
-{{-- DISCOUNT (MUNCUL HANYA JIKA ADA) --}}
 @if($discountAmount > 0)
 <tr class="total-row">
-    <td colspan="5" class="right">DISCOUNT</td>
+    <td colspan="{{ $colspan }}" class="right">DISCOUNT</td>
     <td>
         <table class="money">
         <tr>
             <td class="rp">Rp</td>
-            <td class="val"> {{ number_format($discountAmount,0,',','.') }}</td>
+            <td class="val">{{ number_format($discountAmount,0,',','.') }}</td>
         </tr>
         </table>
     </td>
 </tr>
 @endif
 
-{{-- GRAND TOTAL --}}
 <tr class="total-row">
-    <td colspan="5" class="right bold">GRAND TOTAL</td>
+    <td colspan="{{ $colspan }}" class="right bold">GRAND TOTAL</td>
     <td>
         <table class="money">
         <tr>
@@ -258,7 +273,6 @@ In compliance with your inquiry, we are pleased to offer you this quotation as f
 <div class="terms">
 <br>
 <b>Terms and conditions as follows:</b><br><br>
-
 @foreach($quotation->termsConditions as $term)
 {{ $loop->iteration }}. {{ $term->description }}<br>
 @endforeach

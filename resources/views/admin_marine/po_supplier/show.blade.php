@@ -197,7 +197,7 @@
 
 
 {{-- ================= TERMS ================= --}}
-@if($poSupplier->terms && $poSupplier->terms->count())
+@if($poSupplier->terms()->count() > 0)
 <div class="card mb-4 shadow-sm">
     <div class="card-header bg-light fw-bold">
         Terms & Conditions

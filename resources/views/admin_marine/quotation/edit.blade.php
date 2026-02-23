@@ -290,6 +290,37 @@ Grand Total: Rp
 </div>
 
 </div>
+
+{{-- ================= TERMS ================= --}}
+<div class="card mt-4">
+<div class="card-header d-flex justify-content-between">
+<strong>Terms & Conditions</strong>
+<button type="button"
+        class="btn btn-sm btn-primary"
+        onclick="addTerm()">+ Add Term</button>
+</div>
+
+<div class="card-body">
+<div id="terms-container">
+
+    @foreach($quotation->termsConditions as $term)
+        <div class="input-group mb-2 term-row">
+            <input type="text"
+                   name="terms[]"
+                   class="form-control"
+                   value="{{ $term->description }}">
+            <button type="button"
+                    class="btn btn-danger"
+                    onclick="this.parentElement.remove()">
+                X
+            </button>
+        </div>
+    @endforeach
+
+</div>
+</div>
+</div>
+
 <button type="submit"
     class="btn btn-primary mb-3 float-end">
     Save All
@@ -427,6 +458,7 @@ function addSubItem(){
     subIndex++;
     applyTypeToAll();
 }
+
 
 /* ================= ADD ITEM ================= */
 function addItemRow(btn){
@@ -602,8 +634,28 @@ document.addEventListener("DOMContentLoaded", function(){
     });
 
 });
+
+/* ================= TERMS ================= */
+function addTerm(){
+
+    let container = document.getElementById('terms-container');
+
+    let html = `
+        <div class="input-group mb-2 term-row">
+            <input type="text"
+                   name="terms[]"
+                   class="form-control"
+                   placeholder="Enter term & condition">
+            <button type="button"
+                    class="btn btn-danger"
+                    onclick="this.parentElement.remove()">
+                X
+            </button>
+        </div>
+    `;
+
+    container.insertAdjacentHTML('beforeend', html);
+}
 </script>
-
-
 
 @endsection
