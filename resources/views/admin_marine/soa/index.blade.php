@@ -50,7 +50,7 @@
 <div class="card shadow-sm mb-4">
 <div class="card-body py-3 small">
 
-<form method="GET" action="{{ route('soa.index') }}">
+<form method="GET" action="{{ route('soa.index') }}" id="filterForm">
 
 <div class="row g-3 align-items-end">
 
@@ -181,7 +181,7 @@ $totalInvoice = $soa->items->sum(function($item){
 <div class="aksi-wrapper">
 
     <a href="{{ route('soa.show', $soa->id) }}"
-       class="btn btn-info btn-sm">
+       class="btn btn-info btn-sm btnDetail">
         Detail
     </a>
 
@@ -190,15 +190,17 @@ $totalInvoice = $soa->items->sum(function($item){
         Edit
     </a>
 
-    <form action="{{ route('soa.destroy', $soa->id) }}"
-          method="POST"
-          onsubmit="return confirm('Yakin ingin menghapus SOA ini?')">
-        @csrf
-        @method('DELETE')
-        <button class="btn btn-danger btn-sm">
-            Hapus
-        </button>
-    </form>
+  <form action="{{ route('soa.destroy', $soa->id) }}"
+      method="POST"
+      class="deleteForm">
+    @csrf
+    @method('DELETE')
+    <button type="button"
+            class="btn btn-danger btn-sm btnDelete"
+            data-id="{{ $soa->id }}">
+        Hapus
+    </button>
+</form>
 
 </div>
 </td>
@@ -228,4 +230,135 @@ Belum ada data SOA
 </div>
 
 </div>
+{{-- LOADING MODAL --}}
+<div class="modal fade"
+     id="loadingModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1">
+
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+<div class="modal-body text-center py-4">
+
+<div class="spinner-border text-primary mb-3"
+     style="width:3rem;height:3rem;"></div>
+
+<div class="fw-semibold">
+Memuat Data ...
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+{{-- DELETE MODAL --}}
+<div class="modal fade"
+     id="deleteModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1">
+
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+
+<div class="modal-body text-center py-4">
+
+<i class="bi bi-exclamation-triangle-fill text-danger"
+   style="font-size:60px;"></i>
+
+<h5 class="fw-bold mt-3">Konfirmasi Hapus</h5>
+
+<div class="text-muted mb-4">
+Yakin ingin menghapus SOA ini?
+</div>
+
+<div class="d-flex justify-content-center gap-2">
+
+    <button type="button"
+            class="btn btn-secondary px-4"
+            data-bs-dismiss="modal" style="margin-right: 4px">
+        Batal
+    </button>
+
+    <button type="button"
+            class="btn btn-danger px-4"
+            id="confirmDeleteBtn">
+        Hapus
+    </button>
+
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    const loadingModal = new bootstrap.Modal(
+        document.getElementById("loadingModal")
+    );
+
+    // ================= DETAIL BUTTON =================
+    document.querySelectorAll(".btnDetail").forEach(btn => {
+
+        btn.addEventListener("click", function(e){
+
+            e.preventDefault();
+
+            const url = this.getAttribute("href");
+
+            loadingModal.show();
+
+            setTimeout(function(){
+                window.location.href = url;
+            }, 250);
+
+        });
+
+    });
+
+    // ================= FILTER SUBMIT =================
+    const filterForm = document.getElementById("filterForm");
+
+    if(filterForm){
+        filterForm.addEventListener("submit", function(){
+
+            loadingModal.show();
+
+        });
+    }
+
+    // ================= DELETE MODAL =================
+let deleteForm;
+
+const deleteModal = new bootstrap.Modal(
+    document.getElementById("deleteModal")
+);
+
+document.querySelectorAll(".btnDelete").forEach(btn => {
+
+    btn.addEventListener("click", function(){
+
+        deleteForm = this.closest("form");
+
+        deleteModal.show();
+
+    });
+
+});
+
+document.getElementById("confirmDeleteBtn")
+.addEventListener("click", function(){
+
+    if(deleteForm){
+        deleteForm.submit();
+    }
+
+});
+});
+</script>
 @endsection

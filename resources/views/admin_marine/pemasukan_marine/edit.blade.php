@@ -1,5 +1,4 @@
 @extends('layouts.app')
-
 @section('content')
 <div class="container">
 
@@ -10,7 +9,8 @@
 
         <div class="card-body">
 
-            <form action="{{ route('pemasukan-marine.update', $pemasukanMarine->id) }}"
+            <form id="updateForm"
+                  action="{{ route('pemasukan-marine.update', $pemasukanMarine->id) }}"
                   method="POST"
                   enctype="multipart/form-data">
 
@@ -116,7 +116,6 @@
                                class="form-control form-control-sm"
                                accept="image/*">
 
-                        {{-- Existing Image --}}
                         @if($pemasukanMarine->bukti)
                             <div class="mt-3">
                                 <img src="{{ asset('storage/'.$pemasukanMarine->bukti) }}"
@@ -134,7 +133,9 @@
                 </div>
 
                 <div class="mt-4 d-flex gap-2">
-                    <button class="btn btn-primary btn-sm px-4">
+                    <button type="submit"
+                            class="btn btn-primary btn-sm px-4"
+                            style="margin-right: 4px">
                         Update
                     </button>
 
@@ -179,6 +180,52 @@ document.getElementById('buktiInput').addEventListener('change', function(event)
         preview.src = '#';
         preview.classList.add('d-none');
     }
+});
+</script>
+
+{{-- ================= UPDATE LOADING MODAL ================= --}}
+<div class="modal fade"
+     id="updateModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1">
+
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+<div class="modal-body text-center py-4">
+
+<div class="spinner-border text-primary mb-3"
+     style="width:3rem;height:3rem;"></div>
+
+<div class="fw-semibold">
+Memperbarui Data...
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    const form = document.getElementById("updateForm");
+
+    if(form){
+        form.addEventListener("submit", function(){
+
+            if(!form.checkValidity()){
+                return;
+            }
+
+            const updateModal = new bootstrap.Modal(
+                document.getElementById("updateModal")
+            );
+
+            updateModal.show();
+        });
+    }
+
 });
 </script>
 

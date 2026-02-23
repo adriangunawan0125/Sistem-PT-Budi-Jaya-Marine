@@ -48,7 +48,7 @@
 <div class="card shadow-sm mb-4">
 <div class="card-body py-3 small">
 
-<form method="GET" action="{{ route('working-report.index') }}">
+<form method="GET" action="{{ route('working-report.index') }}"  id="filterForm">
 
 <div class="row g-3 align-items-end">
 
@@ -163,7 +163,7 @@
 <div class="aksi-wrapper">
 
     <a href="{{ route('working-report.show',$report->id) }}"
-       class="btn btn-info btn-sm">
+       class="btn btn-info btn-sm btnDetail">
         Detail
     </a>
 
@@ -195,5 +195,44 @@ Belum ada Working Report
 </div>
 
 </div>
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    const loadingModal = new bootstrap.Modal(
+        document.getElementById("loadingModal")
+    );
+
+    // ================= DETAIL BUTTON =================
+    document.querySelectorAll(".btnDetail").forEach(btn => {
+
+        btn.addEventListener("click", function(e){
+
+            e.preventDefault();
+
+            const url = this.getAttribute("href");
+
+            loadingModal.show();
+
+            setTimeout(function(){
+                window.location.href = url;
+            }, 250);
+
+        });
+
+    });
+
+    // ================= FILTER SUBMIT =================
+    const filterForm = document.getElementById("filterForm");
+
+    if(filterForm){
+        filterForm.addEventListener("submit", function(){
+
+            loadingModal.show();
+
+        });
+    }
+
+});
+</script>
 
 @endsection

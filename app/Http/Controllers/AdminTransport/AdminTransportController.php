@@ -56,6 +56,26 @@ class AdminTransportController extends Controller
             ->whereYear('tanggal', $tahun)
             ->sum('nominal');
 
+            // ============================
+// DATA PEMASUKAN HARIAN (PER TANGGAL DALAM BULAN)
+// ============================
+
+$jumlahHari = Carbon::create($tahun, $bulan)->daysInMonth;
+
+$labelsHarian = [];
+$pemasukanHarianChart = [];
+
+for ($i = 1; $i <= $jumlahHari; $i++) {
+
+    $tanggal = Carbon::create($tahun, $bulan, $i);
+
+    $labelsHarian[] = $i; // tampilkan angka tanggal saja
+
+    $totalHarian = Pemasukan::whereDate('tanggal', $tanggal)
+        ->sum('nominal');
+
+    $pemasukanHarianChart[] = $totalHarian;
+}
 
         /* ======================================================
            DATA CHART TAHUNAN (12 BULAN KE BELAKANG DALAM TAHUN)
@@ -107,7 +127,8 @@ class AdminTransportController extends Controller
             'totalPengeluaranBulanan',
             'totalPemasukanHarian',
             'totalPemasukanBulanan',
-
+'labelsHarian',
+'pemasukanHarianChart',
             // DATA CHART
             'labels',
             'pemasukanTahunan',

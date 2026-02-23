@@ -82,26 +82,16 @@ class TimesheetController extends Controller
 
             foreach ($request->items as $item) {
 
-                if (empty($item['work_date']) || empty($item['time_start']) || empty($item['time_end'])) {
+                if (empty($item['work_date']) || empty($item['hours'])) {
                     continue;
                 }
-
-                $start = Carbon::parse($item['work_date'].' '.$item['time_start']);
-                $end   = Carbon::parse($item['work_date'].' '.$item['time_end']);
-
-                // handle lewat tengah malam
-                if ($end->lt($start)) {
-                    $end->addDay();
-                }
-
-                $hours = $start->diffInMinutes($end) / 60;
 
                 $timesheet->items()->create([
                     'work_date'    => $item['work_date'],
                     'day'          => Carbon::parse($item['work_date'])->format('l'),
-                    'time_start'   => $item['time_start'],
-                    'time_end'     => $item['time_end'],
-                    'hours'        => round($hours, 2),
+                    'time_start'   => $item['time_start'] ?? null,
+                    'time_end'     => $item['time_end'] ?? null,
+                    'hours'        => round($item['hours'], 2), // MANUAL
                     'manpower'     => $item['manpower'] ?? null,
                     'kind_of_work' => $item['kind_of_work'],
                 ]);
@@ -163,26 +153,16 @@ class TimesheetController extends Controller
 
             foreach ($request->items as $item) {
 
-                if (empty($item['work_date']) || empty($item['time_start']) || empty($item['time_end'])) {
+                if (empty($item['work_date']) || empty($item['hours'])) {
                     continue;
                 }
-
-                $start = Carbon::parse($item['work_date'].' '.$item['time_start']);
-                $end   = Carbon::parse($item['work_date'].' '.$item['time_end']);
-
-                // handle lewat tengah malam
-                if ($end->lt($start)) {
-                    $end->addDay();
-                }
-
-                $hours = $start->diffInMinutes($end) / 60;
 
                 $timesheet->items()->create([
                     'work_date'    => $item['work_date'],
                     'day'          => Carbon::parse($item['work_date'])->format('l'),
-                    'time_start'   => $item['time_start'],
-                    'time_end'     => $item['time_end'],
-                    'hours'        => round($hours, 2),
+                    'time_start'   => $item['time_start'] ?? null,
+                    'time_end'     => $item['time_end'] ?? null,
+                    'hours'        => round($item['hours'], 2), // MANUAL
                     'manpower'     => $item['manpower'] ?? null,
                     'kind_of_work' => $item['kind_of_work'],
                 ]);
@@ -203,7 +183,6 @@ class TimesheetController extends Controller
         return back()->with('error', $e->getMessage());
     }
 }
-
     /* ================= DESTROY ================= */
     public function destroy(Timesheet $timesheet)
     {

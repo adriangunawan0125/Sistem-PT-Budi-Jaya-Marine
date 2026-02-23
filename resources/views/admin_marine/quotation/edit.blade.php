@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<form action="{{ route('quotations.update',$quotation->id) }}" method="POST">
+<form action="{{ route('quotations.update',$quotation->id) }}" method="POST" id="editForm">
 @csrf
 @method('PUT')
 
@@ -299,6 +299,38 @@ Grand Total: Rp
 </div>
     </form>
 
+    <!-- SAVING MODAL -->
+<div class="modal fade"
+     id="savingModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1">
+
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-body text-center py-4">
+
+                <div class="spinner-border text-primary mb-3"
+                     style="width:3rem;height:3rem;"></div>
+
+                <div class="fw-semibold">
+                    Menyimpan perubahan data...
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+#savingModal .modal-content{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    height:130px;
+}
+</style>
 
 <script>
 
@@ -535,7 +567,43 @@ function recalculateAll(){
 applyTypeToAll();
 recalculateAll();
 
+document.addEventListener("DOMContentLoaded", function(){
+
+    const form = document.getElementById("editForm");
+    if(!form) return;
+
+    const savingModal = new bootstrap.Modal(
+        document.getElementById("savingModal")
+    );
+
+    form.addEventListener("submit", function(e){
+
+        e.preventDefault();
+
+        // Validasi bawaan HTML
+        if(!form.checkValidity()){
+            form.reportValidity();
+            return;
+        }
+
+        // Cek minimal 1 item
+        const totals = document.querySelectorAll('.total');
+        if(totals.length === 0){
+            alert("Tambahkan minimal 1 item terlebih dahulu.");
+            return;
+        }
+
+        savingModal.show();
+
+        setTimeout(function(){
+            HTMLFormElement.prototype.submit.call(form);
+        }, 250);
+
+    });
+
+});
 </script>
+
 
 
 @endsection

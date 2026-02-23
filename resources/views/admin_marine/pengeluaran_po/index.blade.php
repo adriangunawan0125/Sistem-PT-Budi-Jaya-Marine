@@ -44,7 +44,7 @@
 <div class="card shadow-sm mb-4">
 <div class="card-body py-3 small">
 
-<form method="GET" action="{{ route('pengeluaran-po.index') }}">
+<form method="GET" action="{{ route('pengeluaran-po.index') }} " id="filterForm">
 
 <div class="row g-3 align-items-end">
 
@@ -134,7 +134,7 @@
 <div class="aksi-wrapper">
 
     <a href="{{ route('po-masuk.show',$po->id) }}"
-       class="btn btn-info btn-sm">
+       class="btn btn-info btn-sm btnDetail">
         Detail
     </a>
 
@@ -166,5 +166,64 @@ Belum ada data pengeluaran
 </div>
 
 </div>
+{{-- LOADING MODAL --}}
+<div class="modal fade"
+     id="loadingModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1">
+
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+<div class="modal-body text-center py-4">
+
+<div class="spinner-border text-primary mb-3"
+     style="width:3rem;height:3rem;"></div>
+
+<div class="fw-semibold">
+Memuat Data Pengeluaran...
+</div>
+
+</div>
+</div>
+</div>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    const loadingModal = new bootstrap.Modal(
+        document.getElementById("loadingModal")
+    );
+
+    // Loading saat Filter
+    const filterForm = document.getElementById("filterForm");
+
+    if(filterForm){
+        filterForm.addEventListener("submit", function(){
+            loadingModal.show();
+        });
+    }
+
+    // Loading saat klik Detail
+    document.querySelectorAll(".btnDetail").forEach(btn => {
+
+        btn.addEventListener("click", function(e){
+
+            e.preventDefault();
+
+            const url = this.getAttribute("href");
+
+            loadingModal.show();
+
+            setTimeout(function(){
+                window.location.href = url;
+            }, 250);
+
+        });
+
+    });
+
+});
+</script>
 
 @endsection

@@ -14,15 +14,13 @@
                 Edit
             </a>
 
-            <form action="{{ route('pengeluaran-po.destroy',$pengeluaranPo->id) }}"
-                  method="POST"
-                  onsubmit="return confirm('Hapus pengeluaran ini?')">
-                @csrf
-                @method('DELETE')
-                <button class="btn btn-danger btn-sm px-3" style="margin-left: 4px">
-                    Hapus
-                </button>
-            </form>
+           <button type="button"
+        class="btn btn-danger btn-sm px-3"
+        data-bs-toggle="modal"
+        data-bs-target="#deleteModal"
+        style="margin-left: 4px">
+    Hapus
+</button>
 
             <a href="{{ route('po-masuk.show',$pengeluaranPo->po_masuk_id) }}"
                class="btn btn-secondary btn-sm px-3" style="margin-left: 4px">
@@ -111,4 +109,88 @@
     </div>
 
 </div>
+{{-- DELETE MODAL --}}
+<div class="modal fade" id="deleteModal" tabindex="-1">
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+<div class="modal-body text-center py-4">
+
+<i class="bi bi-exclamation-triangle-fill text-danger"
+   style="font-size:60px;"></i>
+
+<h5 class="fw-bold mt-3">Hapus Pengeluaran?</h5>
+
+<p class="text-muted">
+Data pengeluaran ini akan dihapus permanen.
+</p>
+
+<form action="{{ route('pengeluaran-po.destroy',$pengeluaranPo->id) }}"
+      method="POST">
+@csrf
+@method('DELETE')
+
+<div class="d-flex justify-content-center gap-2 mt-3">
+<button type="button"
+        class="btn btn-secondary"
+        data-bs-dismiss="modal" style="margin-right: 4px">
+Batal
+</button>
+
+<button type="submit"
+        class="btn btn-danger">
+Hapus
+</button>
+</div>
+
+</form>
+
+</div>
+</div>
+</div>
+</div>
+@if(session('success'))
+<div class="modal fade"
+     id="successModal"
+     tabindex="-1">
+
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+
+<div class="modal-body text-center py-4">
+
+<i class="bi bi-check-circle-fill text-success"
+   style="font-size:60px;"></i>
+
+<h5 class="fw-bold mt-3">Berhasil</h5>
+
+<div class="text-muted mb-4">
+    {{ session('success') }}
+</div>
+
+<button type="button"
+        class="btn btn-success px-4"
+        data-bs-dismiss="modal">
+    OK
+</button>
+
+</div>
+</div>
+</div>
+</div>
+@endif
+
+@if(session('success'))
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    const successModal = new bootstrap.Modal(
+        document.getElementById("successModal")
+    );
+
+    successModal.show();
+
+});
+</script>
+@endif
+
 @endsection

@@ -5,7 +5,7 @@
 
 <h4 class="mb-4">Buat Timesheet</h4>
 
-<form action="{{ route('timesheet.store') }}" method="POST">
+<form action="{{ route('timesheet.store') }}" method="POST" id="createTimesheetForm">
 @csrf
 
 <input type="hidden" name="po_masuk_id" value="{{ $poMasuk->id }}">
@@ -64,29 +64,44 @@
     <div class="row g-3 mb-2">
         <div class="col-md-3">
             <label class="form-label small">Date</label>
-            <input type="date" name="items[0][work_date]" class="form-control form-control-sm" required>
+            <input type="date"
+                   name="items[0][work_date]"
+                   class="form-control form-control-sm"
+                   required>
         </div>
 
         <div class="col-md-3">
             <label class="form-label small">Start Time</label>
-            <input type="time" name="items[0][time_start]" class="form-control form-control-sm time-start" required>
+            <input type="time"
+                   name="items[0][time_start]"
+                   class="form-control form-control-sm">
         </div>
 
         <div class="col-md-3">
             <label class="form-label small">End Time</label>
-            <input type="time" name="items[0][time_end]" class="form-control form-control-sm time-end" required>
+            <input type="time"
+                   name="items[0][time_end]"
+                   class="form-control form-control-sm">
         </div>
 
         <div class="col-md-3">
             <label class="form-label small">Hours</label>
-            <input type="text" class="form-control form-control-sm hours bg-white" readonly>
+            <input type="number"
+                   step="0.01"
+                   min="0"
+                   max="24"
+                   name="items[0][hours]"
+                   class="form-control form-control-sm"
+                   required>
         </div>
     </div>
 
     <div class="row g-3 mb-2">
         <div class="col-md-4">
             <label class="form-label small">Manpower</label>
-            <input type="text" name="items[0][manpower]" class="form-control form-control-sm">
+            <input type="text"
+                   name="items[0][manpower]"
+                   class="form-control form-control-sm">
         </div>
     </div>
 
@@ -99,20 +114,18 @@
     </div>
 
     <div class="text-end">
-        <button type="button" class="btn btn-danger btn-sm remove-row">
+        <button type="button"
+                class="btn btn-danger btn-sm remove-row">
             Hapus
         </button>
     </div>
 
 </div>
-
 </div>
 
 </div>
 </div>
 
-
-</form>
 <div class="d-flex justify-content gap-2 mt-4">
 
     <a href="{{ route('po-masuk.show', $poMasuk->id) }}"
@@ -124,6 +137,61 @@
         Simpan Timesheet
     </button>
 
+</div>
+</form>
+
+</div>
+
+{{-- LOADING MODAL --}}
+<div class="modal fade"
+     id="loadingModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1">
+
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+<div class="modal-body text-center py-4">
+
+<div class="spinner-border text-success mb-3"
+     style="width:3rem;height:3rem;"></div>
+
+<div class="fw-semibold">
+Menyimpan Timesheet...
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+{{-- WARNING MODAL --}}
+<div class="modal fade"
+     id="warningModal"
+     tabindex="-1">
+
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+
+<div class="modal-body text-center py-4">
+
+<i class="bi bi-exclamation-triangle-fill text-warning"
+   style="font-size:60px;"></i>
+
+<h5 class="fw-bold mt-3">Peringatan</h5>
+
+<div class="text-muted mb-4">
+Minimal harus ada 1 timesheet item.
+</div>
+
+<button type="button"
+        class="btn btn-warning px-4"
+        data-bs-dismiss="modal">
+    OK
+</button>
+
+</div>
+</div>
 </div>
 </div>
 
@@ -137,53 +205,69 @@ function addRow() {
     let wrapper = document.getElementById('items-wrapper');
 
     wrapper.insertAdjacentHTML('beforeend', `
-        <div class="item-row border rounded p-3 mb-3 bg-light">
+    <div class="item-row border rounded p-3 mb-3 bg-light">
 
-            <div class="row g-3 mb-2">
-                <div class="col-md-3">
-                    <label class="form-label small">Date</label>
-                    <input type="date" name="items[${index}][work_date]" class="form-control form-control-sm" required>
-                </div>
-
-                <div class="col-md-3">
-                    <label class="form-label small">Start Time</label>
-                    <input type="time" name="items[${index}][time_start]" class="form-control form-control-sm time-start" required>
-                </div>
-
-                <div class="col-md-3">
-                    <label class="form-label small">End Time</label>
-                    <input type="time" name="items[${index}][time_end]" class="form-control form-control-sm time-end" required>
-                </div>
-
-                <div class="col-md-3">
-                    <label class="form-label small">Hours</label>
-                    <input type="text" class="form-control form-control-sm hours bg-white" readonly>
-                </div>
+        <div class="row g-3 mb-2">
+            <div class="col-md-3">
+                <label class="form-label small">Date</label>
+                <input type="date"
+                       name="items[${index}][work_date]"
+                       class="form-control form-control-sm"
+                       required>
             </div>
 
-            <div class="row g-3 mb-2">
-                <div class="col-md-4">
-                    <label class="form-label small">Manpower</label>
-                    <input type="text" name="items[${index}][manpower]" class="form-control form-control-sm">
-                </div>
+            <div class="col-md-3">
+                <label class="form-label small">Start Time</label>
+                <input type="time"
+                       name="items[${index}][time_start]"
+                       class="form-control form-control-sm">
             </div>
 
-            <div class="mb-2">
-                <label class="form-label small">Kind of Work</label>
-                <textarea name="items[${index}][kind_of_work]"
-                          class="form-control form-control-sm"
-                          rows="3"
-                          required></textarea>
+            <div class="col-md-3">
+                <label class="form-label small">End Time</label>
+                <input type="time"
+                       name="items[${index}][time_end]"
+                       class="form-control form-control-sm">
             </div>
 
-            <div class="text-end">
-                <button type="button" class="btn btn-danger btn-sm remove-row">
-                    Hapus
-                </button>
+            <div class="col-md-3">
+                <label class="form-label small">Hours</label>
+                <input type="number"
+                       step="0.01"
+                       min="0"
+                       max="24"
+                       name="items[${index}][hours]"
+                       class="form-control form-control-sm"
+                       required>
             </div>
-
         </div>
-    `);
+
+        <div class="row g-3 mb-2">
+            <div class="col-md-4">
+                <label class="form-label small">Manpower</label>
+                <input type="text"
+                       name="items[${index}][manpower]"
+                       class="form-control form-control-sm">
+            </div>
+        </div>
+
+        <div class="mb-2">
+            <label class="form-label small">Kind of Work</label>
+            <textarea name="items[${index}][kind_of_work]"
+                      class="form-control form-control-sm"
+                      rows="3"
+                      required></textarea>
+        </div>
+
+        <div class="text-end">
+            <button type="button"
+                    class="btn btn-danger btn-sm remove-row">
+                Hapus
+            </button>
+        </div>
+
+    </div>
+`);
 
     index++;
     attachEvents();
@@ -226,6 +310,47 @@ function attachEvents() {
 
 attachEvents();
 
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    const form = document.getElementById("createTimesheetForm");
+    if(!form) return;
+
+    const loadingModal = new bootstrap.Modal(
+        document.getElementById("loadingModal")
+    );
+
+    const warningModal = new bootstrap.Modal(
+        document.getElementById("warningModal")
+    );
+
+    form.addEventListener("submit", function(e){
+
+        e.preventDefault();
+
+        if(!form.checkValidity()){
+            form.reportValidity();
+            return;
+        }
+
+        const items = document.querySelectorAll(".item-row");
+
+        if(items.length === 0){
+            warningModal.show();
+            return;
+        }
+
+        loadingModal.show();
+
+        setTimeout(function(){
+            HTMLFormElement.prototype.submit.call(form);
+        }, 400);
+
+    });
+
+});
 </script>
 
 @endsection

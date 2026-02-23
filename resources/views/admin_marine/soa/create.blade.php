@@ -33,7 +33,7 @@ textarea.form-control-sm{
 
 <h5 class="mb-4 fw-semibold">Buat Statement of Account</h5>
 
-<form action="{{ route('soa.store') }}" method="POST">
+<form action="{{ route('soa.store') }}" method="POST" id="createSoaForm">
 @csrf
 
 {{-- ================= HEADER ================= --}}
@@ -109,7 +109,57 @@ textarea.form-control-sm{
 
 </form>
 </div>
+{{-- LOADING MODAL --}}
+<div class="modal fade"
+     id="loadingModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1">
 
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+<div class="modal-body text-center py-4">
+
+<div class="spinner-border text-success mb-3"
+     style="width:3rem;height:3rem;"></div>
+
+<div class="fw-semibold">
+Menyimpan SOA...
+</div>
+
+</div>
+</div>
+</div>
+</div>
+{{-- WARNING MODAL --}}
+<div class="modal fade"
+     id="warningModal"
+     tabindex="-1">
+
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+
+<div class="modal-body text-center py-4">
+
+<i class="bi bi-exclamation-triangle-fill text-warning"
+   style="font-size:60px;"></i>
+
+<h5 class="fw-bold mt-3">Peringatan</h5>
+
+<div class="text-muted mb-4">
+Minimal harus ada 1 item.
+</div>
+
+<button type="button"
+        class="btn btn-warning px-4"
+        data-bs-dismiss="modal">
+    OK
+</button>
+
+</div>
+</div>
+</div>
+</div>
 
 {{-- ================= SCRIPT ================= --}}
 <script>
@@ -285,5 +335,45 @@ addItem();
     box-shadow: 0 0 0 0.1rem rgba(13,110,253,.15);
 }
 </style>
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    const form = document.getElementById("createSoaForm");
+    if(!form) return;
+
+    const loadingModal = new bootstrap.Modal(
+        document.getElementById("loadingModal")
+    );
+
+    const warningModal = new bootstrap.Modal(
+        document.getElementById("warningModal")
+    );
+
+    form.addEventListener("submit", function(e){
+
+        e.preventDefault();
+
+        if(!form.checkValidity()){
+            form.reportValidity();
+            return;
+        }
+
+        const items = document.querySelectorAll(".item-row");
+
+        if(items.length === 0){
+            warningModal.show();
+            return;
+        }
+
+        loadingModal.show();
+
+        setTimeout(function(){
+            HTMLFormElement.prototype.submit.call(form);
+        }, 400);
+
+    });
+
+});
+</script>
 
 @endsection

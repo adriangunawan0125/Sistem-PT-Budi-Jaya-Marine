@@ -5,7 +5,7 @@
 
 <h5 class="mb-4 fw-semibold">Edit Timesheet</h5>
 
-<form action="{{ route('timesheet.update', $timesheet->id) }}" method="POST">
+<form action="{{ route('timesheet.update', $timesheet->id) }}" method="POST"  id="updateTimesheetForm">
 @csrf
 @method('PUT')
 
@@ -58,7 +58,7 @@
 <div class="card-header d-flex justify-content-between align-items-center small">
     <strong>Timesheet Items</strong>
     <button type="button"
-            class="btn btn-outline-primary btn-sm"
+            class="btn btn-primary btn-sm"
             onclick="addRow()">
         + Add Item
     </button>
@@ -73,6 +73,7 @@
 
     <div class="row g-3 mb-2">
 
+        {{-- DATE --}}
         <div class="col-md-3">
             <label class="form-label small">Date</label>
             <input type="date"
@@ -82,30 +83,35 @@
                    required>
         </div>
 
+        {{-- START --}}
         <div class="col-md-3">
             <label class="form-label small">Start</label>
             <input type="time"
                    name="items[{{ $i }}][time_start]"
-                   value="{{ \Carbon\Carbon::parse($item->time_start)->format('H:i') }}"
-                   class="form-control form-control-sm time-start"
-                   required>
+                   value="{{ $item->time_start ? \Carbon\Carbon::parse($item->time_start)->format('H:i') : '' }}"
+                   class="form-control form-control-sm">
         </div>
 
+        {{-- END --}}
         <div class="col-md-3">
             <label class="form-label small">End</label>
             <input type="time"
                    name="items[{{ $i }}][time_end]"
-                   value="{{ \Carbon\Carbon::parse($item->time_end)->format('H:i') }}"
-                   class="form-control form-control-sm time-end"
-                   required>
+                   value="{{ $item->time_end ? \Carbon\Carbon::parse($item->time_end)->format('H:i') : '' }}"
+                   class="form-control form-control-sm">
         </div>
 
+        {{-- HOURS (MANUAL) --}}
         <div class="col-md-3">
             <label class="form-label small">Hours</label>
-            <input type="text"
-                   class="form-control form-control-sm hours bg-white"
-                   value="{{ number_format($item->hours,2) }}"
-                   readonly>
+            <input type="number"
+                   step="0.01"
+                   min="0"
+                   max="24"
+                   name="items[{{ $i }}][hours]"
+                   value="{{ number_format($item->hours,2,'.','') }}"
+                   class="form-control form-control-sm"
+                   required>
         </div>
 
     </div>
@@ -120,7 +126,7 @@
 
     <div class="text-end">
         <button type="button"
-                class="btn btn-sm btn-outline-danger remove-row">
+                class="btn btn-sm btn-danger remove-row">
             Remove
         </button>
     </div>
@@ -145,6 +151,59 @@
 
 </form>
 </div>
+{{-- UPDATE LOADING MODAL --}}
+<div class="modal fade"
+     id="updateModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1">
+
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-body text-center py-4">
+
+                <div class="spinner-border text-success mb-3"
+                     style="width:3rem;height:3rem;"></div>
+
+                <div class="fw-semibold">
+                    Memperbarui Timesheet...
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- WARNING MODAL --}}
+<div class="modal fade"
+     id="warningModal"
+     tabindex="-1">
+
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+
+            <div class="modal-body text-center py-4">
+
+                <i class="bi bi-exclamation-triangle-fill text-warning"
+                   style="font-size:60px;"></i>
+
+                <h5 class="fw-bold mt-3">Peringatan</h5>
+
+                <div class="text-muted mb-4">
+                    Minimal harus ada 1 timesheet item.
+                </div>
+
+                <button type="button"
+                        class="btn btn-warning px-4"
+                        data-bs-dismiss="modal">
+                    OK
+                </button>
+
+            </div>
+
+        </div>
+    </div>
+</div>
 
 {{-- ================= SCRIPT ================= --}}
 <script>
@@ -162,27 +221,35 @@ function addRow(){
 
                 <div class="col-md-3">
                     <label class="form-label small">Date</label>
-                    <input type="date" name="items[${index}][work_date]"
-                           class="form-control form-control-sm" required>
+                    <input type="date"
+                           name="items[${index}][work_date]"
+                           class="form-control form-control-sm"
+                           required>
                 </div>
 
                 <div class="col-md-3">
                     <label class="form-label small">Start</label>
-                    <input type="time" name="items[${index}][time_start]"
-                           class="form-control form-control-sm time-start" required>
+                    <input type="time"
+                           name="items[${index}][time_start]"
+                           class="form-control form-control-sm">
                 </div>
 
                 <div class="col-md-3">
                     <label class="form-label small">End</label>
-                    <input type="time" name="items[${index}][time_end]"
-                           class="form-control form-control-sm time-end" required>
+                    <input type="time"
+                           name="items[${index}][time_end]"
+                           class="form-control form-control-sm">
                 </div>
 
                 <div class="col-md-3">
                     <label class="form-label small">Hours</label>
-                    <input type="text"
-                           class="form-control form-control-sm hours bg-white"
-                           readonly>
+                    <input type="number"
+                           step="0.01"
+                           min="0"
+                           max="24"
+                           name="items[${index}][hours]"
+                           class="form-control form-control-sm"
+                           required>
                 </div>
 
             </div>
@@ -208,30 +275,6 @@ function addRow(){
     index++;
 }
 
-document.addEventListener('input', function(e){
-
-    if(e.target.classList.contains('time-start') || 
-       e.target.classList.contains('time-end')){
-
-        const row = e.target.closest('.item-row');
-        const start = row.querySelector('.time-start').value;
-        const end   = row.querySelector('.time-end').value;
-        const hours = row.querySelector('.hours');
-
-        if(start && end){
-
-            let s = new Date("1970-01-01T" + start + ":00");
-            let eTime = new Date("1970-01-01T" + end + ":00");
-
-            if(eTime < s){
-                eTime.setDate(eTime.getDate() + 1);
-            }
-
-            let diff = (eTime - s) / (1000 * 60 * 60);
-            hours.value = diff.toFixed(2);
-        }
-    }
-});
 
 document.addEventListener('click', function(e){
     if(e.target.classList.contains('remove-row')){
@@ -239,6 +282,50 @@ document.addEventListener('click', function(e){
     }
 });
 
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    const form = document.getElementById("updateTimesheetForm");
+    if(!form) return;
+
+    const updateModal = new bootstrap.Modal(
+        document.getElementById("updateModal")
+    );
+
+    const warningModal = new bootstrap.Modal(
+        document.getElementById("warningModal")
+    );
+
+    form.addEventListener("submit", function(e){
+
+        e.preventDefault();
+
+        // Validasi HTML
+        if(!form.checkValidity()){
+            form.reportValidity();
+            return;
+        }
+
+        // Minimal 1 item
+        const items = document.querySelectorAll(".item-row");
+
+        if(items.length === 0){
+            warningModal.show();
+            return;
+        }
+
+        // Show loading
+        updateModal.show();
+
+        setTimeout(function(){
+            HTMLFormElement.prototype.submit.call(form);
+        }, 400);
+
+    });
+
+});
 </script>
 
 @endsection

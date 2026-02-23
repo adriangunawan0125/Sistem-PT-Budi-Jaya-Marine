@@ -78,7 +78,7 @@
                 <div class="col-md-4">
 
                     {{-- STATUS DROPDOWN --}}
-                    <form action="{{ route('invoice-po.update-status', $invoicePo->id) }}"
+                    <form action="{{ route('invoice-po.update-status', $invoicePo->id) }}" id="statusForm"
                           method="POST"
                           class="mb-4">
                         @csrf
@@ -88,9 +88,9 @@
                             Ubah Status
                         </label>
 
-                        <select name="status"
-                                class="form-control form-control-sm"
-                                onchange="this.form.submit()">
+                       <select name="status"
+        class="form-control form-control-sm"
+        id="statusSelect">
 
                             <option value="draft"
                                 {{ $invoicePo->status == 'draft' ? 'selected' : '' }}>
@@ -120,7 +120,8 @@
 
     <a href="{{ route('invoice-po.print', $invoicePo->id) }}"
        target="_blank"
-       class="btn btn-danger btn-sm w-100 mb-1">
+      class="btn btn-danger btn-sm w-100 mb-1"
+id="printBtn">
         Print Invoice
     </a>
 
@@ -129,16 +130,18 @@
         Edit Invoice
     </a>
 
-    <form action="{{ route('invoice-po.destroy', $invoicePo->id) }}"
-          method="POST"
-          class="w-100"
-          onsubmit="return confirm('Yakin ingin menghapus invoice ini?')">
+    <form action="{{ route('invoice-po.destroy', $invoicePo->id) }}" 
+      id="deleteForm"
+      method="POST"
+      class="w-100">
         @csrf
         @method('DELETE')
-        <button type="submit"
-                class="btn btn-danger btn-sm w-100">
-            Hapus Invoice
-        </button>
+       <button type="button"
+        class="btn btn-danger btn-sm w-100"
+        data-bs-toggle="modal"
+        data-bs-target="#deleteModal">
+    Hapus Invoice
+</button>
     </form>
 
 </div>
@@ -226,4 +229,180 @@
     </div>
 
 </div>
+<div class="modal fade"
+     id="pdfModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1">
+
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+<div class="modal-body text-center py-4">
+
+<div class="spinner-border text-danger mb-3"
+     style="width:3rem;height:3rem;"></div>
+
+<div class="fw-semibold">
+Membuat PDF Invoice...
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="modal fade"
+     id="statusModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1">
+
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+<div class="modal-body text-center py-4">
+
+<div class="spinner-border text-primary mb-3"
+     style="width:3rem;height:3rem;"></div>
+
+<div class="fw-semibold">
+Memperbarui Status Invoice...
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+
+{{-- DELETE CONFIRM MODAL --}}
+<div class="modal fade" id="deleteModal" tabindex="-1">
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+
+<div class="modal-body text-center py-4">
+
+<i class="bi bi-exclamation-circle-fill text-danger"
+   style="font-size:60px;"></i>
+
+<h5 class="fw-bold mt-3">Hapus Invoice?</h5>
+
+<div class="text-muted mb-4">
+Data invoice akan dihapus permanen.
+</div>
+
+<div class="d-flex justify-content-center gap-3">
+<button class="btn btn-secondary px-4"
+        data-bs-dismiss="modal" style="margin-right: 4px">
+Batal
+</button>
+
+<button class="btn btn-danger px-4"
+        id="confirmDelete">
+Ya, Hapus
+</button>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+@if(session('success'))
+<div class="modal fade"
+     id="successModal"
+     tabindex="-1">
+
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+
+<div class="modal-body text-center py-4">
+
+<i class="bi bi-check-circle-fill text-success"
+   style="font-size:60px;"></i>
+
+<h5 class="fw-bold mt-3">Berhasil</h5>
+
+<div class="text-muted mb-4">
+    {{ session('success') }}
+</div>
+
+<button type="button"
+        class="btn btn-success px-4"
+        data-bs-dismiss="modal">
+    OK
+</button>
+
+</div>
+</div>
+</div>
+</div>
+@endif
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    const pdfModal = new bootstrap.Modal(
+        document.getElementById("pdfModal")
+    );
+
+    const statusModal = new bootstrap.Modal(
+        document.getElementById("statusModal")
+    );
+
+    const deleteModal = new bootstrap.Modal(
+        document.getElementById("deleteModal")
+    );
+
+    // ================= PRINT PDF =================
+    const printBtn = document.getElementById("printBtn");
+
+    if(printBtn){
+        printBtn.addEventListener("click", function(e){
+            e.preventDefault();
+            pdfModal.show();
+
+            setTimeout(()=>{
+                window.open(this.href, "_blank");
+                pdfModal.hide();
+            }, 600);
+        });
+    }
+
+    // ================= UPDATE STATUS =================
+    const statusForm = document.getElementById("statusForm");
+    const statusSelect = document.getElementById("statusSelect");
+
+    if(statusForm && statusSelect){
+        statusSelect.addEventListener("change", function(){
+            statusModal.show();
+            setTimeout(()=>{
+                statusForm.submit();
+            }, 500);
+        });
+    }
+
+    // ================= DELETE =================
+    const confirmDelete = document.getElementById("confirmDelete");
+    const deleteForm = document.getElementById("deleteForm");
+
+    if(confirmDelete && deleteForm){
+        confirmDelete.addEventListener("click", function(){
+            deleteModal.hide();
+            setTimeout(()=>{
+                deleteForm.submit();
+            },200);
+        });
+    }
+
+    // ================= SUCCESS MODAL =================
+@if(session('success'))
+    const successModal = new bootstrap.Modal(
+        document.getElementById("successModal")
+    );
+    successModal.show();
+@endif
+
+});
+</script>
 @endsection

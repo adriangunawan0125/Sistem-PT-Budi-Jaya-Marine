@@ -15,7 +15,7 @@
 
          <a href="{{ route('soa.print', $soa->id) }}"
                target="_blank"
-               class="btn btn-danger btn-sm" style="margin-left: 4px">
+               class="btn btn-danger btn-sm" id="btnPrintPdf" style="margin-left: 4px">
                 Print
             </a>
             <a href="{{ route('soa.edit', $soa->id) }}" 
@@ -24,14 +24,15 @@
             </a>
 
             <form action="{{ route('soa.destroy', $soa->id) }}" 
-                  method="POST"
-                  onsubmit="return confirm('Yakin hapus SOA ini?')">
-                @csrf
-                @method('DELETE')
-                <button class="btn btn-danger btn-sm" style="margin-left: 4px">
-                    Hapus SOA
-                </button>
-            </form>
+      method="POST"
+      id="deleteForm">
+    @csrf
+    @method('DELETE')
+    <button type="button"
+            class="btn btn-danger btn-sm btnDelete" style="margin-left: 4px">
+        Hapus SOA
+    </button>
+</form>
 
         </div>
     </div>
@@ -198,4 +199,177 @@
 
 </div>
 
+{{-- PDF LOADING MODAL --}}
+<div class="modal fade"
+     id="pdfLoadingModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1">
+
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+<div class="modal-body text-center py-4">
+
+<div class="spinner-border text-danger mb-3"
+     style="width:3rem;height:3rem;"></div>
+
+<div class="fw-semibold">
+Membuat PDF...
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+{{-- DELETE MODAL --}}
+<div class="modal fade"
+     id="deleteModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1">
+
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+
+<div class="modal-body text-center py-4">
+
+<i class="bi bi-exclamation-triangle-fill text-danger"
+   style="font-size:60px;"></i>
+
+<h5 class="fw-bold mt-3">Konfirmasi Hapus</h5>
+
+<div class="text-muted mb-4">
+Yakin ingin menghapus SOA ini?
+</div>
+
+<div class="d-flex justify-content-center gap-2">
+
+<button type="button"
+        class="btn btn-secondary px-4"
+        data-bs-dismiss="modal">
+    Batal
+</button>
+
+<button type="button"
+        class="btn btn-danger px-4"
+        id="confirmDeleteBtn">
+    Hapus
+</button>
+
+</div>
+
+</div>
+</div>
+</div>
+</div>
+@if(session('success'))
+<div class="modal fade"
+     id="successModal"
+     tabindex="-1">
+
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+
+<div class="modal-body text-center py-4">
+
+<i class="bi bi-check-circle-fill text-success"
+   style="font-size:60px;"></i>
+
+<h5 class="fw-bold mt-3">Berhasil</h5>
+
+<div class="text-muted mb-4">
+    {{ session('success') }}
+</div>
+
+<button type="button"
+        class="btn btn-success px-4"
+        data-bs-dismiss="modal">
+    OK
+</button>
+
+</div>
+</div>
+</div>
+</div>
+@endif
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    /* ================= PDF PRINT ================= */
+    const btnPrint = document.getElementById("btnPrintPdf");
+    const pdfModal = new bootstrap.Modal(
+        document.getElementById("pdfLoadingModal")
+    );
+
+    if(btnPrint){
+
+        btnPrint.addEventListener("click", function(){
+
+            pdfModal.show();
+
+            setTimeout(function(){
+
+                window.open(
+                    "{{ route('soa.print',$soa->id) }}",
+                    "_blank"
+                );
+
+                pdfModal.hide();
+
+            }, 400);
+
+        });
+
+    }
+
+
+    /* ================= DELETE SOA ================= */
+    const deleteModal = new bootstrap.Modal(
+        document.getElementById("deleteModal")
+    );
+
+    const deleteForm = document.getElementById("deleteForm");
+
+    const btnDelete = document.querySelector(".btnDelete");
+
+    if(btnDelete){
+
+        btnDelete.addEventListener("click", function(){
+            deleteModal.show();
+        });
+
+    }
+
+    const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+
+    if(confirmDeleteBtn){
+
+        confirmDeleteBtn.addEventListener("click", function(){
+
+            if(deleteForm){
+                deleteForm.submit();
+            }
+
+        });
+
+    }
+
+    
+});
+</script>
+@if(session('success'))
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    const successModal = new bootstrap.Modal(
+        document.getElementById("successModal")
+    );
+
+    successModal.show();
+
+});
+</script>
+@endif
 @endsection

@@ -13,7 +13,7 @@
     </a>
 </div>
 
-<form action="{{ route('delivery-order.store') }}" method="POST">
+<form action="{{ route('delivery-order.store') }}" method="POST" id="createDoForm">
 @csrf
 
 <input type="hidden" name="po_masuk_id" value="{{ $poMasuk->id }}">
@@ -128,6 +128,53 @@
 </form>
 </div>
 
+{{-- LOADING MODAL --}}
+<div class="modal fade"
+     id="loadingModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1">
+
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+<div class="modal-body text-center py-4">
+
+<div class="spinner-border text-success mb-3"
+     style="width:3rem;height:3rem;"></div>
+
+<div class="fw-semibold">
+Menyimpan Delivery Order...
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+{{-- WARNING MODAL --}}
+<div class="modal fade" id="warningModal" tabindex="-1">
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+<div class="modal-body text-center py-4">
+
+<i class="bi bi-exclamation-circle-fill text-warning"
+   style="font-size:60px;"></i>
+
+<h5 class="fw-bold mt-3">Peringatan</h5>
+
+<div class="text-muted mb-4">
+Minimal harus ada 1 item untuk Delivery Order.
+</div>
+
+<button class="btn btn-warning px-4"
+        data-bs-dismiss="modal">
+OK
+</button>
+
+</div>
+</div>
+</div>
+</div>
 
 {{-- ================= SCRIPT ================= --}}
 <script>
@@ -181,5 +228,47 @@ function removeRow(btn){
 }
 
 </script>
+<script>
+document.addEventListener("DOMContentLoaded", function(){
 
+    const form = document.getElementById("createDoForm");
+    const loadingModal = new bootstrap.Modal(
+        document.getElementById("loadingModal")
+    );
+
+    if(!form) return;
+
+    form.addEventListener("submit", function(e){
+
+        e.preventDefault();
+
+        // Validasi bawaan HTML
+        if(!form.checkValidity()){
+            form.reportValidity();
+            return;
+        }
+
+        // Cek minimal 1 item
+        const items = document.querySelectorAll('#item-body tr');
+
+        if(items.length === 0){
+
+            const warningModal = new bootstrap.Modal(
+                document.getElementById("warningModal")
+            );
+
+            warningModal.show();
+            return;
+        }
+
+        loadingModal.show();
+
+        setTimeout(function(){
+            HTMLFormElement.prototype.submit.call(form);
+        }, 250);
+
+    });
+
+});
+</script>
 @endsection

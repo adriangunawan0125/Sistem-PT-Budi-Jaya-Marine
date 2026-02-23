@@ -12,13 +12,15 @@
         {{-- STATUS DROPDOWN --}}
 <form action="{{ route('po-supplier.update-status', $poSupplier->id) }}"
       method="POST"
+      id="statusForm"
       class="mb-0">
     @csrf
     @method('PATCH')
 
     <select name="status"
+            id="statusSelect"
             class="form-control form-control-sm"
-            onchange="this.form.submit()">
+            onchange="handleStatusChange()">
 
         <option value="draft"
             {{ $poSupplier->status == 'draft' ? 'selected' : '' }}>
@@ -38,11 +40,12 @@
     </select>
 </form>
 
-        <a href="{{ route('po-supplier.print',$poSupplier->id) }}"
-           target="_blank"
-           class="btn btn-danger btn-sm px-3" style="margin-left: 4px">
-           Print PDF
-        </a>
+       <button type="button"
+        class="btn btn-danger btn-sm px-3"
+        id="btnPrintPdf"
+        style="margin-left: 4px">
+    Print PDF
+</button>
 
         <a href="{{ route('po-masuk.show', $poSupplier->po_masuk_id) }}"
            class="btn btn-secondary btn-sm px-3" style="margin-left: 4px">
@@ -54,15 +57,13 @@
             Edit
         </a>
 
-        <form action="{{ route('po-supplier.destroy', $poSupplier->id) }}"
-              method="POST"
-              onsubmit="return confirm('Yakin ingin menghapus PO Supplier ini?')">
-            @csrf
-            @method('DELETE')
-            <button type="submit" class="btn btn-danger btn-sm px-3" style="margin-left: 4px">
-                Hapus
-            </button>
-        </form>
+       <button type="button"
+        class="btn btn-danger btn-sm px-3"
+        data-bs-toggle="modal"
+        data-bs-target="#deleteModal"
+        style="margin-left: 4px">
+    Hapus
+</button>
 
     </div>
 </div>
@@ -246,4 +247,181 @@
 </div>
 
 </div>
+
+{{-- PDF LOADING MODAL --}}
+<div class="modal fade"
+     id="pdfLoadingModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1">
+
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+<div class="modal-body text-center py-4">
+
+<div class="spinner-border text-danger mb-3"
+     style="width:3rem;height:3rem;"></div>
+
+<div class="fw-semibold">
+Membuat PDF...
+</div>
+
+</div>
+</div>
+</div>
+</div>
+{{-- DELETE MODAL --}}
+<div class="modal fade" id="deleteModal" tabindex="-1">
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+<div class="modal-body text-center py-4">
+
+<i class="bi bi-exclamation-triangle-fill text-danger"
+   style="font-size:60px;"></i>
+
+<h5 class="fw-bold mt-3">Hapus PO Supplier?</h5>
+
+<p class="text-muted">
+Data tidak bisa dikembalikan setelah dihapus.
+</p>
+
+<form action="{{ route('po-supplier.destroy', $poSupplier->id) }}"
+      method="POST">
+@csrf
+@method('DELETE')
+
+<div class="d-flex justify-content-center gap-2 mt-3">
+<button type="button"
+        class="btn btn-secondary"
+        data-bs-dismiss="modal" style="margin-right: 4px">
+Batal
+</button>
+
+<button type="submit"
+        class="btn btn-danger">
+Hapus
+</button>
+</div>
+
+</form>
+
+</div>
+</div>
+</div>
+</div>
+{{-- STATUS LOADING MODAL --}}
+<div class="modal fade"
+     id="statusLoadingModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1">
+
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+<div class="modal-body text-center py-4">
+
+<div class="spinner-border text-primary mb-3"
+     style="width:3rem;height:3rem;"></div>
+
+<div class="fw-semibold">
+Memperbarui Status...
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+@if(session('success'))
+<div class="modal fade"
+     id="successModal"
+     tabindex="-1">
+
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+
+<div class="modal-body text-center py-4">
+
+<i class="bi bi-check-circle-fill text-success"
+   style="font-size:60px;"></i>
+
+<h5 class="fw-bold mt-3">Berhasil</h5>
+
+<div class="text-muted mb-4">
+    {{ session('success') }}
+</div>
+
+<button type="button"
+        class="btn btn-primary px-4"
+        data-bs-dismiss="modal">
+    OK
+</button>
+
+</div>
+</div>
+</div>
+</div>
+@endif
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    const btnPrint = document.getElementById("btnPrintPdf");
+    const pdfModal = new bootstrap.Modal(
+        document.getElementById("pdfLoadingModal")
+    );
+
+    if(btnPrint){
+
+        btnPrint.addEventListener("click", function(){
+
+            pdfModal.show();
+
+            setTimeout(function(){
+
+                window.open(
+                    "{{ route('po-supplier.print',$poSupplier->id) }}",
+                    "_blank"
+                );
+
+                pdfModal.hide();
+
+            }, 400);
+
+        });
+
+    }
+
+});
+</script>
+<script>
+function handleStatusChange(){
+
+    const form = document.getElementById("statusForm");
+
+    const loadingModal = new bootstrap.Modal(
+        document.getElementById("statusLoadingModal")
+    );
+
+    loadingModal.show();
+
+    // beri sedikit delay supaya modal sempat tampil
+    setTimeout(function(){
+        form.submit();
+    }, 250);
+}
+</script>
+@if(session('success'))
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    const successModal = new bootstrap.Modal(
+        document.getElementById("successModal")
+    );
+
+    successModal.show();
+
+});
+</script>
+@endif
 @endsection

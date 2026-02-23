@@ -47,7 +47,7 @@
 <div class="card shadow-sm mb-4">
 <div class="card-body py-3 small">
 
-<form method="GET" action="{{ route('invoice-po.index') }}">
+<form method="GET" action="{{ route('invoice-po.index') }}" id="filterForm">
 
 <div class="row g-3 align-items-end">
 
@@ -173,14 +173,8 @@
 <div class="aksi-wrapper">
 
     <a href="{{ route('invoice-po.show',$invoice->id) }}"
-       class="btn btn-info btn-sm">
+       class="btn btn-info btn-sm btn-detail">
         Detail
-    </a>
-
-    <a href="{{ route('invoice-po.print',$invoice->id) }}"
-       target="_blank"
-       class="btn btn-secondary btn-sm">
-        Print
     </a>
 
 </div>
@@ -211,4 +205,54 @@ Belum ada Invoice
 </div>
 
 </div>
+{{-- LOADING MODAL --}}
+<div class="modal fade"
+     id="loadingModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1">
+
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+<div class="modal-body text-center py-4">
+
+<div class="spinner-border text-primary mb-3"
+     style="width:3rem;height:3rem;"></div>
+
+<div class="fw-semibold">
+Memuat Data...
+</div>
+
+</div>
+</div>
+</div>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    const loadingModal = new bootstrap.Modal(
+        document.getElementById("loadingModal")
+    );
+
+    // FILTER SUBMIT
+    const filterForm = document.getElementById("filterForm");
+    if(filterForm){
+        filterForm.addEventListener("submit", function(){
+            loadingModal.show();
+        });
+    }
+
+    // DETAIL BUTTON
+    document.querySelectorAll(".btn-detail").forEach(function(btn){
+        btn.addEventListener("click", function(e){
+            e.preventDefault();
+            loadingModal.show();
+            setTimeout(() => {
+                window.location.href = this.href;
+            }, 200);
+        });
+    });
+
+});
+</script>
 @endsection

@@ -2,6 +2,15 @@
 
 @section('content')
 <div class="container">
+    {{-- SUCCESS --}}
+@if (session('success'))
+    <input type="hidden" id="success-message" value="{{ session('success') }}">
+@endif
+
+{{-- ERROR --}}
+@if (session('error'))
+    <input type="hidden" id="error-message" value="{{ session('error') }}">
+@endif
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h4 class="mb-0">PO Masuk (Client PO)</h4>
@@ -162,21 +171,19 @@
 
 <td>
 <div class="aksi-wrapper">
-    <a href="{{ route('po-masuk.show',$po->id) }}"
-       class="btn btn-info btn-sm">
-       Detail
-    </a>
 
-    <form action="{{ route('po-masuk.destroy',$po->id) }}"
-          method="POST"
-          onsubmit="return confirm('Yakin ingin hapus PO ini?')">
-        @csrf
-        @method('DELETE')
-        <button type="submit"
-                class="btn btn-danger btn-sm">
-            Delete
-        </button>
-    </form>
+   <a href="{{ route('po-masuk.show',$po->id) }}"
+   class="btn btn-info btn-sm btnDetail">
+   Detail
+</a>
+
+    <button type="button"
+            class="btn btn-danger btn-sm btnDelete"
+            data-id="{{ $po->id }}"
+            data-po="{{ $po->no_po_klien }}">
+        Delete
+    </button>
+
 </div>
 </td>
 
@@ -203,7 +210,106 @@ Belum ada data PO Masuk
 </div>
 
 </div>
+{{-- DELETE MODAL --}}
+<div class="modal fade" id="deleteModal" tabindex="-1">
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+<div class="modal-body text-center py-4">
 
+<i class="bi bi-exclamation-triangle-fill text-danger"
+   style="font-size:60px;"></i>
+
+<h5 class="fw-bold mt-3">Hapus PO?</h5>
+
+<p class="text-muted">
+PO <strong id="deletePoName"></strong>
+akan dihapus permanen.
+</p>
+
+<form id="deleteForm" method="POST">
+@csrf
+@method('DELETE')
+
+<div class="d-flex justify-content-center gap-2">
+<button type="button"
+        class="btn btn-secondary"
+        data-bs-dismiss="modal" style="margin-right: 4px">
+Batal
+</button>
+
+<button type="submit"
+        class="btn btn-danger">
+Hapus
+</button>
+</div>
+
+</form>
+
+</div>
+</div>
+</div>
+</div>
+{{-- ERROR MODAL --}}
+<div class="modal fade" id="errorModal" tabindex="-1">
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+<div class="modal-body text-center py-4">
+
+<i class="bi bi-x-circle-fill text-danger"
+   style="font-size:60px;"></i>
+
+<h5 class="fw-bold mt-3">Terjadi Kesalahan</h5>
+<div id="errorText" class="text-muted"></div>
+
+<div class="mt-4">
+<button class="btn btn-danger px-4"
+        data-bs-dismiss="modal">
+Tutup
+</button>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+{{-- LOADING MODAL --}}
+<div class="modal fade"
+     id="loadingModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false">
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+<div class="modal-body text-center py-4">
+<div class="spinner-border text-primary mb-3"
+     style="width:3rem;height:3rem;"></div>
+<div class="fw-semibold">Memuat data...</div>
+</div>
+</div>
+</div>
+</div>
+{{-- SUCCESS MODAL --}}
+<div class="modal fade" id="successModal" tabindex="-1">
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+<div class="modal-body text-center py-4">
+
+<i class="bi bi-check-circle-fill text-success"
+   style="font-size:60px;"></i>
+
+<h5 class="fw-bold mt-3">Berhasil</h5>
+<div id="successText" class="text-muted"></div>
+
+<div class="mt-4">
+<button class="btn btn-primary px-4"
+        data-bs-dismiss="modal">
+OK
+</button>
+</div>
+
+</div>
+</div>
+</div>
+</div>
 <style>
 
 .po-table th,
@@ -234,5 +340,72 @@ Belum ada data PO Masuk
 }
 
 </style>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
 
+    // LOADING FILTER
+    const filterForm = document.querySelector('form[action="{{ route('po-masuk.index') }}"]');
+    const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+
+    if(filterForm){
+        filterForm.addEventListener('submit', function(){
+            loadingModal.show();
+        });
+    }
+
+    // DELETE MODAL
+    const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+    const deleteForm  = document.getElementById('deleteForm');
+    const deleteName  = document.getElementById('deletePoName');
+
+    document.querySelectorAll('.btnDelete').forEach(btn=>{
+        btn.addEventListener('click', function(){
+            deleteName.textContent = this.dataset.po;
+            deleteForm.action = `/po-masuk/${this.dataset.id}`;
+            deleteModal.show();
+        });
+    });
+
+    // ================= SUCCESS & ERROR =================
+    const successInput = document.getElementById("success-message");
+    const errorInput   = document.getElementById("error-message");
+
+    if(successInput){
+        const successModal = new bootstrap.Modal(
+            document.getElementById("successModal")
+        );
+
+        document.getElementById("successText").innerText =
+            successInput.value;
+
+        setTimeout(()=>{ successModal.show(); },200);
+    }
+
+    if(errorInput){
+        const errorModal = new bootstrap.Modal(
+            document.getElementById("errorModal")
+        );
+
+        document.getElementById("errorText").innerText =
+            errorInput.value;
+
+        setTimeout(()=>{ errorModal.show(); },200);
+    }
+    // DETAIL LOADING
+document.querySelectorAll('.btnDetail').forEach(btn=>{
+    btn.addEventListener('click', function(e){
+
+        e.preventDefault();
+
+        loadingModal.show();
+
+        setTimeout(()=>{
+            window.location.href = this.href;
+        },200);
+
+    });
+});
+
+});
+</script>
 @endsection

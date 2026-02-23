@@ -316,7 +316,7 @@
     <div class="col-lg-6 mb-4">
         <div class="card shadow">
             <div class="card-header bg-white fw-semibold">
-                Grafik Pemasukan Bulan Ini
+                Grafik Pemasukan Harian Bulan Ini
             </div>
             <div class="card-body">
                 <canvas id="pemasukanBulananChart"></canvas>
@@ -405,15 +405,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
 /* ================= BULANAN ================= */
 
-// PEMASUKAN BULANAN
+// PEMASUKAN HARIAN
 new Chart(document.getElementById('pemasukanBulananChart'), {
-    type: 'bar',
+    type: 'line',
     data: {
-        labels: ['Pemasukan'],
+        labels: {!! json_encode($labelsHarian) !!},
         datasets: [{
-            label: 'Rp',
-            data: [{{ $totalPemasukanBulanan }}],
-            backgroundColor: '#28a745'
+            label: 'Pemasukan Harian',
+            data: {!! json_encode($pemasukanHarianChart) !!},
+            borderColor: '#28a745',
+            backgroundColor: 'rgba(40,167,69,0.15)',
+            tension: 0.3,
+            fill: true,
+            pointRadius: 3
         }]
     },
     options: chartCurrencyOption()

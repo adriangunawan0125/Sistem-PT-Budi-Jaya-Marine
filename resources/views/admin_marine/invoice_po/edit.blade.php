@@ -5,7 +5,7 @@
 
 <h4 class="mb-4">Edit Invoice</h4>
 
-<form action="{{ route('invoice-po.update',$invoicePo->id) }}" method="POST">
+<form action="{{ route('invoice-po.update',$invoicePo->id) }}" method="POST"  id="updateInvoiceForm">
 @csrf
 @method('PUT')
 
@@ -65,58 +65,73 @@
 
 <hr>
 
+
 {{-- ================= ITEMS ================= --}}
 <h6 class="mb-3">Item Invoice</h6>
 
 <div id="items-wrapper">
 
 @foreach($invoicePo->items as $i => $item)
-<div class="row g-2 align-items-center mb-2 item-row">
+<div class="card mb-3 item-row shadow-sm">
+<div class="card-body">
 
-    <div class="col-md-4">
+    {{-- DESCRIPTION --}}
+    <div class="mb-3">
+        <label class="form-label small">Description</label>
         <textarea name="items[{{ $i }}][description]"
-                  class="form-control form-control-sm"
-                  rows="2">{{ $item->description }}</textarea>
+                  class="form-control"
+                  rows="3"
+                  placeholder="Deskripsi item...">{{ $item->description }}</textarea>
     </div>
 
-    <div class="col-md-2">
-        <input type="number"
-               step="0.01"
-               name="items[{{ $i }}][qty]"
-               value="{{ $item->qty }}"
-               class="form-control form-control-sm qty">
+    {{-- DETAIL ROW --}}
+    <div class="row g-3 align-items-end">
+
+        <div class="col-md-2">
+            <label class="form-label small">Qty</label>
+            <input type="number"
+                   step="0.01"
+                   name="items[{{ $i }}][qty]"
+                   value="{{ $item->qty }}"
+                   class="form-control qty">
+        </div>
+
+        <div class="col-md-2">
+            <label class="form-label small">Unit</label>
+            <input type="text"
+                   name="items[{{ $i }}][unit]"
+                   value="{{ $item->unit }}"
+                   class="form-control">
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label small">Price</label>
+            <input type="number"
+                   step="0.01"
+                   name="items[{{ $i }}][price]"
+                   value="{{ $item->price }}"
+                   class="form-control price">
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label small">Amount</label>
+            <input type="text"
+                   value="{{ number_format($item->qty * $item->price, 0, ',', '.') }}"
+                   class="form-control amount bg-light fw-semibold"
+                   readonly>
+        </div>
+
+        <div class="col-md-2 text-end">
+            <button type="button"
+                    class="btn btn-danger btn-sm px-3"
+                    onclick="removeItem(this)">
+                Hapus Item
+            </button>
+        </div>
+
     </div>
 
-    <div class="col-md-2">
-        <input type="text"
-               name="items[{{ $i }}][unit]"
-               value="{{ $item->unit }}"
-               class="form-control form-control-sm">
-    </div>
-
-    <div class="col-md-2">
-        <input type="number"
-               step="0.01"
-               name="items[{{ $i }}][price]"
-               value="{{ $item->price }}"
-               class="form-control form-control-sm price">
-    </div>
-
-    <div class="col-md-1">
-        <input type="text"
-               class="form-control form-control-sm amount bg-light"
-               value="{{ $item->qty * $item->price }}"
-               readonly>
-    </div>
-
-    <div class="col-md-1 text-end">
-        <button type="button"
-                class="btn btn-sm btn-danger"
-                onclick="removeItem(this)">
-            ×
-        </button>
-    </div>
-
+</div>
 </div>
 @endforeach
 
@@ -124,7 +139,7 @@
 
 <button type="button"
         onclick="addItem()"
-        class="btn btn-sm btn-primary mt-2">
+        class="btn btn-primary btn-sm mb-3">
 + Tambah Item
 </button>
 
@@ -175,10 +190,58 @@
         Update Invoice
     </button>
 
+
 </div>
 </form>
 </div>
+{{-- UPDATE LOADING MODAL --}}
+<div class="modal fade"
+     id="updateModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1">
 
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+<div class="modal-body text-center py-4">
+
+<div class="spinner-border text-success mb-3"
+     style="width:3rem;height:3rem;"></div>
+
+<div class="fw-semibold">
+Memperbarui Invoice...
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+{{-- WARNING MODAL --}}
+<div class="modal fade" id="warningModal" tabindex="-1">
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+
+<div class="modal-body text-center py-4">
+
+<i class="bi bi-exclamation-triangle-fill text-warning"
+   style="font-size:60px;"></i>
+
+<h5 class="fw-bold mt-3">Peringatan</h5>
+
+<div class="text-muted mb-4">
+Minimal harus memiliki 1 item invoice.
+</div>
+
+<button class="btn btn-warning px-4"
+        data-bs-dismiss="modal">
+OK
+</button>
+
+</div>
+</div>
+</div>
+</div>
 {{-- ================= SCRIPT ================= --}}
 <script>
 
@@ -189,50 +252,61 @@ function addItem(){
     let wrapper = document.getElementById('items-wrapper');
 
     wrapper.insertAdjacentHTML('beforeend', `
-        <div class="row g-2 align-items-center mb-2 item-row">
+    <div class="card mb-3 item-row shadow-sm">
+    <div class="card-body">
 
-            <div class="col-md-4">
-                <textarea name="items[${index}][description]"
-                          class="form-control form-control-sm"
-                          rows="2"
-                          placeholder="Description"></textarea>
-            </div>
+        <div class="mb-3">
+            <label class="form-label small">Description</label>
+            <textarea name="items[${index}][description]"
+                      class="form-control"
+                      rows="3"
+                      placeholder="Deskripsi item..."></textarea>
+        </div>
+
+        <div class="row g-3 align-items-end">
 
             <div class="col-md-2">
+                <label class="form-label small">Qty</label>
                 <input type="number"
                        step="0.01"
                        name="items[${index}][qty]"
-                       class="form-control form-control-sm qty">
+                       class="form-control qty">
             </div>
 
             <div class="col-md-2">
+                <label class="form-label small">Unit</label>
                 <input type="text"
                        name="items[${index}][unit]"
-                       class="form-control form-control-sm">
+                       class="form-control">
             </div>
 
-            <div class="col-md-2">
+            <div class="col-md-3">
+                <label class="form-label small">Price</label>
                 <input type="number"
                        step="0.01"
                        name="items[${index}][price]"
-                       class="form-control form-control-sm price">
+                       class="form-control price">
             </div>
 
-            <div class="col-md-1">
+            <div class="col-md-3">
+                <label class="form-label small">Amount</label>
                 <input type="text"
-                       class="form-control form-control-sm amount bg-light"
+                       class="form-control amount bg-light"
                        readonly>
             </div>
 
-            <div class="col-md-1 text-end">
+            <div class="col-md-2 text-end">
                 <button type="button"
-                        class="btn btn-sm btn-danger"
+                        class="btn btn-danger btn-sm px-3"
                         onclick="removeItem(this)">
-                    ×
+                    Hapus Item
                 </button>
             </div>
 
         </div>
+
+    </div>
+    </div>
     `);
 
     index++;
@@ -264,6 +338,49 @@ function attachEvents(){
 
 attachEvents();
 
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    const form = document.getElementById("updateInvoiceForm");
+    if(!form) return;
+
+    const updateModal = new bootstrap.Modal(
+        document.getElementById("updateModal")
+    );
+
+    const warningModal = new bootstrap.Modal(
+        document.getElementById("warningModal")
+    );
+
+    form.addEventListener("submit", function(e){
+
+        e.preventDefault();
+
+        // Validasi HTML biasa
+        if(!form.checkValidity()){
+            form.reportValidity();
+            return;
+        }
+
+        // Cek apakah ada item
+        const items = document.querySelectorAll('.item-row');
+
+        if(items.length === 0){
+            warningModal.show();
+            return;
+        }
+
+        // Jika aman → tampilkan modal update
+        updateModal.show();
+
+        setTimeout(function(){
+            HTMLFormElement.prototype.submit.call(form);
+        }, 400);
+
+    });
+
+});
 </script>
 
 @endsection

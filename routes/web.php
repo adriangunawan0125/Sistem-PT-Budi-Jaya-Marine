@@ -5,7 +5,6 @@ use App\Http\Controllers\ContactMessageController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\OwnerController;
-use App\Http\Controllers\AdminMarineController;
 use App\Http\Controllers\InvoiceItemController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\AdminTransport\KelolaMitraController;
@@ -41,6 +40,7 @@ use App\Http\Controllers\AdminMarine\InvoicePoController;
 use App\Http\Controllers\AdminMarine\WorkingReportController;
 use App\Http\Controllers\AdminMarine\SoaController;
 use App\Http\Controllers\AdminMarine\PemasukanMarineController;
+use App\Http\Controllers\AdminMarine\AdminMarineController;
 
 //PUBLIC 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -282,10 +282,9 @@ Route::resource('pemasukan', PemasukanController::class);
 
 // ADMIN MARINE
 Route::middleware(['auth', 'role:admin_marine'])->group(function () {
-    Route::get('/admin-marine', function () {
-  return view('admin_marine.dashboard');
-    })->name('admin_marine.dashboard');
-
+Route::get('/admin-marine', 
+    [AdminMarineController::class, 'index']
+)->name('admin.marine.dashboard');
 
 Route::get('/mitra-marine', [MitraMarineController::class, 'index'])->name('mitra-marine.index');
 Route::get('/mitra-marine/create', [MitraMarineController::class, 'create'])->name('mitra-marine.create');

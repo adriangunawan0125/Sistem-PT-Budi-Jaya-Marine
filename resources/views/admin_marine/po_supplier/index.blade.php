@@ -16,7 +16,17 @@
     vertical-align:middle;
 }
 </style>
+{{-- SUCCESS --}}
+@if(session('success'))
+<input type="hidden" id="success-message"
+       value="{{ session('success') }}">
+@endif
 
+{{-- ERROR --}}
+@if(session('error'))
+<input type="hidden" id="error-message"
+       value="{{ session('error') }}">
+@endif
 <div class="container py-4">
 
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -146,7 +156,7 @@
     <div class="d-flex align-items-center">
 
         <a href="{{ route('po-supplier.show',$po->id) }}"
-           class="btn btn-info btn-sm mr-2">
+           class="btn btn-info btn-sm mr-2 btnDetail">
             Detail
         </a>
 
@@ -159,19 +169,21 @@
               method="POST"
               class="mb-0"
               style="display:inline-block;"
-              onsubmit="return confirm('Yakin ingin menghapus PO ini?')">
+            class="deleteForm"
+data-id="{{ $po->id }}"
+data-no="{{ $po->no_po_internal }}">
             @csrf
             @method('DELETE')
-            <button type="submit"
-                    class="btn btn-danger btn-sm">
-                Delete
-            </button>
+            <button type="button"
+        class="btn btn-danger btn-sm btnDelete"
+        data-id="{{ $po->id }}"
+        data-no="{{ $po->no_po_internal }}">
+    Delete
+</button>
         </form>
 
     </div>
 </td>
-
-
 
                     </tr>
 
@@ -194,4 +206,117 @@
     </div>
 
 </div>
+{{-- DELETE MODAL --}}
+<div class="modal fade" id="deleteModal" tabindex="-1">
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+<div class="modal-body text-center py-4">
+
+<i class="bi bi-exclamation-triangle-fill text-danger"
+   style="font-size:60px;"></i>
+
+<h5 class="fw-bold mt-3">Hapus PO Supplier?</h5>
+
+<p class="text-muted">
+PO <strong id="deletePoName"></strong>
+akan dihapus permanen.
+</p>
+
+<form id="deleteForm" method="POST">
+@csrf
+@method('DELETE')
+
+<div class="d-flex justify-content-center gap-2">
+<button type="button"
+        class="btn btn-secondary"
+        data-bs-dismiss="modal" style="margin-right: 4px">
+Batal
+</button>
+
+<button type="submit"
+        class="btn btn-danger">
+Hapus
+</button>
+</div>
+
+</form>
+
+</div>
+</div>
+</div>
+</div>
+{{-- LOADING MODAL --}}
+<div class="modal fade"
+     id="loadingModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false">
+
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+<div class="modal-body text-center py-4">
+
+<div class="spinner-border text-primary mb-3"
+     style="width:3rem;height:3rem;"></div>
+
+<div class="fw-semibold" id="loadingText">
+Memuat data...
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    const loadingModal = new bootstrap.Modal(
+        document.getElementById("loadingModal")
+    );
+
+    const deleteModal = new bootstrap.Modal(
+        document.getElementById("deleteModal")
+    );
+
+    const loadingText = document.getElementById("loadingText");
+    const deleteForm  = document.getElementById("deleteForm");
+    const deleteName  = document.getElementById("deletePoName");
+
+    // ================= FILTER LOADING =================
+    const filterForm = document.querySelector('form[method="GET"]');
+    if(filterForm){
+        filterForm.addEventListener('submit', function(){
+            loadingText.innerText = "Memuat data...";
+            loadingModal.show();
+        });
+    }
+
+    // ================= DETAIL / EDIT =================
+    document.querySelectorAll('.btnDetail').forEach(btn=>{
+        btn.addEventListener('click', function(e){
+            e.preventDefault();
+            loadingText.innerText = "Memuat halaman...";
+            loadingModal.show();
+
+            setTimeout(()=>{
+                window.location.href = this.href;
+            },200);
+        });
+    });
+
+    // ================= DELETE =================
+    document.querySelectorAll('.btnDelete').forEach(btn=>{
+        btn.addEventListener('click', function(){
+
+            deleteName.textContent = this.dataset.no;
+            deleteForm.action = `/po-supplier/${this.dataset.id}`;
+
+            deleteModal.show();
+        });
+    });
+
+});
+
+</script>
 @endsection

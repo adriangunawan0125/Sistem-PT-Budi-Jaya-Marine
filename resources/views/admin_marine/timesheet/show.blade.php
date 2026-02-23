@@ -80,33 +80,28 @@
                 </div>
 
        {{-- RIGHT SIDE --}}
+{{-- RIGHT SIDE --}}
 <div class="col-md-4">
 
     <div class="d-flex flex-column gap-2">
 
-        <a href="{{ route('timesheet.print', $timesheet->id) }}"
-           target="_blank"
-           class="btn btn-danger btn-sm w-100 mb-1">
-            Print
-        </a>
+        <button type="button"
+                id="btnPrintPdf"
+                class="btn btn-danger btn-sm w-100">
+            Print PDF
+        </button>
 
         <a href="{{ route('timesheet.edit', $timesheet->id) }}"
-           class="btn btn-warning btn-sm w-100 mb-1">
+           class="btn btn-warning btn-sm w-100">
             Edit
         </a>
 
-        <form action="{{ route('timesheet.destroy', $timesheet->id) }}"
-              method="POST"
-              class="w-100"
-              onsubmit="return confirm('Yakin ingin menghapus timesheet ini?')">
-            @csrf
-            @method('DELETE')
-
-            <button type="submit"
-                    class="btn btn-danger btn-sm w-100">
-                Hapus
-            </button>
-        </form>
+        <button type="button"
+                class="btn btn-danger btn-sm w-100"
+                data-bs-toggle="modal"
+                data-bs-target="#deleteModal">
+            Hapus
+        </button>
 
     </div>
 
@@ -205,4 +200,146 @@
     </div>
 
 </div>
+{{-- DELETE MODAL --}}
+<div class="modal fade" id="deleteModal" tabindex="-1">
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+
+<div class="modal-body text-center py-4">
+
+<i class="bi bi-exclamation-triangle-fill text-danger"
+   style="font-size:60px;"></i>
+
+<h5 class="fw-bold mt-3">Hapus Timesheet?</h5>
+
+<p class="text-muted">
+Data tidak bisa dikembalikan setelah dihapus.
+</p>
+
+<form action="{{ route('timesheet.destroy', $timesheet->id) }}"
+      method="POST">
+@csrf
+@method('DELETE')
+
+<div class="d-flex justify-content-center gap-2 mt-3">
+
+<button type="button"
+        class="btn btn-secondary"
+        data-bs-dismiss="modal" style="margin-right: 4px">
+    Batal
+</button>
+
+<button type="submit"
+        class="btn btn-danger">
+    Hapus
+</button>
+
+</div>
+
+</form>
+
+</div>
+</div>
+</div>
+</div>
+
+{{-- PDF LOADING MODAL --}}
+<div class="modal fade"
+     id="pdfLoadingModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1">
+
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+<div class="modal-body text-center py-4">
+
+<div class="spinner-border text-danger mb-3"
+     style="width:3rem;height:3rem;"></div>
+
+<div class="fw-semibold">
+Membuat PDF...
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+{{-- SUCCESS MODAL --}}
+<div class="modal fade"
+     id="successModal"
+     tabindex="-1">
+
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+
+<div class="modal-body text-center py-4">
+
+<i class="bi bi-check-circle-fill text-success"
+   style="font-size:60px;"></i>
+
+<h5 class="fw-bold mt-3">Berhasil</h5>
+
+<div class="text-muted mb-4">
+    {{ session('success') }}
+</div>
+
+<button type="button"
+        class="btn btn-primary px-4"
+        data-bs-dismiss="modal">
+    OK
+</button>
+
+</div>
+</div>
+</div>
+</div>
+
+@if(session('success'))
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    const successModal = new bootstrap.Modal(
+        document.getElementById("successModal")
+    );
+
+    successModal.show();
+
+});
+</script>
+@endif
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    const btnPrint = document.getElementById("btnPrintPdf");
+    const pdfModal = new bootstrap.Modal(
+        document.getElementById("pdfLoadingModal")
+    );
+
+    if(btnPrint){
+
+        btnPrint.addEventListener("click", function(){
+
+            pdfModal.show();
+
+            setTimeout(function(){
+
+                window.open(
+                    "{{ route('timesheet.print', $timesheet->id) }}",
+                    "_blank"
+                );
+
+                pdfModal.hide();
+
+            }, 400);
+
+        });
+
+    }
+
+});
+</script>
 @endsection

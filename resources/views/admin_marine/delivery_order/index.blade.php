@@ -11,7 +11,7 @@
 <div class="card mb-3 shadow-sm">
     <div class="card-body py-3">
 
-        <form method="GET" action="{{ route('delivery-order.index') }}">
+        <form method="GET" action="{{ route('delivery-order.index') }}" id="filterForm">
             <div class="row align-items-end g-3">
 
                 {{-- SEARCH --}}
@@ -137,31 +137,11 @@
 <div class="aksi-wrapper">
 
     <a href="{{ route('delivery-order.show',$do->id) }}"
-       class="btn btn-info btn-sm">
+       class="btn btn-info btn-sm btnDetail">
        Detail
     </a>
 
-    <a href="{{ route('delivery-order.edit',$do->id) }}"
-       class="btn btn-warning btn-sm">
-       Edit
-    </a>
-
-    <a href="{{ route('delivery-order.print',$do->id) }}"
-       target="_blank"
-       class="btn btn-secondary btn-sm">
-       Print
-    </a>
-
-    <form action="{{ route('delivery-order.destroy',$do->id) }}"
-          method="POST"
-          onsubmit="return confirm('Yakin ingin hapus DO ini?')">
-        @csrf
-        @method('DELETE')
-        <button type="submit"
-                class="btn btn-danger btn-sm">
-            Delete
-        </button>
-    </form>
+    
 
 </div>
 </td>
@@ -220,5 +200,107 @@ Belum ada Delivery Order
 }
 
 </style>
+{{-- LOADING MODAL --}}
+<div class="modal fade"
+     id="loadingModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1">
 
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+<div class="modal-body text-center py-4">
+
+<div class="spinner-border text-primary mb-3"
+     style="width:3rem;height:3rem;"></div>
+
+<div class="fw-semibold">
+Memuat Data ...
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+@if(session('success'))
+<div class="modal fade"
+     id="successModal"
+     tabindex="-1">
+
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+
+<div class="modal-body text-center py-4">
+
+<i class="bi bi-check-circle-fill text-success"
+   style="font-size:60px;"></i>
+
+<h5 class="fw-bold mt-3">Berhasil</h5>
+
+<div class="text-muted mb-4">
+    {{ session('success') }}
+</div>
+
+<button type="button"
+        class="btn btn-success px-4"
+        data-bs-dismiss="modal">
+    OK
+</button>
+
+</div>
+</div>
+</div>
+</div>
+@endif
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    const loadingModal = new bootstrap.Modal(
+        document.getElementById("loadingModal")
+    );
+
+    // ================= DETAIL =================
+    document.querySelectorAll(".btnDetail").forEach(btn => {
+        btn.addEventListener("click", function(e){
+            e.preventDefault();
+            loadingModal.show();
+            setTimeout(() => {
+                window.location.href = this.href;
+            }, 250);
+        });
+    });
+
+    // ================= FILTER =================
+    const filterForm = document.getElementById("filterForm");
+
+    if(filterForm){
+        filterForm.addEventListener("submit", function(){
+            loadingModal.show();
+        });
+    }
+
+    // ================= PAGINATION =================
+    document.querySelectorAll(".pagination a").forEach(link => {
+        link.addEventListener("click", function(e){
+            e.preventDefault();
+            loadingModal.show();
+            setTimeout(() => {
+                window.location.href = this.href;
+            }, 250);
+        });
+    });
+
+    // ================= SUCCESS MODAL =================
+    @if(session('success'))
+        const successModal = new bootstrap.Modal(
+            document.getElementById("successModal")
+        );
+        successModal.show();
+    @endif
+
+});
+</script>
 @endsection

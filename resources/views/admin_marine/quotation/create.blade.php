@@ -15,7 +15,7 @@
 </div>
 @endif
 
-<form action="{{ route('quotations.store') }}" method="POST">
+<form action="{{ route('quotations.store') }}" method="POST" id="createForm">
 @csrf
 
 {{-- ================= HEADER ================= --}}
@@ -171,6 +171,59 @@ onclick="addTerm()">+ Add Term</button>
 
 </form>
 </div>
+<!-- LOADING MODAL -->
+<div class="modal fade"
+     id="loadingModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1">
+
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-body text-center py-4">
+                <div class="spinner-border text-primary mb-3"
+                     style="width:3rem;height:3rem;"></div>
+                <div class="fw-semibold">Menyimpan quotation...</div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- WARNING MODAL (MINIMAL ITEM) -->
+<div class="modal fade" id="warningItemModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-body text-center py-4">
+
+                <div class="mb-3">
+                    <i class="bi bi-exclamation-triangle-fill text-warning"
+                       style="font-size:60px;"></i>
+                </div>
+
+                <h5 class="fw-bold mb-2">Item Belum Ditambahkan</h5>
+
+                <div class="text-muted mb-4">
+                    Anda harus menambahkan minimal 1 item sebelum menyimpan quotation.
+                </div>
+
+                <button class="btn btn-primary px-4"
+                        data-bs-dismiss="modal">
+                    OK
+                </button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+#loadingModal .modal-content{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    height:130px;
+}
+</style>
 
 <script>
 
@@ -412,5 +465,45 @@ updateGrandTotal();
 
 applyTypeToAll();
 
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    const form = document.getElementById("createForm");
+    if(!form) return;
+
+    const modal = new bootstrap.Modal(
+        document.getElementById("loadingModal")
+    );
+
+    form.addEventListener("submit", function(e){
+
+        e.preventDefault();
+
+        // validasi bawaan HTML
+        if(!form.checkValidity()){
+            form.reportValidity();
+            return;
+        }
+
+        // pastikan ada minimal 1 item
+        const totals = document.querySelectorAll('.total');
+      if(totals.length === 0){
+    const warningModal = new bootstrap.Modal(
+        document.getElementById("warningItemModal")
+    );
+    warningModal.show();
+    return;
+}
+
+        modal.show();
+
+        setTimeout(function(){
+            HTMLFormElement.prototype.submit.call(form);
+        }, 250);
+
+    });
+
+});
 </script>
 @endsection

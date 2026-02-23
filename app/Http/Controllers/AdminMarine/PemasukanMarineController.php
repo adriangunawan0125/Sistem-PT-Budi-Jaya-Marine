@@ -123,7 +123,7 @@ PemasukanMarine::create($data);
             DB::commit();
 
             return redirect()
-                ->route('admin-marine.pemasukan-marine.index')
+                ->route('pemasukan-marine.index')
                 ->with('success','Pemasukan berhasil disimpan');
 
         } catch (\Exception $e) {
@@ -168,34 +168,34 @@ PemasukanMarine::create($data);
         try {
 
             // VALIDASI
-$request->validate([
-    'po_masuk_id'   => 'required|exists:po_masuk,id',
-    'tanggal'       => 'required|date',
-    'nama_pengirim' => 'required|string|max:255',
-    'metode'        => 'required|string|max:100',
-    'keterangan'    => 'nullable|string',
-    'nominal'       => 'required|numeric|min:0', // Tambahkan validasi nominal
-    'bukti'         => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-]);
+            $request->validate([
+                'po_masuk_id'   => 'required|exists:po_masuk,id',
+                'tanggal'       => 'required|date',
+                'nama_pengirim' => 'required|string|max:255',
+                'metode'        => 'required|string|max:100',
+                'keterangan'    => 'nullable|string',
+                'nominal'       => 'required|numeric|min:0', // Tambahkan validasi nominal
+                'bukti'         => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            ]);
 
-// AMBIL DATA YANG DIUPDATE
-$data = $request->only([
-    'po_masuk_id',
-    'tanggal',
-    'nama_pengirim',
-    'metode',
-    'keterangan',
-    'nominal', // Tambahkan kolom nominal
-]);
+            // AMBIL DATA YANG DIUPDATE
+            $data = $request->only([
+                'po_masuk_id',
+                'tanggal',
+                'nama_pengirim',
+                'metode',
+                'keterangan',
+                'nominal', // Tambahkan kolom nominal
+            ]);
 
-// HANDLE UPLOAD BUKTI
-if ($request->hasFile('bukti')) {
-    if ($pemasukanMarine->bukti) {
-        Storage::disk('public')->delete($pemasukanMarine->bukti);
-    }
-    $data['bukti'] = $request->file('bukti')
-        ->store('pemasukan_marine', 'public');
-}
+            // HANDLE UPLOAD BUKTI
+            if ($request->hasFile('bukti')) {
+                if ($pemasukanMarine->bukti) {
+                    Storage::disk('public')->delete($pemasukanMarine->bukti);
+                }
+                $data['bukti'] = $request->file('bukti')
+                    ->store('pemasukan_marine', 'public');
+            }
 
 // UPDATE DATA
 $pemasukanMarine->update($data);
@@ -203,7 +203,7 @@ $pemasukanMarine->update($data);
             DB::commit();
 
             return redirect()
-                ->route('admin-marine.pemasukan-marine.index')
+                ->route('pemasukan-marine.index')
                 ->with('success','Data berhasil diupdate');
 
         } catch (\Exception $e) {

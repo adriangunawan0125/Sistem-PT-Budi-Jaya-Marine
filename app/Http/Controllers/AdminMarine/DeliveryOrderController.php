@@ -202,7 +202,9 @@ public function updateStatus(Request $request, DeliveryOrder $deliveryOrder)
 
         DB::commit();
 
-        return back()->with('success','Status Delivery Order berhasil diupdate');
+       return redirect()
+    ->route('delivery-order.show', $deliveryOrder->id)
+    ->with('success','Status Delivery Order berhasil diupdate');
 
     } catch (\Exception $e) {
 

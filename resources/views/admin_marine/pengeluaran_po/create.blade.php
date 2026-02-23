@@ -25,7 +25,7 @@
 
             <form action="{{ route('pengeluaran-po.store') }}" 
                   method="POST" 
-                  enctype="multipart/form-data">
+                  enctype="multipart/form-data" id="createPengeluaranForm">
                 @csrf
 
                 <input type="hidden" name="po_masuk_id" value="{{ $poMasuk->id }}">
@@ -104,6 +104,28 @@
     </div>
 
 </div>
+{{-- LOADING MODAL --}}
+<div class="modal fade"
+     id="loadingModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1">
+
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+<div class="modal-body text-center py-4">
+
+<div class="spinner-border text-primary mb-3"
+     style="width:3rem;height:3rem;"></div>
+
+<div class="fw-semibold">
+Menyimpan Pengeluaran...
+</div>
+
+</div>
+</div>
+</div>
+</div>
 
 {{-- PREVIEW SCRIPT --}}
 <script>
@@ -121,5 +143,35 @@ function previewImage(event){
     }
 }
 </script>
+<script>
+document.addEventListener("DOMContentLoaded", function(){
 
+    const form = document.getElementById("createPengeluaranForm");
+
+    if(!form) return;
+
+    const loadingModal = new bootstrap.Modal(
+        document.getElementById("loadingModal")
+    );
+
+    form.addEventListener("submit", function(e){
+
+        e.preventDefault();
+
+        // Validasi bawaan HTML
+        if(!form.checkValidity()){
+            form.reportValidity();
+            return;
+        }
+
+        loadingModal.show();
+
+        setTimeout(function(){
+            HTMLFormElement.prototype.submit.call(form);
+        }, 250);
+
+    });
+
+});
+</script>
 @endsection

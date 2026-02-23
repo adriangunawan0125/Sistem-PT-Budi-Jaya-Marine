@@ -2,14 +2,22 @@
 
 @section('content')
 <div class="container-fluid px-3">
+{{-- SUCCESS --}}
+@if (session('success'))
+    <input type="hidden" id="success-message" value="{{ session('success') }}">
+@endif
 
+{{-- ERROR --}}
+@if (session('error'))
+    <input type="hidden" id="error-message" value="{{ session('error') }}">
+@endif
     <h5 class="mb-3 fw-semibold">Rekap Quotation</h5>
 
     {{-- FILTER --}}
 <div class="card mb-3 shadow-sm">
     <div class="card-body py-3">
 
-        <form method="GET" action="{{ route('quotations.index') }}">
+        <form method="GET" action="{{ route('quotations.index') }}" id="filterForm">
             <div class="row align-items-end g-3">
 
                 {{-- SEARCH --}}
@@ -126,7 +134,7 @@
                     <td>
                         <div class="aksi-wrapper">
                             <a href="{{ route('quotations.show',$q->id) }}"
-                               class="btn btn-info btn-sm">
+                               class="btn btn-info btn-sm btnDetail">
                                 Detail
                             </a>
 
@@ -135,15 +143,12 @@
                                 Edit
                             </a>
 
-                            <form action="{{ route('quotations.destroy',$q->id) }}"
-                                  method="POST"
-                                  onsubmit="return confirm('Yakin hapus quotation ini?')">
-                                @csrf
-                                @method('DELETE')
-                                <button class="btn btn-danger btn-sm">
-                                    Hapus
-                                </button>
-                            </form>
+                            <button type="button"
+    class="btn btn-danger btn-sm btnDelete"
+    data-id="{{ $q->id }}"
+    data-quote="{{ $q->quote_no }}">
+    Hapus
+</button>
                         </div>
                     </td>
 
@@ -214,5 +219,147 @@
 
 
 </style>
+<!-- DELETE MODAL -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-body text-center py-4">
 
+                <div class="mb-3">
+                    <i class="bi bi-exclamation-triangle-fill text-danger"
+                       style="font-size:60px;"></i>
+                </div>
+
+                <h5 class="fw-bold mb-2">Hapus Quotation?</h5>
+
+                <p class="text-muted mb-4">
+                    Quotation <strong id="deleteQuoteName"></strong>
+                    akan dihapus permanen dan tidak bisa dikembalikan.
+                </p>
+
+                <form id="deleteForm" method="POST">
+                    @csrf
+                    @method('DELETE')
+
+                    <div class="d-flex justify-content-center gap-2">
+                        <button type="button"
+                                class="btn btn-secondary px-4"
+                                data-bs-dismiss="modal" style="margin-right:4px;">
+                            Batal
+                        </button>
+
+                        <button type="submit" class="btn btn-danger px-4">
+                            Hapus
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- LOADING MODAL -->
+<div class="modal fade" id="loadingModal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-body text-center py-4">
+                <div class="spinner-border text-primary mb-3"
+                     style="width:3rem;height:3rem;"></div>
+                <div class="fw-semibold">Memuat data...</div>
+            </div>
+        </div>
+    </div>
+</div>
+    <!-- SUCCESS MODAL -->
+<div class="modal fade" id="successModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-body text-center py-4">
+
+                <div class="mb-3">
+                    <i class="bi bi-check-circle-fill text-success"
+                       style="font-size:60px;"></i>
+                </div>
+
+                <h5 class="fw-bold mb-2">Berhasil</h5>
+                <div id="successText" class="text-muted"></div>
+
+                <div class="mt-4">
+                    <button class="btn btn-primary px-4"
+                            data-bs-dismiss="modal">
+                        OK
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    /* ================= DELETE MODAL ================= */
+    const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+    const deleteForm  = document.getElementById('deleteForm');
+    const quoteName   = document.getElementById('deleteQuoteName');
+
+    document.querySelectorAll('.btnDelete').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const id    = this.getAttribute('data-id');
+            const quote = this.getAttribute('data-quote');
+
+            quoteName.textContent = quote;
+            deleteForm.action = `/quotations/${id}`;
+            deleteModal.show();
+        });
+    });
+
+    /* ================= LOADING MODAL ================= */
+    const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+
+    document.querySelectorAll('.btnDetail').forEach(btn => {
+        btn.addEventListener('click', function(e){
+            e.preventDefault();
+            loadingModal.show();
+            setTimeout(() => {
+                window.location.href = this.href;
+            }, 200);
+        });
+    });
+
+    const filterForm = document.getElementById('filterForm');
+    if(filterForm){
+        filterForm.addEventListener('submit', function(){
+            loadingModal.show();
+        });
+    }
+
+    /* ================= SUCCESS & ERROR MODAL ================= */
+    const successInput = document.getElementById("success-message");
+    const errorInput   = document.getElementById("error-message");
+
+    if(successInput){
+        const successModal = new bootstrap.Modal(
+            document.getElementById("successModal")
+        );
+
+        document.getElementById("successText").innerText =
+            successInput.value;
+
+        successModal.show();
+    }
+
+    if(errorInput){
+        const errorModal = new bootstrap.Modal(
+            document.getElementById("errorModal")
+        );
+
+        document.getElementById("errorText").innerText =
+            errorInput.value;
+
+        errorModal.show();
+    }
+
+});
+</script>
 @endsection

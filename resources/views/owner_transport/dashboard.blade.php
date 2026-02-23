@@ -306,8 +306,147 @@
     </div>
 
 </div>
+{{-- ================= RECENT TRANSACTIONS CLEAN ================= --}}
+<div class="row mt-4 g-4">
 
-  
+    {{-- PEMASUKAN --}}
+    <div class="col-xl-3 col-md-6">
+        <div class="card shadow-sm h-100 border-0 recent-card">
+            <div class="card-header bg-white fw-semibold text-success">
+                <i class="fas fa-coins me-2"></i> Pemasukan Terbaru
+            </div>
+
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush">
+                    @forelse($recentPemasukan as $item)
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fw-semibold small">
+                                {{ $item->mitra->nama_mitra ?? '-' }}
+                            </div>
+                            <div class="text-muted small">
+                                {{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}
+                            </div>
+                        </div>
+                        <span class="fw-bold text-success">
+                            Rp {{ number_format($item->nominal,0,',','.') }}
+                        </span>
+                    </li>
+                    @empty
+                    <li class="list-group-item text-center text-muted small">
+                        Tidak ada data
+                    </li>
+                    @endforelse
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    {{-- INTERNAL --}}
+    <div class="col-xl-3 col-md-6">
+        <div class="card shadow-sm h-100 border-0 recent-card">
+            <div class="card-header bg-white fw-semibold text-danger">
+                <i class="fas fa-building me-2"></i> Internal Terbaru
+            </div>
+
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush">
+                    @forelse($recentPengeluaranInternal as $item)
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span class="text-muted small">
+                            {{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}
+                        </span>
+                        <span class="fw-bold text-danger">
+                            Rp {{ number_format($item->nominal,0,',','.') }}
+                        </span>
+                    </li>
+                    @empty
+                    <li class="list-group-item text-center text-muted small">
+                        Tidak ada data
+                    </li>
+                    @endforelse
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    {{-- TRANSPORT --}}
+    <div class="col-xl-3 col-md-6">
+        <div class="card shadow-sm h-100 border-0 recent-card">
+            <div class="card-header bg-white fw-semibold text-warning">
+                <i class="fas fa-truck me-2"></i> Transport Terbaru
+            </div>
+
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush">
+                    @forelse($recentPengeluaranTransport as $item)
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span class="text-muted small">
+                            {{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}
+                        </span>
+                        <span class="fw-bold text-danger">
+                            Rp {{ number_format($item->total_amount,0,',','.') }}
+                        </span>
+                    </li>
+                    @empty
+                    <li class="list-group-item text-center text-muted small">
+                        Tidak ada data
+                    </li>
+                    @endforelse
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    {{-- PAJAK --}}
+    <div class="col-xl-3 col-md-6">
+        <div class="card shadow-sm h-100 border-0 recent-card">
+            <div class="card-header bg-white fw-semibold text-secondary">
+                <i class="fas fa-file-invoice-dollar me-2"></i> Pajak Terbaru
+            </div>
+
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush">
+                    @forelse($recentPengeluaranPajak as $item)
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span class="text-muted small">
+                            {{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}
+                        </span>
+                        <span class="fw-bold text-danger">
+                            Rp {{ number_format($item->nominal,0,',','.') }}
+                        </span>
+                    </li>
+                    @empty
+                    <li class="list-group-item text-center text-muted small">
+                        Tidak ada data
+                    </li>
+                    @endforelse
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</div>
+<style>
+.recent-card {
+    border-radius: 12px;
+}
+
+.recent-card .card-header {
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+}
+
+.recent-card .list-group-item {
+    padding: 12px 16px;
+    font-size: 13px;
+}
+
+.recent-card .list-group-item:hover {
+    background-color: #f8f9fa;
+}
+</style>
+
   {{-- CHART --}}
 <div class="row mt-4">
 

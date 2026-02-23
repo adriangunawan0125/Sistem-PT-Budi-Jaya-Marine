@@ -23,7 +23,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('pengeluaran-po.update',$pengeluaranPo->id) }}"
+            <form action="{{ route('pengeluaran-po.update',$pengeluaranPo->id) }}" id="updatePengeluaranForm"
                   method="POST"
                   enctype="multipart/form-data">
                 @csrf
@@ -108,6 +108,28 @@
     </div>
 
 </div>
+{{-- LOADING MODAL --}}
+<div class="modal fade"
+     id="loadingModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1">
+
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+<div class="modal-body text-center py-4">
+
+<div class="spinner-border text-warning mb-3"
+     style="width:3rem;height:3rem;"></div>
+
+<div class="fw-semibold">
+Memperbarui Pengeluaran...
+</div>
+
+</div>
+</div>
+</div>
+</div>
 
 {{-- PREVIEW SCRIPT --}}
 <script>
@@ -125,5 +147,34 @@ function previewImage(event){
     }
 }
 </script>
+<script>
+document.addEventListener("DOMContentLoaded", function(){
 
+    const form = document.getElementById("updatePengeluaranForm");
+
+    if(!form) return;
+
+    const loadingModal = new bootstrap.Modal(
+        document.getElementById("loadingModal")
+    );
+
+    form.addEventListener("submit", function(e){
+
+        e.preventDefault();
+
+        if(!form.checkValidity()){
+            form.reportValidity();
+            return;
+        }
+
+        loadingModal.show();
+
+        setTimeout(function(){
+            HTMLFormElement.prototype.submit.call(form);
+        }, 250);
+
+    });
+
+});
+</script>
 @endsection

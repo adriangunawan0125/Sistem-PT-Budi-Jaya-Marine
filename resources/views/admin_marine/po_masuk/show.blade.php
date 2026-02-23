@@ -55,7 +55,7 @@
             Edit PO-Klien
         </a>
         {{-- STATUS DROPDOWN --}}
-        <form action="{{ route('po-masuk.update-status', $poMasuk->id) }}"
+        <form action="{{ route('po-masuk.update-status', $poMasuk->id) }}" id="statusForm"
               method="POST"
               class="mb-0">
             @csrf
@@ -316,7 +316,7 @@
                         <td>
                             <div class="d-flex justify-content-center">
                                 <a href="{{ route('po-supplier.show', $sup->id) }}"
-                                   class="btn btn-primary btn-sm">
+                                   class="btn btn-primary btn-sm btnDetail">
                                     Detail
                                 </a>
                             </div>
@@ -401,7 +401,7 @@
 
                         <td class="text-center">
                             <a href="{{ route('delivery-order.show', $do->id) }}"
-                               class="btn btn-sm btn-primary">
+                               class="btn btn-sm btn-primary btnDetail">
                                 Detail
                             </a>
                         </td>
@@ -477,7 +477,7 @@
                             <div class="d-flex justify-content-center gap-2">
 
                                 <a href="{{ route('pengeluaran-po.show',$exp->id) }}"
-                                   class="btn btn-sm btn-primary" style="margin-right: 7px">
+                                   class="btn btn-sm btn-primary btnDetail" style="margin-right: 7px">
                                     Detail
                                 </a>
 
@@ -582,7 +582,7 @@
 
                         <td class="text-center">
                             <a href="{{ route('invoice-po.show',$inv->id) }}"
-                               class="btn btn-sm btn-primary">
+                               class="btn btn-sm btn-primary btnDetail">
                                 Detail
                             </a>
                         </td>
@@ -676,7 +676,7 @@
 
                         <td class="text-center">
                             <a href="{{ route('timesheet.show', $ts->id) }}"
-                               class="btn btn-sm btn-primary">
+                               class="btn btn-sm btn-primary btnDetail">
                                 Detail
                             </a>
                         </td>
@@ -755,7 +755,7 @@
 
                         <td class="text-center">
                             <a href="{{ route('working-report.show', $wr->id) }}"
-                               class="btn btn-sm btn-primary">
+                               class="btn btn-sm btn-primary btnDetail">
                                 Detail
                             </a>
                         </td>
@@ -831,4 +831,109 @@
     </div>
 
 </div>
+
+{{-- LOADING MODAL --}}
+<div class="modal fade"
+     id="loadingModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1">
+
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+<div class="modal-body text-center py-4">
+
+<div class="spinner-border text-primary mb-3"
+     style="width:3rem;height:3rem;"></div>
+
+<div class="fw-semibold" id="loadingText">
+Memuat data...
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+{{-- SUCCESS MODAL --}}
+@if(session('success'))
+<div class="modal fade"
+     id="successModal"
+     tabindex="-1">
+
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+
+<div class="modal-body text-center py-4">
+
+<i class="bi bi-check-circle-fill text-success"
+   style="font-size:60px;"></i>
+
+<h5 class="fw-bold mt-3">Berhasil</h5>
+
+<div class="text-muted mb-4">
+    {{ session('success') }}
+</div>
+
+<button type="button"
+        class="btn btn-primary px-4"
+        data-bs-dismiss="modal">
+    OK
+</button>
+
+</div>
+</div>
+</div>
+</div>
+@endif
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    const loadingModal = new bootstrap.Modal(
+        document.getElementById("loadingModal")
+    );
+
+    const loadingText = document.getElementById("loadingText");
+
+    // ================= STATUS CHANGE =================
+    const statusForm = document.getElementById("statusForm");
+
+    if(statusForm){
+        statusForm.querySelector("select").addEventListener("change", function(){
+
+            loadingText.innerText = "Mengubah status...";
+            loadingModal.show();
+
+            setTimeout(()=>{
+                statusForm.submit();
+            },200);
+
+        });
+    }
+
+    // ================= DETAIL BUTTON =================
+    document.querySelectorAll('.btnDetail').forEach(btn=>{
+        btn.addEventListener('click', function(e){
+
+            e.preventDefault();
+
+            loadingText.innerText = "Memuat detail...";
+            loadingModal.show();
+
+            setTimeout(()=>{
+                window.location.href = this.href;
+            },200);
+
+        });
+    });
+
+    @if(session('success'))
+    const successModal = new bootstrap.Modal(
+        document.getElementById("successModal")
+    );
+    successModal.show();
+@endif
+});
+</script>
 @endsection

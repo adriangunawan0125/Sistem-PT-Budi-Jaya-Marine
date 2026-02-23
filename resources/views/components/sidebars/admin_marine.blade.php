@@ -63,24 +63,31 @@
 <!-- Sidebar -->
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
-    {{-- BRAND --}}
-    <a class="sidebar-brand d-flex align-items-center justify-content-center py-4" href="{{ route('admin_marine.dashboard') }}">
-        <div class="sidebar-brand-text text-center">
-            <div class="brand-title">
-                ADMIN<br>TRANSPORT
-            </div>
+   {{-- BRAND --}}
+<a class="sidebar-brand d-flex align-items-center justify-content-center py-4"
+   href="{{ route('admin.marine.dashboard') }}">
+
+    <div class="text-center">
+        <div class="fw-bold text-uppercase" style="font-size:14px; letter-spacing:1px;">
+            Admin Marine
         </div>
+        <small class="text-light">Management System</small>
+    </div>
+
+</a>
+
+<hr class="sidebar-divider my-0">
+
+{{-- DASHBOARD --}}
+<li class="nav-item {{ request()->routeIs('admin.marine.dashboard') ? 'active' : '' }}">
+    <a class="nav-link"
+       href="{{ route('admin.marine.dashboard') }}">
+
+        <i class="fas fa-chart-line me-2"></i>
+        <span>Dashboard</span>
+
     </a>
-
-    <hr class="sidebar-divider my-0">
-
-    {{-- DASHBOARD --}}
-    <li class="nav-item">
-        <a class="nav-link" href="{{ route('admin_marine.dashboard') }}">
-            <i class="fas fa-fw fa-chart-line"></i>
-            <span>Dashboard</span>
-        </a>
-    </li>
+</li>
 
     <hr class="sidebar-divider">
 

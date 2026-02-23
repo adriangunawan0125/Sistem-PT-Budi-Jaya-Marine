@@ -14,19 +14,19 @@
                Kembali
             </a>
 
-            <a href="{{ route('quotations.print', $quotation->id) }}" 
-               target="_blank"
-               class="btn btn-danger btn-sm" style="margin-left: 7px">
+            <a href="#"
+               id="btnPrintPdf"
+               data-url="{{ route('quotations.print', $quotation->id) }}"
+               class="btn btn-danger btn-sm"
+               style="margin-left:7px;">
                Print PDF
             </a>
         </div>
     </div>
 
-
     {{-- HEADER INFO --}}
     <div class="card shadow-sm mb-4">
         <div class="card-body">
-
             <div class="row mb-3">
                 <div class="col-md-6">
                     <div class="info-label">To</div>
@@ -79,10 +79,8 @@
                     {{ $quotation->place ?? '-' }}
                 </div>
             </div>
-
         </div>
     </div>
-
 
     {{-- ITEM TABLE --}}
     @php 
@@ -97,7 +95,6 @@
 
         <div class="table-responsive">
             <table class="table table-bordered table-hover align-middle mb-0 item-table">
-
                 <thead class="table-light text-center">
                     <tr>
                         <th width="5%">No</th>
@@ -110,7 +107,6 @@
                 </thead>
 
                 <tbody>
-
                 @foreach($quotation->subItems as $sub)
 
                     <tr class="sub-row">
@@ -119,31 +115,19 @@
                     </tr>
 
                     @foreach($sub->items as $item)
-
                         @php $grandTotal += $item->total; @endphp
-
                         <tr>
                             <td class="text-center">{{ $no++ }}</td>
-
                             <td>{{ $item->item }}</td>
-
                             <td class="text-end">
                                 Rp {{ number_format($item->price,0,',','.') }}
                             </td>
-
-                            <td class="text-center">
-                                {{ $item->qty }}
-                            </td>
-
-                            <td class="text-center">
-                                {{ $item->unit }}
-                            </td>
-
+                            <td class="text-center">{{ $item->qty }}</td>
+                            <td class="text-center">{{ $item->unit }}</td>
                             <td class="text-end">
                                 Rp {{ number_format($item->total,0,',','.') }}
                             </td>
                         </tr>
-
                     @endforeach
 
                 @endforeach
@@ -156,12 +140,10 @@
                         Rp {{ number_format($grandTotal,0,',','.') }}
                     </td>
                 </tr>
-
                 </tbody>
             </table>
         </div>
     </div>
-
 
     {{-- TERMS --}}
     @if($quotation->termsConditions->count())
@@ -169,13 +151,10 @@
             <div class="card-header bg-secondary text-white">
                 <strong>Terms & Conditions</strong>
             </div>
-
             <div class="card-body">
                 <ol class="mb-0 small">
                     @foreach($quotation->termsConditions as $term)
-                        <li class="mb-2">
-                            {{ $term->description }}
-                        </li>
+                        <li class="mb-2">{{ $term->description }}</li>
                     @endforeach
                 </ol>
             </div>
@@ -184,38 +163,78 @@
 
 </div>
 
+{{-- ================= PDF LOADING MODAL ================= --}}
+<div class="modal fade"
+     id="pdfModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-body text-center py-4">
+                <div class="spinner-border text-danger mb-3"
+                     style="width:3rem;height:3rem;"></div>
+                <div class="fw-semibold">
+                    Membuat PDF quotation...
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <style>
-
 .info-label{
     font-size:12px;
     font-weight:600;
     color:#6c757d;
 }
-
 .info-value{
     font-size:14px;
 }
-
 .item-table th,
 .item-table td{
     font-size:13px;
     padding:8px 10px;
 }
-
 .sub-row{
     background:#f8f9fa;
     font-weight:600;
 }
-
 .total-row{
     background:#f1f3f5;
 }
-
 .table-hover tbody tr:hover{
     background:#f5f7fa;
 }
-
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const pdfModal = new bootstrap.Modal(
+        document.getElementById('pdfModal')
+    );
+
+    const btnPrint = document.getElementById('btnPrintPdf');
+
+    if(btnPrint){
+        btnPrint.addEventListener('click', function (e) {
+
+            e.preventDefault();
+
+            pdfModal.show();
+
+            const url = this.dataset.url;
+
+            // redirect normal supaya tidak blank
+            setTimeout(() => {
+                window.location.href = url;
+            }, 500);
+
+        });
+    }
+
+});
+</script>
 
 @endsection

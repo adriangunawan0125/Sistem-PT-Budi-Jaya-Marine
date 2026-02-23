@@ -40,7 +40,7 @@
     <div class="card shadow-sm border-0 mb-4 compact-card">
         <div class="card-body">
 
-            <form method="GET" action="{{ route('pemasukan-marine.index') }}">
+            <form method="GET" action="{{ route('pemasukan-marine.index') }}" id="filterForm">
                 <div class="row g-3 align-items-end">
 
                     <div class="col-md-4">
@@ -150,7 +150,7 @@
                             <div class="d-flex justify-content-center gap-1">
 
                                 <a href="{{ route('pemasukan-marine.show',$item->id) }}"
-                                   class="btn btn-info btn-xs" style="margin-right: 4px">
+                                   class="btn btn-info btn-xs btnDetail" style="margin-right: 4px">
                                    Detail
                                 </a>
 
@@ -159,15 +159,16 @@
                                    Edit
                                 </a>
 
-                                <form action="{{ route('pemasukan-marine.destroy',$item->id) }}"
-                                      method="POST"
-                                      onsubmit="return confirm('Hapus data ini?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="btn btn-danger btn-xs">
-                                        Hapus
-                                    </button>
-                                </form>
+                              <form action="{{ route('pemasukan-marine.destroy',$item->id) }}"
+      method="POST"
+      class="deleteForm">
+    @csrf
+    @method('DELETE')
+    <button type="button"
+            class="btn btn-danger btn-xs btnDelete">
+        Hapus
+    </button>
+</form>
 
                             </div>
                         </td>
@@ -190,4 +191,158 @@
     </div>
 
 </div>
+{{-- LOADING MODAL --}}
+<div class="modal fade"
+     id="loadingModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1">
+
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+<div class="modal-body text-center py-4">
+
+<div class="spinner-border text-primary mb-3"
+     style="width:3rem;height:3rem;"></div>
+
+<div class="fw-semibold">
+Memuat Data ...
+</div>
+
+</div>
+</div>
+</div>
+</div>
+{{-- DELETE MODAL --}}
+<div class="modal fade"
+     id="deleteModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1">
+
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+
+<div class="modal-body text-center py-4">
+
+<i class="bi bi-exclamation-triangle-fill text-danger"
+   style="font-size:60px;"></i>
+
+<h5 class="fw-bold mt-3">Konfirmasi Hapus</h5>
+
+<div class="text-muted mb-4">
+Yakin ingin menghapus data ini?
+</div>
+
+<div class="d-flex justify-content-center gap-2">
+
+<button type="button"
+        class="btn btn-secondary px-4"
+        data-bs-dismiss="modal" style="margin-right: 4px">
+    Batal
+</button>
+
+<button type="button"
+        class="btn btn-danger px-4"
+        id="confirmDeleteBtn">
+    Hapus
+</button>
+
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+{{-- SUCCESS MODAL --}}
+@if(session('success'))
+<div class="modal fade"
+     id="successModal"
+     tabindex="-1">
+
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content border-0 shadow">
+
+<div class="modal-body text-center py-4">
+
+<i class="bi bi-check-circle-fill text-success"
+   style="font-size:60px;"></i>
+
+<h5 class="fw-bold mt-3">Berhasil</h5>
+
+<div class="text-muted mb-4">
+    {{ session('success') }}
+</div>
+
+<button type="button"
+        class="btn btn-primary px-4"
+        data-bs-dismiss="modal">
+    OK
+</button>
+
+</div>
+</div>
+</div>
+</div>
+@endif
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    const loadingModal = new bootstrap.Modal(
+        document.getElementById("loadingModal")
+    );
+
+    const deleteModal = new bootstrap.Modal(
+        document.getElementById("deleteModal")
+    );
+
+    let deleteForm;
+
+    // ================= DETAIL =================
+    document.querySelectorAll(".btnDetail").forEach(btn => {
+        btn.addEventListener("click", function(e){
+            e.preventDefault();
+            const url = this.getAttribute("href");
+            loadingModal.show();
+            setTimeout(function(){
+                window.location.href = url;
+            }, 250);
+        });
+    });
+
+    // ================= FILTER =================
+    const filterForm = document.getElementById("filterForm");
+    if(filterForm){
+        filterForm.addEventListener("submit", function(){
+            loadingModal.show();
+        });
+    }
+
+    // ================= DELETE =================
+    document.querySelectorAll(".btnDelete").forEach(btn => {
+        btn.addEventListener("click", function(){
+            deleteForm = this.closest("form");
+            deleteModal.show();
+        });
+    });
+
+    document.getElementById("confirmDeleteBtn")
+    .addEventListener("click", function(){
+        if(deleteForm){
+            deleteForm.submit();
+        }
+    });
+
+    // ================= SUCCESS =================
+    @if(session('success'))
+        const successModal = new bootstrap.Modal(
+            document.getElementById("successModal")
+        );
+        successModal.show();
+    @endif
+
+});
+</script>
 @endsection
