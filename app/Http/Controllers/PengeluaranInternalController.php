@@ -1,120 +1,153 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\PengeluaranInternal;
- use Barryvdh\DomPDF\Facade\Pdf;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Storage;
 
 class PengeluaranInternalController extends Controller
 {
-    // Menampilkan daftar pengeluaran
+    // ================= INDEX =================
     public function index(Request $request)
-{
-    $bulan  = $request->bulan ?? date('Y-m'); // default bulan ini
-    $search = $request->search; // keyword deskripsi
+    {
+        $bulan  = $request->bulan ?? date('Y-m');
+        $search = $request->search;
 
-    $pengeluaran = PengeluaranInternal::whereYear('tanggal', substr($bulan, 0, 4))
-        ->whereMonth('tanggal', substr($bulan, 5, 2))
-        ->when($search, function ($query) use ($search) {
-            $query->where('deskripsi', 'like', '%' . $search . '%');
-        })
-        ->orderBy('tanggal', 'asc')
-        ->get();
+        $pengeluaran = PengeluaranInternal::whereYear('tanggal', substr($bulan, 0, 4))
+            ->whereMonth('tanggal', substr($bulan, 5, 2))
+            ->when($search, function ($query) use ($search) {
+                $query->where('deskripsi', 'like', '%' . $search . '%');
+            })
+            ->orderBy('tanggal', 'asc')
+            ->get();
 
-    $total = $pengeluaran->sum('nominal');
+        $total = $pengeluaran->sum('nominal');
 
-    return view(
-        'admin_transport.pengeluaran_internal.index',
-        compact('pengeluaran', 'total', 'bulan', 'search')
-    );
-}
+        return view(
+            'admin_transport.pengeluaran_internal.index',
+            compact('pengeluaran', 'total', 'bulan', 'search')
+        );
+    }
 
+    // ================= SHOW =================
+    public function show($id)
+    {
+        $pengeluaran = PengeluaranInternal::findOrFail($id);
+        return view('admin_transport.pengeluaran_internal.show', compact('pengeluaran'));
+    }
 
-
-public function show($id)
-{
-    $pengeluaran = PengeluaranInternal::findOrFail($id);
-    return view('admin_transport.pengeluaran_internal.show', compact('pengeluaran'));
-}
-
-    // Form tambah pengeluaran
+    // ================= CREATE =================
     public function create()
     {
         return view('admin_transport.pengeluaran_internal.create');
     }
 
-    // Simpan pengeluaran
+    // ================= STORE =================
     public function store(Request $request)
-{
-    $request->validate([
-        'tanggal' => 'required|date',
-        'deskripsi' => 'required|string',
-        'nominal' => 'required|numeric',
-        'gambar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048', // maksimal 2MB
-    ]);
+    {
+        $request->validate([
+            'tanggal'   => 'required|date',
+            'deskripsi' => 'required|string',
+            'nominal'   => 'required|numeric',
+            'gambar'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'gambar1'   => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
 
-    $data = $request->all();
+        $data = $request->only(['tanggal','deskripsi','nominal']);
 
-    if ($request->hasFile('gambar')) {
-        $data['gambar'] = $request->file('gambar')->store('pengeluaran', 'public');
+        // Upload gambar pertama
+        if ($request->hasFile('gambar')) {
+            $data['gambar'] = $request->file('gambar')
+                ->store('pengeluaran', 'public');
+        }
+
+        // Upload gambar kedua
+        if ($request->hasFile('gambar1')) {
+            $data['gambar1'] = $request->file('gambar1')
+                ->store('pengeluaran', 'public');
+        }
+
+        PengeluaranInternal::create($data);
+
+        return redirect()->route('pengeluaran_internal.index')
+            ->with('success', 'Pengeluaran berhasil ditambahkan.');
     }
 
-    PengeluaranInternal::create($data);
-
-    return redirect()->route('pengeluaran_internal.index')
-                     ->with('success', 'Pengeluaran berhasil ditambahkan.');
-}
-
-
-    // Form edit pengeluaran
+    // ================= EDIT =================
     public function edit(PengeluaranInternal $pengeluaranInternal)
     {
-        return view('admin_transport.pengeluaran_internal.edit', compact('pengeluaranInternal'));
+        return view(
+            'admin_transport.pengeluaran_internal.edit',
+            compact('pengeluaranInternal')
+        );
     }
 
-    // Update pengeluaran
+    // ================= UPDATE =================
     public function update(Request $request, PengeluaranInternal $pengeluaranInternal)
-{
-    $request->validate([
-        'tanggal' => 'required|date',
-        'deskripsi' => 'required|string',
-        'nominal' => 'required|numeric',
-        'gambar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-    ]);
+    {
+        $request->validate([
+            'tanggal'   => 'required|date',
+            'deskripsi' => 'required|string',
+            'nominal'   => 'required|numeric',
+            'gambar'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'gambar1'   => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
 
-    $data = $request->all();
+        $data = $request->only(['tanggal','deskripsi','nominal']);
 
-    if ($request->hasFile('gambar')) {
-        // hapus file lama kalau ada
-        if ($pengeluaranInternal->gambar) {
-            \Storage::disk('public')->delete($pengeluaranInternal->gambar);
+        // Update gambar pertama
+        if ($request->hasFile('gambar')) {
+            if ($pengeluaranInternal->gambar) {
+                Storage::disk('public')
+                    ->delete($pengeluaranInternal->gambar);
+            }
+
+            $data['gambar'] = $request->file('gambar')
+                ->store('pengeluaran', 'public');
         }
-        $data['gambar'] = $request->file('gambar')->store('pengeluaran', 'public');
+
+        // Update gambar kedua
+        if ($request->hasFile('gambar1')) {
+            if ($pengeluaranInternal->gambar1) {
+                Storage::disk('public')
+                    ->delete($pengeluaranInternal->gambar1);
+            }
+
+            $data['gambar1'] = $request->file('gambar1')
+                ->store('pengeluaran', 'public');
+        }
+
+        $pengeluaranInternal->update($data);
+
+        return redirect()->route('pengeluaran_internal.index')
+            ->with('success', 'Pengeluaran berhasil diupdate.');
     }
 
-    $pengeluaranInternal->update($data);
-
-    return redirect()->route('pengeluaran_internal.index')
-                     ->with('success', 'Pengeluaran berhasil diupdate.');
-}
-
-
+    // ================= DESTROY =================
     public function destroy(Request $request, PengeluaranInternal $pengeluaranInternal)
-{
-    if ($pengeluaranInternal->gambar) {
-        \Storage::disk('public')->delete($pengeluaranInternal->gambar);
+    {
+        if ($pengeluaranInternal->gambar) {
+            Storage::disk('public')
+                ->delete($pengeluaranInternal->gambar);
+        }
+
+        if ($pengeluaranInternal->gambar1) {
+            Storage::disk('public')
+                ->delete($pengeluaranInternal->gambar1);
+        }
+
+        $pengeluaranInternal->delete();
+
+        return redirect()->route('pengeluaran_internal.index', [
+            'bulan'  => $request->bulan,
+            'search' => $request->search
+        ])->with('success', 'Pengeluaran berhasil dihapus.');
     }
 
-    $pengeluaranInternal->delete();
-
-    return redirect()->route('pengeluaran_internal.index', [
-        'bulan' => $request->bulan,
-        'search' => $request->search
-    ])->with('success', 'Pengeluaran berhasil dihapus.');
-}
-
-
-public function laporan(Request $request)
+    // ================= LAPORAN =================
+    public function laporan(Request $request)
     {
         $bulan = $request->bulan ?? date('Y-m');
 
@@ -131,30 +164,23 @@ public function laporan(Request $request)
         );
     }
 
-    // HALAMAN KHUSUS PRINT
-  
+    // ================= PDF =================
+    public function pdf(Request $request)
+    {
+        $bulan = $request->bulan ?? date('Y-m');
 
-public function pdf(Request $request)
-{
-    $bulan = $request->bulan ?? date('Y-m');
+        $pengeluaran = PengeluaranInternal::whereYear('tanggal', substr($bulan, 0, 4))
+            ->whereMonth('tanggal', substr($bulan, 5, 2))
+            ->orderBy('tanggal', 'asc')
+            ->get();
 
-    $pengeluaran = PengeluaranInternal::whereYear('tanggal', substr($bulan, 0, 4))
-        ->whereMonth('tanggal', substr($bulan, 5, 2))
-        ->orderBy('tanggal', 'asc')
-        ->get();
+        $total = $pengeluaran->sum('nominal');
 
-    $total = $pengeluaran->sum('nominal');
+        $pdf = Pdf::loadView(
+            'admin_transport.pengeluaran_internal.print',
+            compact('pengeluaran', 'total', 'bulan')
+        )->setPaper('A4', 'portrait');
 
-    $pdf = Pdf::loadView(
-        'admin_transport.pengeluaran_internal.print',
-        compact('pengeluaran', 'total', 'bulan')
-    )->setPaper('A4', 'portrait');
-
-    return $pdf->stream('laporan-pengeluaran-'.$bulan.'.pdf');
+        return $pdf->stream('laporan-pengeluaran-'.$bulan.'.pdf');
+    }
 }
-
-}
-
-
-
-

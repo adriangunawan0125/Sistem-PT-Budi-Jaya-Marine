@@ -16,7 +16,8 @@
 
     <form id="createForm"
           method="POST"
-          enctype="multipart/form-data" action="{{ route('pemasukan.store') }}">
+          enctype="multipart/form-data"
+          action="{{ route('pemasukan.store') }}">
         @csrf
 
         <div class="mb-3">
@@ -29,27 +30,27 @@
         </div>
 
         <div class="mb-3">
-    <label class="form-label">Nama Mitra</label>
-    <select name="mitra_id" class="form-control" required>
-        <option value="">-- Pilih Mitra --</option>
-        @foreach($mitras as $mitra)
-            <option value="{{ $mitra->id }}"
-                {{ old('mitra_id') == $mitra->id ? 'selected' : '' }}>
-                {{ $mitra->nama_mitra }}
-            </option>
-        @endforeach
-    </select>
-</div>
+            <label class="form-label">Nama Mitra</label>
+            <select name="mitra_id" class="form-control" required>
+                <option value="">-- Pilih Mitra --</option>
+                @foreach($mitras as $mitra)
+                    <option value="{{ $mitra->id }}"
+                        {{ old('mitra_id') == $mitra->id ? 'selected' : '' }}>
+                        {{ $mitra->nama_mitra }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
 
-<div class="mb-3">
-    <label class="form-label">Kategori</label>
-    <select name="kategori" class="form-control" required>
-        <option value="">-- Pilih Kategori --</option>
-        <option value="setoran">Setoran</option>
-        <option value="cicilan">Cicilan</option>
-        <option value="deposit">Deposit</option>
-    </select>
-</div>
+        <div class="mb-3">
+            <label class="form-label">Kategori</label>
+            <select name="kategori" class="form-control" required>
+                <option value="">-- Pilih Kategori --</option>
+                <option value="setoran">Setoran</option>
+                <option value="cicilan">Cicilan</option>
+                <option value="deposit">Deposit</option>
+            </select>
+        </div>
 
         <div class="mb-3">
             <label class="form-label">Deskripsi</label>
@@ -60,25 +61,50 @@
                    required>
         </div>
 
-       <div class="mb-3">
-    <label class="form-label">Nominal</label>
-
-    <input type="text"
-           class="form-control rupiah"
-           data-hidden="nominal"
-           placeholder="Rp 0"
-           value="{{ old('nominal') ? 'Rp ' . number_format(old('nominal'), 0, ',', '.') : '' }}">
-
-    <input type="hidden"
-           name="nominal"
-           value="{{ old('nominal', 0) }}">
-</div>
-
-
         <div class="mb-3">
-            <label class="form-label">Gambar (Bukti)</label>
+            <label class="form-label">Nominal</label>
+
+            <input type="text"
+                   class="form-control rupiah"
+                   data-hidden="nominal"
+                   placeholder="Rp 0"
+                   value="{{ old('nominal') ? 'Rp ' . number_format(old('nominal'), 0, ',', '.') : '' }}">
+
+            <input type="hidden"
+                   name="nominal"
+                   value="{{ old('nominal', 0) }}">
+        </div>
+
+        {{-- ================= GAMBAR NOTA ================= --}}
+        <div class="mb-3">
+            <label class="form-label">Bukti Tf 1</label>
+
+            <div class="mb-2">
+                <img id="preview-gambar"
+                     src=""
+                     style="max-height:150px;border:1px solid #ddd;border-radius:8px;display:none;">
+            </div>
+
             <input type="file"
                    name="gambar"
+                   id="input-gambar"
+                   class="form-control"
+                   accept="image/*">
+        </div>
+
+        {{-- ================= GAMBAR BUKTI TF ================= --}}
+        <div class="mb-3">
+            <label class="form-label">Bukti TF 2 (jika transfer 2 kali)</label>
+
+            <div class="mb-2">
+                <img id="preview-gambar1"
+                     src=""
+                     style="max-height:150px;border:1px solid #ddd;border-radius:8px;display:none;">
+            </div>
+
+            <input type="file"
+                   name="gambar1"
+                   id="input-gambar1"
                    class="form-control"
                    accept="image/*">
         </div>
@@ -93,6 +119,7 @@
         </a>
     </form>
 </div>
+
 <!-- LOADING MODAL -->
 <div class="modal fade"
      id="loadingModal"
@@ -111,6 +138,7 @@
 </div>
 
 <script>
+/* ================= FORMAT RUPIAH ================= */
 function formatRupiah(angka) {
     let number_string = angka.replace(/\D/g, ''),
         sisa = number_string.length % 3,
@@ -136,14 +164,65 @@ document.querySelectorAll('.rupiah').forEach(el => {
         document.querySelector(`input[name="${hiddenName}"]`).value = raw || 0;
     });
 });
-</script>
-<script>
-function showLoading() {
 
-    const modalEl = document.getElementById('loadingModal');
-    const modal = new bootstrap.Modal(modalEl);
 
-    modal.show();
+/* ================= PREVIEW IMAGE FUNCTION ================= */
+function bindPreview(inputId, previewId) {
+
+    const input = document.getElementById(inputId);
+    const preview = document.getElementById(previewId);
+
+    if (!input) return;
+
+    input.addEventListener("change", function(){
+
+        if (this.files && this.files[0]) {
+
+            const reader = new FileReader();
+
+            reader.onload = function(e){
+                preview.src = e.target.result;
+                preview.style.display = "block";
+            }
+
+            reader.readAsDataURL(this.files[0]);
+
+        } else {
+            preview.src = "";
+            preview.style.display = "none";
+        }
+
+    });
 }
+
+
+/* ================= INIT ================= */
+document.addEventListener("DOMContentLoaded", function(){
+
+    bindPreview("input-gambar", "preview-gambar");
+    bindPreview("input-gambar1", "preview-gambar1");
+
+    const form = document.getElementById("createForm");
+    const modal = new bootstrap.Modal(document.getElementById("loadingModal"));
+
+    form.addEventListener("submit", function(e){
+
+        e.preventDefault();
+
+        if(!form.checkValidity()){
+            form.reportValidity();
+            return;
+        }
+
+        modal.show();
+
+        setTimeout(function(){
+            HTMLFormElement.prototype.submit.call(form);
+        }, 200);
+
+    });
+
+});
 </script>
+
 @endsection

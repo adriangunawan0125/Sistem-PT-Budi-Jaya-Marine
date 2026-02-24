@@ -31,7 +31,7 @@
 }
 
 .preview-img{
-    max-height:250px;
+    max-height:100px;
     border-radius:8px;
     border:1px solid #dee2e6;
     cursor:pointer;
@@ -75,7 +75,8 @@
             <th width="50">No</th>
             <th>Keterangan</th>
             <th width="150">Nominal</th>
-            <th width="150">Gambar</th>
+            <th width="150">Gambar Nota</th>
+            <th width="150">Bukti TF</th>
         </tr>
     </thead>
     <tbody>
@@ -86,6 +87,8 @@
             <td class="text-end">
                 Rp {{ number_format($item->nominal,0,',','.') }}
             </td>
+
+            {{-- Gambar Nota --}}
             <td class="text-center">
                 @if($item->gambar)
                     <img src="{{ asset('storage/'.$item->gambar) }}"
@@ -97,6 +100,20 @@
                     -
                 @endif
             </td>
+
+            {{-- Bukti TF --}}
+            <td class="text-center">
+                @if($item->gambar1)
+                    <img src="{{ asset('storage/'.$item->gambar1) }}"
+                         class="preview-img"
+                         data-bs-toggle="modal"
+                         data-bs-target="#imageModal"
+                         onclick="showImage(this.src)">
+                @else
+                    -
+                @endif
+            </td>
+
         </tr>
         @endforeach
     </tbody>

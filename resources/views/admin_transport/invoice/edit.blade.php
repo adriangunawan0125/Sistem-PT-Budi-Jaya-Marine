@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <h4>Edit Invoice</h4>
+    <h4 class="mb-4">Edit Invoice</h4>
 
     @if(session('error'))
         <div class="alert alert-danger">{{ session('error') }}</div>
@@ -11,67 +11,63 @@
     <form action="{{ route('invoice.update', $invoice->id) }}"
           method="POST"
           enctype="multipart/form-data"
-          onsubmit="return submitWithLoading()"
->
+          onsubmit="return submitWithLoading()">
         @csrf
         @method('PUT')
 
         {{-- MITRA --}}
         <input type="hidden" name="mitra_id" value="{{ $invoice->mitra->id }}">
+
         <div class="mb-3">
-            <label>Mitra</label>
+            <label class="form-label small mb-1">Mitra</label>
             <input type="text"
-                   class="form-control"
+                   class="form-control form-control-sm"
                    value="{{ $invoice->mitra->nama_mitra }}"
                    readonly>
         </div>
 
         <hr>
 
-        <h5>Item Invoice</h5>
+        <h5 class="mb-3">Item Invoice</h5>
 
         <div class="table-responsive">
-            <table class="table table-bordered" id="items">
-                <thead class="table-light">
+            <table class="table table-bordered table-hover align-middle invoice-table" id="items">
+                <thead class="table-light text-center">
                 <tr>
-                    <th style="min-width:180px;">No Invoice</th>
-                    <th style="min-width:140px;">Tanggal Invoice</th>
-                    <th style="min-width:220px;">Item</th>
-                    <th style="min-width:140px;">Tanggal TF</th>
-                    <th style="min-width:140px;">Cicilan</th>
-                    <th style="min-width:140px;">Tagihan</th>
-                    <th style="min-width:140px;">Bukti Transfer</th>
-                    <th style="min-width:140px;">Bukti Perjalanan</th>
-                    <th style="width:60px;"></th>
+                    <th>No Invoice</th>
+                    <th>Tgl Invoice</th>
+                    <th>Item</th>
+                    <th>Tgl TF</th>
+                    <th>Cicilan</th>
+                    <th>Tagihan</th>
+                    <th>Bukti Transfer</th>
+                    <th>Bukti Trip</th>
+                    <th></th>
                 </tr>
                 </thead>
 
                 <tbody>
                 @foreach($invoice->items as $i => $item)
                 <tr>
-                    <td>
-                        <input type="hidden"
-                               name="items[{{ $i }}][id]"
-                               value="{{ $item->id }}">
 
-                        <input type="text"
-                               name="items[{{ $i }}][no_invoices]"
-                               class="form-control"
+                    <input type="hidden" name="items[{{ $i }}][id]" value="{{ $item->id }}">
+
+                    <td>
+                        <input name="items[{{ $i }}][no_invoices]"
+                               class="form-control form-control-sm"
                                value="{{ $item->no_invoices }}">
                     </td>
 
                     <td>
                         <input type="date"
                                name="items[{{ $i }}][tanggal_invoices]"
-                               class="form-control"
-                               value="{{ $item->tanggal_invoices
-                                   ? \Carbon\Carbon::parse($item->tanggal_invoices)->format('Y-m-d')
-                                   : '' }}">
+                               class="form-control form-control-sm"
+                               value="{{ $item->tanggal_invoices }}">
                     </td>
 
                     <td>
                         <input name="items[{{ $i }}][item]"
-                               class="form-control"
+                               class="form-control form-control-sm"
                                value="{{ $item->item }}"
                                required>
                     </td>
@@ -79,15 +75,12 @@
                     <td>
                         <input type="date"
                                name="items[{{ $i }}][tanggal_tf]"
-                               class="form-control"
-                               value="{{ $item->tanggal_tf
-                                   ? \Carbon\Carbon::parse($item->tanggal_tf)->format('Y-m-d')
-                                   : '' }}">
+                               class="form-control form-control-sm"
+                               value="{{ $item->tanggal_tf }}">
                     </td>
 
                     <td>
-                        <input type="text"
-                               class="form-control rupiah"
+                        <input class="form-control form-control-sm rupiah"
                                data-hidden="items[{{ $i }}][cicilan]"
                                value="Rp {{ number_format($item->cicilan,0,',','.') }}">
                         <input type="hidden"
@@ -96,8 +89,7 @@
                     </td>
 
                     <td>
-                        <input type="text"
-                               class="form-control rupiah"
+                        <input class="form-control form-control-sm rupiah"
                                data-hidden="items[{{ $i }}][tagihan]"
                                value="Rp {{ number_format($item->tagihan,0,',','.') }}">
                         <input type="hidden"
@@ -105,37 +97,98 @@
                                value="{{ $item->tagihan }}">
                     </td>
 
+                    {{-- ================= TRANSFER ================= --}}
                     <td>
-                        @if($item->gambar_transfer)
-                            <img src="{{ asset('storage/'.$item->gambar_transfer) }}"
-                                 width="60"
-                                 class="d-block mb-1">
-                        @endif
-                        <input type="file"
-                               name="items[{{ $i }}][gambar_transfer]"
-                               class="form-control"
-                               accept="image/*">
+                        <div class="upload-group transfer-group">
+
+                            <div class="upload-buttons">
+                                <label class="upload-btn">
+                                    <i class="bi bi-upload"></i>
+                                    <input type="file"
+                                           name="items[{{ $i }}][gambar_transfer]"
+                                           class="image-input transfer-input"
+                                           hidden>
+                                </label>
+
+                                <button type="button"
+                                        class="btn btn-xs btn-outline-secondary"
+                                        onclick="addTransfer(this,{{ $i }})">
+                                    +
+                                </button>
+                            </div>
+
+                            <div class="preview-area">
+
+                                @foreach(['gambar_transfer','gambar_transfer1','gambar_transfer2'] as $field)
+                                    @if($item->$field)
+                                        <div class="preview-box">
+                                            <img src="{{ asset('storage/'.$item->$field) }}"
+                                                 class="preview-img">
+                                            <span class="remove-img"
+                                                  onclick="removeOldImage(this)">
+                                                ×
+                                            </span>
+                                            <input type="hidden"
+                                                   name="items[{{ $i }}][hapus_{{ $field }}]"
+                                                   value="0">
+                                        </div>
+                                    @endif
+                                @endforeach
+
+                            </div>
+                        </div>
                     </td>
 
+                    {{-- ================= TRIP ================= --}}
                     <td>
-                        @if($item->gambar_trip)
-                            <img src="{{ asset('storage/'.$item->gambar_trip) }}"
-                                 width="60"
-                                 class="d-block mb-1">
-                        @endif
-                        <input type="file"
-                               name="items[{{ $i }}][gambar_trip]"
-                               class="form-control"
-                               accept="image/*">
+                        <div class="upload-group trip-group">
+
+                            <div class="upload-buttons">
+                                <label class="upload-btn">
+                                    <i class="bi bi-image"></i>
+                                    <input type="file"
+                                           name="items[{{ $i }}][gambar_trip]"
+                                           class="image-input trip-input"
+                                           hidden>
+                                </label>
+
+                                <button type="button"
+                                        class="btn btn-xs btn-outline-secondary"
+                                        onclick="addTrip(this,{{ $i }})">
+                                    +
+                                </button>
+                            </div>
+
+                            <div class="preview-area">
+
+                                @foreach(['gambar_trip','gambar_trip1'] as $field)
+                                    @if($item->$field)
+                                        <div class="preview-box">
+                                            <img src="{{ asset('storage/'.$item->$field) }}"
+                                                 class="preview-img">
+                                            <span class="remove-img"
+                                                  onclick="removeOldImage(this)">
+                                                ×
+                                            </span>
+                                            <input type="hidden"
+                                                   name="items[{{ $i }}][hapus_{{ $field }}]"
+                                                   value="0">
+                                        </div>
+                                    @endif
+                                @endforeach
+
+                            </div>
+                        </div>
                     </td>
 
                     <td class="text-center">
                         <button type="button"
                                 class="btn btn-danger btn-sm"
                                 onclick="this.closest('tr').remove()">
-                            hapus
+                            Hapus
                         </button>
                     </td>
+
                 </tr>
                 @endforeach
                 </tbody>
@@ -144,7 +197,9 @@
 
         <button type="button"
                 class="btn btn-sm btn-secondary mt-3 mb-3"
-                onclick="addItem()">+ Item</button>
+                onclick="addItem()">
+            + Item
+        </button>
 
         <hr>
 
@@ -153,35 +208,54 @@
            class="btn btn-secondary">Batal</a>
     </form>
 </div>
-<!-- MODAL LOADING UPDATE -->
-<div class="modal fade" id="loadingModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow">
-            <div class="modal-body text-center py-4">
-                <div class="spinner-border text-primary mb-3" style="width:3rem;height:3rem;"></div>
-                <div class="fw-semibold">Memperbarui data...</div>
-            </div>
-        </div>
-    </div>
-</div>
 
+<style>
+.invoice-table th,.invoice-table td{
+    font-size:13px;
+    padding:8px;
+    vertical-align:middle;
+}
+.upload-group{display:flex;flex-direction:column;gap:6px;}
+.upload-buttons{display:flex;gap:6px;align-items:center;}
+.upload-btn{
+    width:34px;height:34px;display:flex;
+    align-items:center;justify-content:center;
+    background:#f1f3f5;border:1px solid #ddd;
+    border-radius:6px;cursor:pointer;
+}
+.preview-area{display:flex;gap:6px;flex-wrap:wrap;}
+.preview-box{position:relative;}
+.preview-img{
+    width:42px;height:42px;object-fit:cover;
+    border-radius:6px;border:1px solid #ddd;
+}
+.remove-img{
+    position:absolute;top:-6px;right:-6px;
+    background:#fff;border-radius:50%;
+    font-size:12px;cursor:pointer;color:red;
+}
+</style>
+
+<script>
+function removeOldImage(btn){
+    const box = btn.closest(".preview-box");
+    const hidden = box.querySelector("input[type=hidden]");
+    hidden.value = 1;
+    box.style.opacity = 0.3;
+}
+</script>
+
+@endsection
 
 <script>
 let i = {{ $invoice->items->count() }};
 
-/* ===== UTIL ===== */
-function bulanRomawi(b){
-    return ['','I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'][b];
-}
-function pad3(n){
-    return String(n).replace(/\D/g,'').padStart(3,'0');
-}
-
-/* ===== RUPIAH ===== */
+/* ================= RUPIAH FORMAT ================= */
 function formatRupiah(a){
     let s = a.replace(/\D/g,'');
     return s ? 'Rp ' + s.replace(/\B(?=(\d{3})+(?!\d))/g,'.') : '';
 }
+
 function bindRupiah(el){
     el.addEventListener('input',function(){
         let raw = this.value.replace(/\D/g,'');
@@ -191,79 +265,231 @@ function bindRupiah(el){
         ).value = raw || 0;
     });
 }
+
 document.querySelectorAll('.rupiah').forEach(bindRupiah);
 
-/* ===== ADD ITEM ===== */
+
+/* ================= PREVIEW GAMBAR BARU ================= */
+document.addEventListener("change", function(e){
+
+    if(e.target.classList.contains("image-input")){
+
+        const input = e.target;
+        if(!input.files.length) return;
+
+        const group = input.closest(".upload-group");
+        const preview = group.querySelector(".preview-area");
+
+        const reader = new FileReader();
+
+        reader.onload = function(ev){
+
+            const box = document.createElement("div");
+            box.className = "preview-box";
+
+            box.innerHTML = `
+                <img src="${ev.target.result}" class="preview-img">
+                <span class="remove-img">×</span>
+            `;
+
+            preview.appendChild(box);
+
+            box.querySelector(".remove-img").onclick = function(){
+                input.value = "";
+                box.remove();
+            }
+        }
+
+        reader.readAsDataURL(input.files[0]);
+    }
+
+});
+
+
+/* ================= HAPUS GAMBAR LAMA ================= */
+function removeOldImage(btn){
+
+    const box = btn.closest(".preview-box");
+    const hidden = box.querySelector("input[type=hidden]");
+
+    if(hidden){
+        hidden.value = 1; // kirim ke controller untuk delete
+    }
+
+    box.style.opacity = 0.3;
+}
+
+
+/* ================= ADD TRANSFER ================= */
+function addTransfer(btn,index){
+
+    const group = btn.closest(".transfer-group");
+    const btnArea = group.querySelector(".upload-buttons");
+    const count = btnArea.querySelectorAll(".transfer-input").length;
+
+    if(count >= 3){
+        alert("Maksimal 3 bukti transfer");
+        return;
+    }
+
+    let fieldName;
+
+    if(count === 1){
+        fieldName = 'gambar_transfer1';
+    }else{
+        fieldName = 'gambar_transfer2';
+    }
+
+    btnArea.insertAdjacentHTML("afterbegin",`
+        <label class="upload-btn">
+            <i class="bi bi-upload"></i>
+            <input type="file"
+                   name="items[${index}][${fieldName}]"
+                   class="image-input transfer-input"
+                   hidden>
+        </label>
+    `);
+}
+
+
+/* ================= ADD TRIP ================= */
+function addTrip(btn,index){
+
+    const group = btn.closest(".trip-group");
+    const btnArea = group.querySelector(".upload-buttons");
+    const count = btnArea.querySelectorAll(".trip-input").length;
+
+    if(count >= 2){
+        alert("Maksimal 2 bukti trip");
+        return;
+    }
+
+    btnArea.insertAdjacentHTML("afterbegin",`
+        <label class="upload-btn">
+            <i class="bi bi-image"></i>
+            <input type="file"
+                   name="items[${index}][gambar_trip1]"
+                   class="image-input trip-input"
+                   hidden>
+        </label>
+    `);
+}
+
+
+/* ================= ADD ITEM BARU ================= */
 function addItem(){
+
     let row = `
     <tr>
-        <td><input name="items[${i}][no_invoices]" class="form-control"></td>
-        <td><input type="date" name="items[${i}][tanggal_invoices]" class="form-control"></td>
-        <td><input name="items[${i}][item]" class="form-control" required></td>
-        <td><input type="date" name="items[${i}][tanggal_tf]" class="form-control"></td>
+
         <td>
-            <input class="form-control rupiah" data-hidden="items[${i}][cicilan]">
-            <input type="hidden" name="items[${i}][cicilan]" value="0">
+            <input name="items[${i}][no_invoices]"
+                   class="form-control form-control-sm">
         </td>
+
         <td>
-            <input class="form-control rupiah" data-hidden="items[${i}][tagihan]">
-            <input type="hidden" name="items[${i}][tagihan]" value="0">
+            <input type="date"
+                   name="items[${i}][tanggal_invoices]"
+                   class="form-control form-control-sm">
         </td>
+
         <td>
-            <input type="file"
-                   name="items[${i}][gambar_transfer]"
-                   class="form-control"
-                   accept="image/*">
+            <input name="items[${i}][item]"
+                   class="form-control form-control-sm"
+                   required>
         </td>
+
         <td>
-            <input type="file"
-                   name="items[${i}][gambar_trip]"
-                   class="form-control"
-                   accept="image/*">
+            <input type="date"
+                   name="items[${i}][tanggal_tf]"
+                   class="form-control form-control-sm">
         </td>
+
+        <td>
+            <input class="form-control form-control-sm rupiah"
+                   data-hidden="items[${i}][cicilan]">
+            <input type="hidden"
+                   name="items[${i}][cicilan]"
+                   value="0">
+        </td>
+
+        <td>
+            <input class="form-control form-control-sm rupiah"
+                   data-hidden="items[${i}][tagihan]">
+            <input type="hidden"
+                   name="items[${i}][tagihan]"
+                   value="0">
+        </td>
+
+        <td>
+            <div class="upload-group transfer-group">
+                <div class="upload-buttons">
+                    <label class="upload-btn">
+                        <i class="bi bi-upload"></i>
+                        <input type="file"
+                               name="items[${i}][gambar_transfer]"
+                               class="image-input transfer-input"
+                               hidden>
+                    </label>
+
+                    <button type="button"
+                            class="btn btn-xs btn-outline-secondary"
+                            onclick="addTransfer(this,${i})">
+                        +
+                    </button>
+                </div>
+                <div class="preview-area"></div>
+            </div>
+        </td>
+
+        <td>
+            <div class="upload-group trip-group">
+                <div class="upload-buttons">
+                    <label class="upload-btn">
+                        <i class="bi bi-image"></i>
+                        <input type="file"
+                               name="items[${i}][gambar_trip]"
+                               class="image-input trip-input"
+                               hidden>
+                    </label>
+
+                    <button type="button"
+                            class="btn btn-xs btn-outline-secondary"
+                            onclick="addTrip(this,${i})">
+                        +
+                    </button>
+                </div>
+                <div class="preview-area"></div>
+            </div>
+        </td>
+
         <td class="text-center">
             <button type="button"
                     class="btn btn-danger btn-sm"
-                    onclick="this.closest('tr').remove()">hapus</button>
+                    onclick="this.closest('tr').remove()">
+                Hapus
+            </button>
         </td>
+
     </tr>`;
 
     document.querySelector('#items tbody')
         .insertAdjacentHTML('beforeend', row);
 
     document.querySelectorAll('.rupiah').forEach(bindRupiah);
+
     i++;
 }
 
-/* ===== SUBMIT ===== */
-function cekItem(){
-    for(let row of document.querySelectorAll('#items tbody tr')){
-        let no  = row.querySelector('input[name*="[no_invoices]"]');
-        let tgl = row.querySelector('input[name*="[tanggal_invoices]"]');
 
-        if(!no.value || !tgl.value){
-            alert('No Invoice dan Tanggal Invoice wajib diisi');
-            return false;
-        }
-
-        let d = new Date(tgl.value);
-        let raw = no.value.split('/')[0];
-
-        no.value =
-            `${pad3(raw)}/BJM/${bulanRomawi(d.getMonth()+1)}/${d.getFullYear()}`;
-    }
-    return true;
-}
-
+/* ================= LOADING ================= */
 function submitWithLoading(){
-    if(!cekItem()) return false;
 
     let modal = new bootstrap.Modal(
         document.getElementById('loadingModal')
     );
     modal.show();
 
-    return true; // lanjut submit
+    return true;
 }
 </script>
-@endsection

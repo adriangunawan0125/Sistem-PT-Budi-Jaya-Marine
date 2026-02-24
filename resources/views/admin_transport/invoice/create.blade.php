@@ -51,7 +51,7 @@
                     <th>Cicilan</th>
                     <th>Tagihan</th>
                     <th>Bukti Transfer</th>
-                    <th>Bukti Perjalanan</th>
+                    <th>Bukti Trip</th>
                     <th></th>
                 </tr>
                 </thead>
@@ -77,18 +77,48 @@
                         <input type="hidden" name="items[0][tagihan]" value="0">
                     </td>
 
+                    {{-- TRANSFER --}}
                     <td>
-                        <input type="file"
-                               name="items[0][gambar_transfer]"
-                               class="form-control form-control-sm image-input">
-                        <img class="preview-img mt-1" style="display:none;">
+                        <div class="upload-group transfer-group">
+                            <div class="upload-buttons">
+                                <label class="upload-btn">
+                                    <i class="bi bi-upload"></i>
+                                    <input type="file"
+                                           name="items[0][gambar_transfer]"
+                                           class="image-input transfer-input"
+                                           hidden>
+                                </label>
+
+                                <button type="button"
+                                        class="btn btn-xs btn-outline-secondary"
+                                        onclick="addTransfer(this,0)">
+                                    +
+                                </button>
+                            </div>
+                            <div class="preview-area"></div>
+                        </div>
                     </td>
 
+                    {{-- TRIP --}}
                     <td>
-                        <input type="file"
-                               name="items[0][gambar_trip]"
-                               class="form-control form-control-sm image-input">
-                        <img class="preview-img mt-1" style="display:none;">
+                        <div class="upload-group trip-group">
+                            <div class="upload-buttons">
+                                <label class="upload-btn">
+                                    <i class="bi bi-image"></i>
+                                    <input type="file"
+                                           name="items[0][gambar_trip]"
+                                           class="image-input trip-input"
+                                           hidden>
+                                </label>
+
+                                <button type="button"
+                                        class="btn btn-xs btn-outline-secondary"
+                                        onclick="addTrip(this,0)">
+                                    +
+                                </button>
+                            </div>
+                            <div class="preview-area"></div>
+                        </div>
                     </td>
 
                     <td></td>
@@ -115,8 +145,8 @@
     </form>
 </div>
 
-{{-- LOADING MODAL --}}
-<div class="modal fade" id="loadingModal" data-bs-backdrop="static" data-bs-keyboard="false">
+{{-- LOADING --}}
+<div class="modal fade" id="loadingModal" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">
             <div class="modal-body text-center py-4">
@@ -131,42 +161,73 @@
 .invoice-table th,
 .invoice-table td{
     font-size:13px;
-    padding:8px 10px;
+    padding:8px;
     vertical-align:middle;
 }
 
-.table-hover tbody tr:hover{
-    background:#f5f7fa;
+.upload-group{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
 }
 
-.form-control-sm{
-    font-size:13px;
-    padding:6px 8px;
+.upload-buttons{
+    display:flex;
+    gap:6px;
+    align-items:center;
+}
+
+.upload-btn{
+    width:34px;
+    height:34px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#f1f3f5;
+    border:1px solid #ddd;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+.preview-area{
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+}
+
+.preview-box{
+    position:relative;
 }
 
 .preview-img{
-    max-height:60px;
+    width:42px;
+    height:42px;
+    object-fit:cover;
     border-radius:6px;
     border:1px solid #ddd;
+}
+
+.remove-img{
+    position:absolute;
+    top:-6px;
+    right:-6px;
+    background:#fff;
+    border-radius:50%;
+    font-size:12px;
+    cursor:pointer;
+    color:red;
 }
 </style>
 
 <script>
 let i = 1;
 
-/* ===== UTIL ===== */
-function bulanRomawi(b){
-    return ['','I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'][b];
-}
-function pad3(n){
-    return String(n).replace(/\D/g,'').padStart(3,'0');
-}
-
-/* ===== RUPIAH ===== */
+/* FORMAT RUPIAH */
 function formatRupiah(a){
     let s = a.replace(/\D/g,'');
     return s ? 'Rp ' + s.replace(/\B(?=(\d{3})+(?!\d))/g,'.') : '';
 }
+
 function bindRupiah(el){
     el.addEventListener('input',function(){
         let raw = this.value.replace(/\D/g,'');
@@ -176,87 +237,177 @@ function bindRupiah(el){
         ).value = raw || 0;
     });
 }
+
 document.querySelectorAll('.rupiah').forEach(bindRupiah);
 
-/* ===== IMAGE PREVIEW ===== */
+/* PREVIEW GLOBAL */
 document.addEventListener("change", function(e){
+
     if(e.target.classList.contains("image-input")){
-        let reader = new FileReader();
-        let preview = e.target.nextElementSibling;
+
+        const input = e.target;
+        const group = input.closest(".upload-group");
+        const preview = group.querySelector(".preview-area");
+
+        if(!input.files.length) return;
+
+        const reader = new FileReader();
 
         reader.onload = function(ev){
-            preview.src = ev.target.result;
-            preview.style.display = "block";
+
+            const box = document.createElement("div");
+            box.className = "preview-box";
+
+            box.innerHTML = `
+                <img src="${ev.target.result}" class="preview-img">
+                <span class="remove-img">×</span>
+            `;
+
+            preview.appendChild(box);
+
+            box.querySelector(".remove-img").onclick = function(){
+                input.value = "";
+                box.remove();
+            }
         }
-        reader.readAsDataURL(e.target.files[0]);
+
+        reader.readAsDataURL(input.files[0]);
     }
 });
 
-/* ===== ADD ITEM ===== */
+/* ADD TRANSFER */
+function addTransfer(btn,index){
+
+    const group = btn.closest(".transfer-group");
+    const btnArea = group.querySelector(".upload-buttons");
+    const count = btnArea.querySelectorAll(".transfer-input").length;
+
+    if(count >= 3){
+        alert("Maksimal 3 bukti transfer");
+        return;
+    }
+
+    btnArea.insertAdjacentHTML("afterbegin",`
+        <label class="upload-btn">
+            <i class="bi bi-upload"></i>
+            <input type="file"
+                   name="items[${index}][gambar_transfer${count}]"
+                   class="image-input transfer-input"
+                   hidden>
+        </label>
+    `);
+}
+
+/* ADD TRIP */
+function addTrip(btn,index){
+
+    const group = btn.closest(".trip-group");
+    const btnArea = group.querySelector(".upload-buttons");
+    const count = btnArea.querySelectorAll(".trip-input").length;
+
+    if(count >= 2){
+        alert("Maksimal 2 bukti trip");
+        return;
+    }
+
+    btnArea.insertAdjacentHTML("afterbegin",`
+        <label class="upload-btn">
+            <i class="bi bi-image"></i>
+            <input type="file"
+                   name="items[${index}][gambar_trip${count}]"
+                   class="image-input trip-input"
+                   hidden>
+        </label>
+    `);
+}
+
+/* ADD ITEM */
 function addItem(){
+
     let row = `
     <tr>
         <td><input name="items[${i}][no_invoices]" class="form-control form-control-sm"></td>
         <td><input type="date" name="items[${i}][tanggal_invoices]" class="form-control form-control-sm"></td>
         <td><input name="items[${i}][item]" class="form-control form-control-sm" required></td>
         <td><input type="date" name="items[${i}][tanggal_tf]" class="form-control form-control-sm"></td>
+
         <td>
             <input class="form-control form-control-sm rupiah"
-                   data-hidden="items[${i}][cicilan]">
+                   data-hidden="items[${i}][cicilan]"
+                   placeholder="Rp 0">
             <input type="hidden" name="items[${i}][cicilan]" value="0">
         </td>
+
         <td>
             <input class="form-control form-control-sm rupiah"
-                   data-hidden="items[${i}][tagihan]">
+                   data-hidden="items[${i}][tagihan]"
+                   placeholder="Rp 0">
             <input type="hidden" name="items[${i}][tagihan]" value="0">
         </td>
+
         <td>
-            <input type="file"
-                   name="items[${i}][gambar_transfer]"
-                   class="form-control form-control-sm image-input">
-            <img class="preview-img mt-1" style="display:none;">
+            <div class="upload-group transfer-group">
+                <div class="upload-buttons">
+                    <label class="upload-btn">
+                        <i class="bi bi-upload"></i>
+                        <input type="file"
+                               name="items[${i}][gambar_transfer]"
+                               class="image-input transfer-input"
+                               hidden>
+                    </label>
+
+                    <button type="button"
+                            class="btn btn-xs btn-outline-secondary"
+                            onclick="addTransfer(this,${i})">
+                        +
+                    </button>
+                </div>
+                <div class="preview-area"></div>
+            </div>
         </td>
+
         <td>
-            <input type="file"
-                   name="items[${i}][gambar_trip]"
-                   class="form-control form-control-sm image-input">
-            <img class="preview-img mt-1" style="display:none;">
+            <div class="upload-group trip-group">
+                <div class="upload-buttons">
+                    <label class="upload-btn">
+                        <i class="bi bi-image"></i>
+                        <input type="file"
+                               name="items[${i}][gambar_trip]"
+                               class="image-input trip-input"
+                               hidden>
+                    </label>
+
+                    <button type="button"
+                            class="btn btn-xs btn-outline-secondary"
+                            onclick="addTrip(this,${i})">
+                        +
+                    </button>
+                </div>
+                <div class="preview-area"></div>
+            </div>
         </td>
+
         <td class="text-center">
-            <button type="button" class="btn btn-danger btn-sm"
-                    onclick="this.closest('tr').remove()">hapus</button>
+            <button type="button"
+                    class="btn btn-danger btn-sm"
+                    onclick="this.closest('tr').remove()">
+                Hapus
+            </button>
         </td>
     </tr>`;
-    document.querySelector('#items tbody').insertAdjacentHTML('beforeend', row);
+
+    document.querySelector('#items tbody')
+        .insertAdjacentHTML('beforeend', row);
+
     document.querySelectorAll('.rupiah').forEach(bindRupiah);
+
     i++;
 }
-
-/* ===== SUBMIT + LOADING ===== */
 function submitWithLoading(){
-    if(!cekItem()) return false;
-    let modal = new bootstrap.Modal(document.getElementById('loadingModal'));
+    let modal = new bootstrap.Modal(
+        document.getElementById('loadingModal')
+    );
     modal.show();
-    return true;
-}
-
-/* ===== VALIDASI ===== */
-function cekItem(){
-    for(let row of document.querySelectorAll('#items tbody tr')){
-        let no  = row.querySelector('input[name*="[no_invoices]"]');
-        let tgl = row.querySelector('input[name*="[tanggal_invoices]"]');
-
-        if(!no.value || !tgl.value){
-            alert('No Invoice dan Tanggal Invoice wajib diisi');
-            return false;
-        }
-
-        let d = new Date(tgl.value);
-        let raw = no.value.split('/')[0];
-
-        no.value =
-            `${pad3(raw)}/BJM/${bulanRomawi(d.getMonth()+1)}/${d.getFullYear()}`;
-    }
     return true;
 }
 </script>

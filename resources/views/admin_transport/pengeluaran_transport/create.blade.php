@@ -4,7 +4,6 @@
 <div class="container">
     <h4>Tambah Pengeluaran Transport</h4>
  
-    {{-- ALERT ERROR --}}
     @if ($errors->any())
         <div class="alert alert-warning">
             <i class="bi bi-exclamation-triangle"></i>
@@ -12,14 +11,16 @@
         </div>
     @endif
 
-    {{-- ALERT SUCCESS --}}
     @if (session('success'))
         <div class="alert alert-success">
             {{ session('success') }}
         </div>
     @endif
 
-    <form id="formUnit" method="POST" action="{{ route('pengeluaran_transport.store') }}" enctype="multipart/form-data">
+    <form id="formUnit"
+          method="POST"
+          action="{{ route('pengeluaran_transport.store') }}"
+          enctype="multipart/form-data">
         @csrf
 
         <div class="mb-3">
@@ -38,15 +39,18 @@
         </div>
 
         <h5>Item Pengeluaran</h5>
+
         <table class="table table-bordered" id="items_table">
             <thead>
                 <tr>
                     <th>Keterangan</th>
                     <th>Nominal</th>
-                    <th>Gambar</th>
+                    <th>Gambar Nota</th>
+                    <th>Bukti TF</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
+
             <tbody>
                 <tr>
                     <td>
@@ -62,30 +66,53 @@
                     </td>
 
                     <td>
-                        <input type="file" name="gambar[]" class="form-control" accept="image/*">
+                        <input type="file"
+                               name="gambar[]"
+                               class="form-control preview-input"
+                               accept="image/*">
+                        <img class="img-preview mt-2"
+                             style="max-height:90px; display:none; border:1px solid #ddd; border-radius:6px;">
                     </td>
 
                     <td>
-                        <button type="button" class="btn btn-danger remove-row">Hapus</button>
+                        <input type="file"
+                               name="gambar1[]"
+                               class="form-control preview-input"
+                               accept="image/*">
+                        <img class="img-preview mt-2"
+                             style="max-height:90px; display:none; border:1px solid #ddd; border-radius:6px;">
+                    </td>
+
+                    <td>
+                        <button type="button" class="btn btn-danger remove-row">
+                            Hapus
+                        </button>
                     </td>
                 </tr>
             </tbody>
         </table>
 
-        <button type="button" class="btn btn-secondary mb-3" id="add_item">Tambah Item</button>
-        <br>
-   <button type="submit"
-        class="btn btn-primary"
-        onclick="return cekItem()">
-    Simpan
-</button>
+        <button type="button"
+                class="btn btn-secondary mb-3"
+                id="add_item">
+            Tambah Item
+        </button>
 
-         <a href="{{ route('pengeluaran_transport.index') }}"
+        <br>
+
+        <button type="submit"
+                class="btn btn-primary"
+                onclick="return cekItem()">
+            Simpan
+        </button>
+
+        <a href="{{ route('pengeluaran_transport.index') }}"
            class="btn btn-secondary">
             Kembali
         </a>
     </form>
 </div>
+
 <script>
 function cekItem() {
     let rows = document.querySelectorAll('#items_table tbody tr');
@@ -110,24 +137,6 @@ function cekItem() {
 }
 </script>
 
-<!-- LOADING MODAL -->
-<div class="modal fade"
-     id="loadingModal"
-     data-bs-backdrop="static"
-     data-bs-keyboard="false"
-     tabindex="-1">
-     
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow">
-            <div class="modal-body text-center py-4">
-                <div class="spinner-border text-primary mb-3"
-                     style="width:3rem;height:3rem;"></div>
-                <div class="fw-semibold">Memperbarui data...</div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <style>
 #loadingModal .modal-content{
     display:flex;
@@ -138,9 +147,8 @@ function cekItem() {
 }
 </style>
 
-
 <script>
-// ================= FORMAT RUPIAH =================
+/* ================= FORMAT RUPIAH ================= */
 function formatRupiah(angka) {
     let number_string = angka.replace(/\D/g, ''),
         sisa = number_string.length % 3,
@@ -166,8 +174,39 @@ function bindRupiah(input) {
 
 document.querySelectorAll('.rupiah').forEach(bindRupiah);
 
-// ================= TAMBAH ROW =================
+/* ================= PREVIEW IMAGE ================= */
+function bindPreview(row){
+
+    row.querySelectorAll('.preview-input').forEach(input => {
+
+        input.addEventListener('change', function(){
+
+            const preview = this.nextElementSibling;
+
+            if(this.files && this.files[0]){
+                const reader = new FileReader();
+
+                reader.onload = function(e){
+                    preview.src = e.target.result;
+                    preview.style.display = "block";
+                }
+
+                reader.readAsDataURL(this.files[0]);
+
+            } else {
+                preview.src = "";
+                preview.style.display = "none";
+            }
+        });
+
+    });
+}
+
+bindPreview(document.querySelector('#items_table tbody tr'));
+
+/* ================= TAMBAH ROW ================= */
 document.getElementById('add_item').addEventListener('click', function () {
+
     let tbody = document.querySelector('#items_table tbody');
     let row = document.createElement('tr');
 
@@ -177,47 +216,32 @@ document.getElementById('add_item').addEventListener('click', function () {
             <input type="text" class="form-control rupiah" placeholder="Rp 0" required>
             <input type="hidden" name="nominal[]" value="0">
         </td>
-        <td><input type="file" name="gambar[]" class="form-control" accept="image/*"></td>
-        <td><button type="button" class="btn btn-danger remove-row">Hapus</button></td>
+        <td>
+            <input type="file" name="gambar[]" class="form-control preview-input" accept="image/*">
+            <img class="img-preview mt-2"
+                 style="max-height:90px; display:none; border:1px solid #ddd; border-radius:6px;">
+        </td>
+        <td>
+            <input type="file" name="gambar1[]" class="form-control preview-input" accept="image/*">
+            <img class="img-preview mt-2"
+                 style="max-height:90px; display:none; border:1px solid #ddd; border-radius:6px;">
+        </td>
+        <td>
+            <button type="button" class="btn btn-danger remove-row">Hapus</button>
+        </td>
     `;
 
     tbody.appendChild(row);
+
     bindRupiah(row.querySelector('.rupiah'));
+    bindPreview(row);
 });
 
-// ================= HAPUS ROW =================
+/* ================= HAPUS ROW ================= */
 document.addEventListener('click', function (e) {
     if (e.target.classList.contains('remove-row')) {
         e.target.closest('tr').remove();
     }
-});
-</script>
-
-<script>
-document.addEventListener("DOMContentLoaded", function(){
-
-    const form = document.getElementById("formUnit");
-    if(!form) return;
-
-    const modal = new bootstrap.Modal(document.getElementById("loadingModal"));
-
-    form.addEventListener("submit", function(e){
-
-        e.preventDefault();
-
-        if(!form.checkValidity()){
-            form.reportValidity();
-            return;
-        }
-
-        modal.show();
-
-        setTimeout(function(){
-            HTMLFormElement.prototype.submit.call(form);
-        }, 200);
-
-    });
-
 });
 </script>
 

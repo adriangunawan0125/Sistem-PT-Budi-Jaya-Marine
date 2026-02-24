@@ -46,7 +46,7 @@
                 <th>Tanggal</th>
                 <th>Deskripsi</th>
                 <th>Nominal</th>
-                <th>Gambar</th>
+                
                 <th>Aksi</th>
             </tr>
         </thead>
@@ -58,16 +58,6 @@
                 <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d-m-Y') }}</td>
                 <td>{{ $item->deskripsi }}</td>
                 <td>Rp {{ number_format($item->nominal,0,',','.') }}</td>
-                <td>
-                    @if($item->gambar)
-                        <img src="{{ asset('storage/'.$item->gambar) }}"
-                             alt="Gambar"
-                             width="80"
-                             class="img-thumbnail">
-                    @else
-                        -
-                    @endif
-                </td>
                 <td>
                     <a href="{{ route('pengeluaran_pajak.show', $item->id) }}"
    class="btn btn-info btn-sm mb-1">

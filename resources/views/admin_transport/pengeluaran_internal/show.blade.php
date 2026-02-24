@@ -55,8 +55,9 @@
     </div>
 </div>
 
+{{-- ================= GAMBAR NOTA ================= --}}
 <div class="detail-row">
-    <div class="detail-label">Gambar</div>
+    <div class="detail-label">Gambar Nota</div>
     <div class="detail-value">
         :
         @if($pengeluaran->gambar)
@@ -68,7 +69,26 @@
                      onclick="showImage(this.src)">
             </div>
         @else
-            <span class="text-muted">Tidak ada gambar</span>
+            <span class="text-muted">Tidak ada gambar nota</span>
+        @endif
+    </div>
+</div>
+
+{{-- ================= GAMBAR TF ================= --}}
+<div class="detail-row">
+    <div class="detail-label">Bukti Transfer</div>
+    <div class="detail-value">
+        :
+        @if($pengeluaran->gambar1)
+            <div class="mt-2">
+                <img src="{{ asset('storage/'.$pengeluaran->gambar1) }}"
+                     class="preview-img"
+                     data-bs-toggle="modal"
+                     data-bs-target="#imageModal"
+                     onclick="showImage(this.src)">
+            </div>
+        @else
+            <span class="text-muted">Tidak ada bukti transfer</span>
         @endif
     </div>
 </div>

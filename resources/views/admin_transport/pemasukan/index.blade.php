@@ -158,17 +158,18 @@
                     <td>{{ ucfirst($item->kategori) }}</td>
                     <td>{{ $item->deskripsi }}</td>
 
-                    <td>
-                        @if($item->gambar)
-                            <a href="{{ asset('storage/pemasukan/'.$item->gambar) }}"
-                               target="_blank"
-                               class="btn btn-primary btn-xs">
-                                Lihat
-                            </a>
-                        @else
-                            -
-                        @endif
-                    </td>
+                  <td>
+    @if($item->gambar || $item->gambar1)
+        <button type="button"
+                class="btn btn-primary btn-xs btnPreview"
+                data-gambar="{{ $item->gambar ? asset('storage/pemasukan/'.$item->gambar) : '' }}"
+                data-gambar1="{{ $item->gambar1 ? asset('storage/pemasukan/'.$item->gambar1) : '' }}">
+            Lihat
+        </button>
+    @else
+        -
+    @endif
+</td>
 
                     <td>
                         Rp {{ number_format($item->nominal, 0, ',', '.') }}
@@ -317,21 +318,89 @@
 </div>
 @endif
 
+{{-- ================= PREVIEW IMAGE MODAL ================= --}}
+<div class="modal fade"
+     id="previewModal"
+     tabindex="-1">
 
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+
+            <div class="modal-header">
+                <h5 class="modal-title fw-semibold">
+                    Bukti Transfer
+                </h5>
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <div id="previewContainer"
+                     class="row g-3 justify-content-center">
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
 <script>
 document.addEventListener("DOMContentLoaded", function(){
+
+    /* ================= PREVIEW MODAL ================= */
+
+    const previewModal = new bootstrap.Modal(
+        document.getElementById("previewModal")
+    );
+
+    document.querySelectorAll(".btnPreview").forEach(btn => {
+
+        btn.addEventListener("click", function(){
+
+            const gambar  = this.dataset.gambar;
+            const gambar1 = this.dataset.gambar1;
+
+            const container = document.getElementById("previewContainer");
+            container.innerHTML = "";
+
+            function createImage(src, label){
+                if(!src) return;
+
+                container.innerHTML += `
+                    <div class="col-md-6 text-center">
+                        <p class="small text-muted mb-2">${label}</p>
+                        <img src="${src}"
+                             class="img-fluid rounded shadow"
+                             style="max-height:400px; cursor:pointer;"
+                             onclick="window.open('${src}','_blank')">
+                    </div>
+                `;
+            }
+
+            createImage(gambar, "Bukti TF 1");
+            createImage(gambar1, "Bukti TF 2");
+
+            previewModal.show();
+        });
+
+    });
+
+    // CLEAR MODAL SAAT DITUTUP
+    document.getElementById("previewModal")
+    .addEventListener("hidden.bs.modal", function(){
+        document.getElementById("previewContainer").innerHTML = "";
+    });
+
+
+    /* ================= LOADING MODAL ================= */
 
     const loadingModal = new bootstrap.Modal(
         document.getElementById("loadingModal")
     );
 
-    const deleteModal = new bootstrap.Modal(
-        document.getElementById("deleteModal")
-    );
-
-    let deleteForm;
-
-    // DETAIL
     document.querySelectorAll(".btnDetail").forEach(btn => {
         btn.addEventListener("click", function(e){
             e.preventDefault();
@@ -343,7 +412,6 @@ document.addEventListener("DOMContentLoaded", function(){
         });
     });
 
-    // FILTER
     const filterForm = document.getElementById("filterForm");
     if(filterForm){
         filterForm.addEventListener("submit", function(){
@@ -351,7 +419,15 @@ document.addEventListener("DOMContentLoaded", function(){
         });
     }
 
-    // DELETE
+
+    /* ================= DELETE MODAL ================= */
+
+    const deleteModal = new bootstrap.Modal(
+        document.getElementById("deleteModal")
+    );
+
+    let deleteForm;
+
     document.querySelectorAll(".btnDelete").forEach(btn => {
         btn.addEventListener("click", function(){
             deleteForm = this.closest("form");
@@ -366,7 +442,9 @@ document.addEventListener("DOMContentLoaded", function(){
         }
     });
 
-    // SUCCESS
+
+    /* ================= SUCCESS MODAL ================= */
+
     @if(session('success'))
         const successModal = new bootstrap.Modal(
             document.getElementById("successModal")

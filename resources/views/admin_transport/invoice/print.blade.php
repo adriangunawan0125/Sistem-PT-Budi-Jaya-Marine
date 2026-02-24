@@ -183,25 +183,68 @@ maka unit akan ditarik ke pool.
 </table>
 
 {{-- ================= BUKTI ================= --}}
+@php
+    $transferImages = [];
+
+    if($lastItem){
+        foreach([
+            $lastItem->gambar_transfer,
+            $lastItem->gambar_transfer1,
+            $lastItem->gambar_transfer2
+        ] as $img){
+            if($img){
+                $transferImages[] = $img;
+            }
+        }
+    }
+
+    // Ambil 2 terakhir
+    $transferImages = array_slice($transferImages, -2);
+
+    $tripImage = $lastItem->gambar_trip1
+        ?? $lastItem->gambar_trip
+        ?? null;
+@endphp
+
 <table class="no-border" width="100%">
 <tr>
+
+{{-- ================= TRANSFER ================= --}}
 <td width="50%" valign="top">
 <b>Bukti Transfer Terakhir</b><br><br>
-@if($lastItem && $lastItem->gambar_transfer)
-<img src="{{ storage_path('app/public/'.$lastItem->gambar_transfer) }}" class="img-proof">
+@if(!empty($latestTransfers))
+   @if(!empty($latestTransfers))
+    <table width="100%" class="no-border">
+        <tr>
+            @foreach($latestTransfers as $img)
+                <td width="50%" style="text-align:left;">
+                    <img src="{{ storage_path('app/public/'.$img) }}"
+                         class="img-proof">
+                </td>
+            @endforeach
+        </tr>
+    </table>
 @else
-<i>Tidak ada bukti transfer</i>
+    <i>Tidak ada bukti transfer</i>
 @endif
+@else
+    <i>Tidak ada bukti transfer</i>
+@endif
+
 </td>
 
+{{-- ================= TRIP ================= --}}
 <td width="50%" valign="top" class="text-right">
 <b>Bukti Perjalanan Terakhir</b><br><br>
-@if($lastItem && $lastItem->gambar_trip)
-<img src="{{ storage_path('app/public/'.$lastItem->gambar_trip) }}" class="img-proof">
+
+@if($latestTrip)
+    <img src="{{ storage_path('app/public/'.$latestTrip) }}" class="img-proof">
 @else
-<i>Tidak ada bukti perjalanan</i>
+    <i>Tidak ada bukti perjalanan</i>
 @endif
+
 </td>
+
 </tr>
 </table>
 

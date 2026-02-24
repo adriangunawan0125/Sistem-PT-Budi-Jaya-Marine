@@ -4,7 +4,6 @@
 <div class="container">
     <h4>Tambah Pengeluaran Internal</h4>
 
-    {{-- ALERT ERROR --}}
     @if ($errors->any())
         <div class="alert alert-warning">
             <i class="bi bi-exclamation-triangle"></i>
@@ -12,14 +11,14 @@
         </div>
     @endif
 
-    {{-- ALERT SUCCESS --}}
     @if (session('success'))
         <div class="alert alert-success">
             {{ session('success') }}
         </div>
     @endif
 
-    <form id="createForm" action="{{ route('pengeluaran_internal.store') }}"
+    <form id="createForm"
+          action="{{ route('pengeluaran_internal.store') }}"
           method="POST"
           enctype="multipart/form-data">
         @csrf
@@ -41,7 +40,6 @@
                    required>
         </div>
 
-        {{-- NOMINAL (SAMA KAYAK INVOICE & PEMASUKAN STYLE) --}}
         <div class="mb-3">
             <label class="form-label">Nominal</label>
 
@@ -55,10 +53,20 @@
                    value="0">
         </div>
 
+        {{-- GAMBAR NOTA --}}
         <div class="mb-3">
-            <label class="form-label">Gambar (Bukti)</label>
+            <label class="form-label">Gambar Nota</label>
             <input type="file"
                    name="gambar"
+                   class="form-control"
+                   accept="image/*">
+        </div>
+
+        {{-- BUKTI TF --}}
+        <div class="mb-3">
+            <label class="form-label">Bukti Transfer</label>
+            <input type="file"
+                   name="gambar1"
                    class="form-control"
                    accept="image/*">
         </div>

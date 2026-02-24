@@ -85,25 +85,35 @@ public function show($id)
     /* ================= STORE ================= */
     public function store(Request $request)
 {
-    $request->validate([
-        'tanggal'   => 'required|date',
-        'mitra_id'  => 'required|exists:mitras,id',
-        'kategori'  => 'required|in:setoran,cicilan,deposit',
-        'deskripsi' => 'required',
-        'nominal'   => 'required|numeric',
-        'gambar'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
-    ]);
+   $request->validate([
+    'tanggal'   => 'required|date',
+    'mitra_id'  => 'required|exists:mitras,id',
+    'kategori'  => 'required|in:setoran,cicilan,deposit',
+    'deskripsi' => 'required',
+    'nominal'   => 'required|numeric',
+    'gambar'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+    'gambar1'   => 'nullable|image|mimes:jpg,jpeg,png|max:2048', // tambah ini
+]);
 
     $data = $request->only([
         'tanggal','mitra_id','kategori','deskripsi','nominal'
     ]);
 
-    if ($request->hasFile('gambar')) {
-        $file = $request->file('gambar');
-        $namaFile = time().'_'.$file->getClientOriginalName();
-        $file->storeAs('public/pemasukan', $namaFile);
-        $data['gambar'] = $namaFile;
-    }
+   // Upload gambar utama
+if ($request->hasFile('gambar')) {
+    $file = $request->file('gambar');
+    $namaFile = time().'_'.$file->getClientOriginalName();
+    $file->storeAs('public/pemasukan', $namaFile);
+    $data['gambar'] = $namaFile;
+}
+
+// Upload gambar1 (Bukti TF)
+if ($request->hasFile('gambar1')) {
+    $file2 = $request->file('gambar1');
+    $namaFile2 = time().'_tf_'.$file2->getClientOriginalName();
+    $file2->storeAs('public/pemasukan', $namaFile2);
+    $data['gambar1'] = $namaFile2;
+}
 
     $pemasukan = Pemasukan::create($data);
 
@@ -135,27 +145,29 @@ public function update(Request $request, $id)
 {
     $pemasukan = Pemasukan::findOrFail($id);
 
-    $request->validate([
-        'tanggal'   => 'required|date',
-        'kategori'  => 'required|in:setoran,cicilan,deposit',
-        'deskripsi' => 'required',
-        'nominal'   => 'required|numeric',
-        'gambar'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-    ]);
+   $request->validate([
+    'tanggal'   => 'required|date',
+    'kategori'  => 'required|in:setoran,cicilan,deposit',
+    'deskripsi' => 'required',
+    'nominal'   => 'required|numeric',
+    'gambar'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+    'gambar1'   => 'nullable|image|mimes:jpg,jpeg,png|max:2048', // tambah ini
+]);
 
     // upload gambar
-    if ($request->hasFile('gambar')) {
-        if ($pemasukan->gambar) {
-            Storage::disk('public')->delete('pemasukan/'.$pemasukan->gambar);
-        }
+   // Update gambar1 (Bukti TF)
+if ($request->hasFile('gambar1')) {
 
-        $file = $request->file('gambar');
-        $namaFile = time().'_'.$file->getClientOriginalName();
-        $file->storeAs('public/pemasukan', $namaFile);
-
-        $pemasukan->gambar = $namaFile;
+    if ($pemasukan->gambar1) {
+        Storage::disk('public')->delete('pemasukan/'.$pemasukan->gambar1);
     }
 
+    $file2 = $request->file('gambar1');
+    $namaFile2 = time().'_tf_'.$file2->getClientOriginalName();
+    $file2->storeAs('public/pemasukan', $namaFile2);
+
+    $pemasukan->gambar1 = $namaFile2;
+}
     $pemasukan->update([
         'tanggal'   => $request->tanggal,
         'kategori'  => $request->kategori,
@@ -174,9 +186,9 @@ public function update(Request $request, $id)
     {
         $pemasukan = Pemasukan::findOrFail($id);
 
-        if ($pemasukan->gambar) {
-            Storage::disk('public')->delete('pemasukan/'.$pemasukan->gambar);
-        }
+       if ($pemasukan->gambar1) {
+    Storage::disk('public')->delete('pemasukan/'.$pemasukan->gambar1);
+}
 
         $pemasukan->delete();
 

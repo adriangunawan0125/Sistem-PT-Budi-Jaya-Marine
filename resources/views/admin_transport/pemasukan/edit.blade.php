@@ -15,13 +15,14 @@
         </div>
     @endif
 
-    <form id="editForm" action="{{ route('pemasukan.update', $pemasukan->id) }}"
+    <form id="editForm"
+          action="{{ route('pemasukan.update', $pemasukan->id) }}"
           method="POST"
           enctype="multipart/form-data">
         @csrf
         @method('PUT')
 
-        {{-- MITRA (READ ONLY) --}}
+        {{-- MITRA --}}
         <div class="mb-3">
             <label class="form-label">Nama Mitra</label>
             <input type="text"
@@ -44,7 +45,6 @@
         <div class="mb-3">
             <label class="form-label">Kategori</label>
             <select name="kategori" class="form-control" required>
-                <option value="">-- Pilih Kategori --</option>
                 <option value="setoran" {{ old('kategori', $pemasukan->kategori)=='setoran'?'selected':'' }}>Setoran</option>
                 <option value="cicilan" {{ old('kategori', $pemasukan->kategori)=='cicilan'?'selected':'' }}>Cicilan</option>
                 <option value="deposit" {{ old('kategori', $pemasukan->kategori)=='deposit'?'selected':'' }}>Deposit</option>
@@ -69,31 +69,62 @@
                    class="form-control rupiah"
                    data-hidden="nominal"
                    placeholder="Rp 0"
-                   value="{{ old('nominal')
-                        ? 'Rp ' . number_format(old('nominal'), 0, ',', '.')
-                        : 'Rp ' . number_format($pemasukan->nominal, 0, ',', '.') }}">
+                   value="Rp {{ number_format(old('nominal', $pemasukan->nominal), 0, ',', '.') }}">
 
             <input type="hidden"
                    name="nominal"
                    value="{{ old('nominal', $pemasukan->nominal) }}">
         </div>
 
-        {{-- GAMBAR --}}
-        <div class="mb-3">
-            <label class="form-label">Ganti Gambar (Opsional)</label>
+        {{-- ================= BUKTI TF 1 ================= --}}
+        <div class="mb-4">
+            <label class="form-label fw-semibold">Bukti TF 1</label>
+
             <input type="file"
                    name="gambar"
+                   id="input-gambar"
                    class="form-control"
-                   accept="image/*"
-                   onchange="previewImage(event)">
+                   accept="image/*">
 
-            <img id="preview" class="img-thumbnail mt-2" width="150" style="display:none;">
+            {{-- Preview realtime --}}
+            <img id="preview-gambar"
+                 class="img-thumbnail mt-2"
+                 style="max-width:180px; display:none;">
 
+            {{-- Gambar lama --}}
             @if ($pemasukan->gambar)
                 <div class="mt-3">
-                    <p class="mb-1 text-muted">Gambar saat ini:</p>
+                    <small class="text-muted">Gambar saat ini:</small><br>
                     <img src="{{ asset('storage/pemasukan/'.$pemasukan->gambar) }}"
-                         width="150"
+                         style="max-width:180px;"
+                         class="img-thumbnail">
+                </div>
+            @endif
+        </div>
+
+        {{-- ================= BUKTI TF 2 ================= --}}
+        <div class="mb-4">
+            <label class="form-label fw-semibold">
+                Bukti TF 2 (Jika transfer 2 kali)
+            </label>
+
+            <input type="file"
+                   name="gambar1"
+                   id="input-gambar1"
+                   class="form-control"
+                   accept="image/*">
+
+            {{-- Preview realtime --}}
+            <img id="preview-gambar1"
+                 class="img-thumbnail mt-2"
+                 style="max-width:180px; display:none;">
+
+            {{-- Gambar lama --}}
+            @if ($pemasukan->gambar1)
+                <div class="mt-3">
+                    <small class="text-muted">Bukti TF saat ini:</small><br>
+                    <img src="{{ asset('storage/pemasukan/'.$pemasukan->gambar1) }}"
+                         style="max-width:180px;"
                          class="img-thumbnail">
                 </div>
             @endif
@@ -111,6 +142,7 @@
     </form>
 </div>
 
+
 <!-- LOADING MODAL -->
 <div class="modal fade" id="loadingModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
@@ -123,27 +155,8 @@
     </div>
 </div>
 
-<!-- SUCCESS MODAL -->
-<div class="modal fade" id="successModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow">
-            <div class="modal-body text-center py-4">
-                <div class="mb-3">
-                    <i class="bi bi-check-circle-fill text-success" style="font-size:60px;"></i>
-                </div>
-                <h5 class="fw-bold mb-2">Berhasil</h5>
-                <div id="successText" class="text-muted"></div>
-                <div class="mt-4">
-                    <button class="btn btn-success px-4" data-bs-dismiss="modal">
-                        OK
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
-{{-- Rupiah Script --}}
+{{-- ================= RUPIAH FORMAT ================= --}}
 <script>
 function formatRupiah(angka) {
     let number_string = angka.replace(/\D/g, ''),
@@ -170,19 +183,52 @@ document.querySelectorAll('.rupiah').forEach(el => {
 });
 </script>
 
-{{-- LOADING SUBMIT SCRIPT (INI KUNCI NYA) --}}
+
+{{-- ================= PREVIEW REALTIME ================= --}}
 <script>
-document.getElementById('editForm').addEventListener('submit', function (e) {
-    e.preventDefault();
+function bindPreview(inputId, previewId) {
 
-    let modal = new bootstrap.Modal(
-        document.getElementById('loadingModal')
-    );
-    modal.show();
+    const input = document.getElementById(inputId);
+    const preview = document.getElementById(previewId);
 
-    setTimeout(() => {
-        this.submit();
-    }, 200);
+    if (!input) return;
+
+    input.addEventListener("change", function(){
+
+        if (this.files.length > 0) {
+
+            const reader = new FileReader();
+
+            reader.onload = function(e){
+                preview.src = e.target.result;
+                preview.style.display = "block";
+            }
+
+            reader.readAsDataURL(this.files[0]);
+
+        } else {
+            preview.src = "";
+            preview.style.display = "none";
+        }
+
+    });
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+
+    bindPreview("input-gambar", "preview-gambar");
+    bindPreview("input-gambar1", "preview-gambar1");
+
+    const form = document.getElementById('editForm');
+    const modal = new bootstrap.Modal(document.getElementById('loadingModal'));
+
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        modal.show();
+        setTimeout(() => {
+            form.submit();
+        }, 200);
+    });
 });
 </script>
 

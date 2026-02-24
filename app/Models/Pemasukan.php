@@ -16,7 +16,8 @@ class Pemasukan extends Model
         'kategori',
         'deskripsi',
         'nominal',
-        'gambar'
+        'gambar',
+        'gambar1'
     ];
 
     /* ================= RELATION ================= */

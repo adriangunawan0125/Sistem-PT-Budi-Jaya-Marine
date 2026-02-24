@@ -15,8 +15,15 @@ class InvoiceItem extends Model
         'cicilan',
         'tagihan',
         'amount',
+
+        // ====== GAMBAR TRIP (2) ======
         'gambar_trip',
-        'gambar_transfer'
+        'gambar_trip1',
+
+        // ====== GAMBAR TRANSFER (3) ======
+        'gambar_transfer',
+        'gambar_transfer1',
+        'gambar_transfer2',
     ];
 
     public function invoice()

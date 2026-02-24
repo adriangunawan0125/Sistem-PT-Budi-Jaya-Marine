@@ -9,7 +9,7 @@ class PengeluaranTransportItem extends Model
     use HasFactory;
 
     protected $table = 'pengeluaran_transport_item';
-    protected $fillable = ['transport_id', 'keterangan', 'nominal', 'gambar'];
+    protected $fillable = ['transport_id', 'keterangan', 'nominal', 'gambar','gambar1'];
 
     public function transport()
     {
