@@ -145,7 +145,8 @@ class DeliveryOrderController extends Controller
             $this->updatePoStatus($poMasuk);
             DB::commit();
             return redirect()
-                ->route('po-masuk.show', $deliveryOrder->po_masuk_id);
+                ->route('po-masuk.show', $deliveryOrder->po_masuk_id)
+                ->with('success','Delivery Order berhasil dihapus');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error',$e->getMessage());

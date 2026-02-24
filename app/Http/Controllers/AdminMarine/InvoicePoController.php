@@ -187,27 +187,29 @@ class InvoicePoController extends Controller
     }
 
     /* ================= DESTROY ================= */
-    public function destroy(InvoicePo $invoicePo)
-    {
-        DB::beginTransaction();
+   public function destroy(InvoicePo $invoicePo)
+{
+    DB::beginTransaction();
 
-        try {
+    try {
 
-            $invoicePo->items()->delete();
-            $invoicePo->delete();
+        $poMasukId = $invoicePo->po_masuk_id; // simpan dulu sebelum delete
 
-            DB::commit();
+        $invoicePo->items()->delete();
+        $invoicePo->delete();
 
-                return redirect()
-                ->route('po-masuk.show', $invoice->po_masuk_id)
-                ->with('success','Invoice berhasil dihapus');
+        DB::commit();
 
-        } catch (\Exception $e) {
+        return redirect()
+            ->route('po-masuk.show', $poMasukId)
+            ->with('success','Invoice berhasil dihapus');
 
-            DB::rollBack();
-            return back()->with('error',$e->getMessage());
-        }
+    } catch (\Exception $e) {
+
+        DB::rollBack();
+        return back()->with('error',$e->getMessage());
     }
+}
 
     /* ================= PRINT ================= */
     public function print(InvoicePo $invoicePo)

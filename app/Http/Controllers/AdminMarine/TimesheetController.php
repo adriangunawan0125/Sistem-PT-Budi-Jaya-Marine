@@ -189,7 +189,7 @@ class TimesheetController extends Controller
         $timesheet->delete();
 
         return redirect()
-            ->route('timesheet.index')
+          ->route('po-masuk.show', $timesheet->po_masuk_id)
             ->with('success', 'Timesheet berhasil dihapus');
     }
 

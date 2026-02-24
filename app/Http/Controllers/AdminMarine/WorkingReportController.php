@@ -239,7 +239,7 @@ public function index(Request $request)
         $workingReport->delete();
 
         return redirect()
-            ->route('working-report.index')
+           ->route('po-masuk.show', $report->po_masuk_id)
             ->with('success','Working Report berhasil dihapus');
     }
 
