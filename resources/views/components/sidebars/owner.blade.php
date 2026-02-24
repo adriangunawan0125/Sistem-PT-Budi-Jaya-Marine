@@ -82,7 +82,7 @@
 
     <hr class="sidebar-divider">
 
-    <div class="sidebar-heading">Kelola</div>
+    <div class="sidebar-heading">Kelola Transport</div>
 
     <!-- LAPORAN PEMASUKAN -->
     <li class="nav-item">

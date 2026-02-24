@@ -188,7 +188,7 @@ maka unit akan ditarik ke pool.
 <td width="50%" valign="top">
 <b>Bukti Transfer Terakhir</b><br><br>
 @if($lastItem && $lastItem->gambar_transfer)
-<img src="{{ public_path('storage/'.$lastItem->gambar_transfer) }}" class="img-proof">
+<img src="{{ storage_path('app/public/'.$lastItem->gambar_transfer) }}" class="img-proof">
 @else
 <i>Tidak ada bukti transfer</i>
 @endif
@@ -197,7 +197,7 @@ maka unit akan ditarik ke pool.
 <td width="50%" valign="top" class="text-right">
 <b>Bukti Perjalanan Terakhir</b><br><br>
 @if($lastItem && $lastItem->gambar_trip)
-<img src="{{ public_path('storage/'.$lastItem->gambar_trip) }}" class="img-proof">
+<img src="{{ storage_path('app/public/'.$lastItem->gambar_trip) }}" class="img-proof">
 @else
 <i>Tidak ada bukti perjalanan</i>
 @endif

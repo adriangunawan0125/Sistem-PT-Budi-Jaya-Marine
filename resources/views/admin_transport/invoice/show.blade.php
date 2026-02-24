@@ -88,8 +88,10 @@
             <thead>
                 <tr>
                     <th style="width:50px;">No</th>
+                     <th style="width:130px;">Tanggal Invoice</th>
                     <th style="width:160px;">No Invoice</th>
                     <th>Item</th>
+                   
                     <th style="width:120px;">Tgl TF</th>
                     <th style="width:120px;">Cicilan</th>
                     <th style="width:120px;">Tagihan</th>
@@ -107,7 +109,13 @@
                 @foreach ($invoice->items as $item)
                     <tr>
                         <td class="text-center">{{ $no++ }}</td>
-
+   {{-- TANGGAL INVOICE PER ITEM --}}
+                        <td class="text-center nowrap">
+                            {{ $item->tanggal_invoices
+                                ? \Carbon\Carbon::parse($item->tanggal_invoices)->format('d-m-Y')
+                                : '-' }}
+                        </td>
+                        
                         <td class="text-center nowrap">
                             {{ $item->no_invoices ?? '-' }}
                         </td>
@@ -115,6 +123,8 @@
                         <td class="item-cell">
                             {{ $item->item }}
                         </td>
+
+                     
 
                         <td class="text-center nowrap">
                             {{ $item->tanggal_tf
@@ -146,7 +156,7 @@
                 @endforeach
 
                 <tr class="total-row">
-                    <td colspan="6" class="text-end">TOTAL</td>
+                    <td colspan="7" class="text-end">TOTAL</td>
                     <td class="text-end">
                         Rp {{ number_format($grandTotal,0,',','.') }}
                     </td>
