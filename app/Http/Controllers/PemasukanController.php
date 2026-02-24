@@ -67,6 +67,12 @@ public function index(Request $request)
     ));
 }
 
+public function show($id)
+{
+    $pemasukan = Pemasukan::with('mitra')->findOrFail($id);
+
+    return view('admin_transport.pemasukan.show', compact('pemasukan'));
+}
 
     /* ================= CREATE ================= */
     public function create()

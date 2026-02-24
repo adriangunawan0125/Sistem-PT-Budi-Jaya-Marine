@@ -161,7 +161,14 @@
         </div>
     </li>
 
-
+    <!-- KELOLA AKUN -->
+    <li class="nav-item {{ request()->routeIs('akun.*') ? 'active' : '' }}">
+        <a class="nav-link"
+           href="{{ route('akun.index') }}">
+            <i class="fas fa-fw fa-user-cog"></i>
+            <span>Kelola Akun</span>
+        </a>
+    </li>
     <hr class="sidebar-divider d-none d-md-block">
 
 </ul>

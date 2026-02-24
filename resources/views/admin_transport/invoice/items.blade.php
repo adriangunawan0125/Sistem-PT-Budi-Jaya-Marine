@@ -19,19 +19,21 @@
     {{-- DETAIL ITEM --}}
     <h5 class="mb-3">Detail Item</h5>
 
-    {{-- STATUS ITEM --}}
-    <div class="d-flex mb-2">
-        <div style="width:170px"><b>Status Item</b></div>
-        <div>:
-            @php
-                $statusItem = $item->tanggal_tf ? 'lunas' : 'belum';
-            @endphp
+   {{-- STATUS ITEM --}}
+<div class="d-flex mb-2">
+    <div style="width:170px"><b>Status Item</b></div>
+    <div>:
+        @php
+            $sisa = $item->tagihan - $item->cicilan;
+            $statusItem = $sisa <= 0 ? 'lunas' : 'belum lunas';
+        @endphp
 
-            <span class="badge text-light bg-{{ $statusItem == 'lunas' ? 'success' : 'warning' }}">
-                {{ strtoupper($statusItem) }}
-            </span>
-        </div>
+        <span class="badge px-3 py-2 text-light 
+            bg-{{ $statusItem == 'lunas' ? 'success' : 'warning' }}">
+            {{ strtoupper($statusItem) }}
+        </span>
     </div>
+</div>
 
     <div class="d-flex mb-1">
         <div style="width:170px"><b>No Invoice</b></div>

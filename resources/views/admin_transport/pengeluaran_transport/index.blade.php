@@ -66,6 +66,11 @@
 
                     @if($itemIndex == 0)
                         <td rowspan="{{ $t->items->count() }}">
+                            <a href="{{ route('pengeluaran_transport.show', $t->id) }}"
+   class="btn btn-info btn-sm mb-1">
+    Detail
+</a>
+
                             <a href="{{ route('pengeluaran_transport.edit', $t->id) }}"
                                class="btn btn-warning btn-sm mb-1">
                                 Edit

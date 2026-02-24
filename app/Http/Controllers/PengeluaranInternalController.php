@@ -30,6 +30,13 @@ class PengeluaranInternalController extends Controller
 }
 
 
+
+public function show($id)
+{
+    $pengeluaran = PengeluaranInternal::findOrFail($id);
+    return view('admin_transport.pengeluaran_internal.show', compact('pengeluaran'));
+}
+
     // Form tambah pengeluaran
     public function create()
     {

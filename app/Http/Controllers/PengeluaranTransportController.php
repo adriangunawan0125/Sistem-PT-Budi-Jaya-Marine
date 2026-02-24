@@ -37,6 +37,15 @@ class PengeluaranTransportController extends Controller
     );
 }
 
+public function show(PengeluaranTransport $pengeluaran_transport)
+{
+    $pengeluaran_transport->load('unit','items');
+
+    return view(
+        'admin_transport.pengeluaran_transport.show',
+        compact('pengeluaran_transport')
+    );
+}
 
     // Form tambah pengeluaran
     public function create()

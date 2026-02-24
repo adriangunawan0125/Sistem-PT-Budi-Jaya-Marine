@@ -16,7 +16,7 @@
 
     <form id="createForm"
           method="POST"
-          enctype="multipart/form-data">
+          enctype="multipart/form-data" action="{{ route('pemasukan.store') }}">
         @csrf
 
         <div class="mb-3">

@@ -33,6 +33,15 @@ class PengeluaranPajakController extends Controller
 }
 
 
+public function show($id)
+{
+    $pajak = PengeluaranPajak::with('unit')->findOrFail($id);
+
+    return view(
+        'admin_transport.pengeluaran_pajak.show',
+        compact('pajak')
+    );
+}
     public function create()
     {
         $units = Unit::all();

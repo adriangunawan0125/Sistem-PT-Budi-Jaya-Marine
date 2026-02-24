@@ -70,6 +70,11 @@
                     @endif
                 </td>
                 <td>
+                   <a href="{{ route('pengeluaran_internal.show', $item->id) }}"
+   class="btn btn-info btn-sm mb-1">
+    Detail
+</a>
+
                     <a href="{{ route('pengeluaran_internal.edit', $item->id) }}"
                        class="btn btn-warning btn-sm mb-1">
                         Edit

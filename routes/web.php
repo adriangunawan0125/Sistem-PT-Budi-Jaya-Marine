@@ -25,6 +25,7 @@ use App\Http\Controllers\CalonMitraController;
 use App\Http\Controllers\AdminTransport\CalonMitraController as AdminCalonMitraController;
 use App\Http\Controllers\PemasukanController;
 use App\Http\Controllers\owner_transport\OwnerTransportController;
+use App\Http\Controllers\owner_transport\AkunController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\AdminMarine\MarineInvoiceController;
 //use App\Http\Controllers\PoMasukController;
@@ -149,6 +150,19 @@ Route::post('/owner/notifikasi/read/{id}', function ($id) {
     return response()->json(['status' => 'ok']);
 })->name('owner.notif.read');
 
+ // =========================
+    // CRUD AKUN (OWNER ONLY)
+    // =========================
+
+    Route::get('/akun', [AkunController::class, 'index'])->name('akun.index');
+    Route::get('/akun/create', [AkunController::class, 'create'])->name('akun.create');
+    Route::post('/akun', [AkunController::class, 'store'])->name('akun.store');
+    Route::get('/akun/{akun}/edit', [AkunController::class, 'edit'])->name('akun.edit');
+    Route::put('/akun/{akun}', [AkunController::class, 'update'])->name('akun.update');
+    Route::delete('/akun/{akun}', [AkunController::class, 'destroy'])->name('akun.destroy');
+    Route::put('/akun/{akun}/reset-password', 
+    [AkunController::class, 'resetPassword']
+)->name('akun.reset-password');
 
 });
 
@@ -225,7 +239,7 @@ Route::get('/invoice-item/{item}', [InvoiceController::class, 'showItem'])
     Route::get('pengeluaran_internal/laporan',[PengeluaranInternalController::class, 'laporan'])->name('pengeluaran_internal.laporan');
     Route::get('pengeluaran_internal/pdf',[PengeluaranInternalController::class, 'pdf'])->name('pengeluaran_internal.pdf');
     Route::resource('pengeluaran_internal',PengeluaranInternalController::class)->except(['show']);
-    
+    Route::get('/pengeluaran_internal/{id}', [PengeluaranInternalController::class, 'show'])->name('pengeluaran_internal.show');
 
     //Pengeluaran Pajak
     Route::get('pengeluaran_pajak/laporan',[PengeluaranPajakController::class, 'laporan'])->name('pengeluaran_pajak.laporan');
@@ -234,12 +248,15 @@ Route::get('/invoice-item/{item}', [InvoiceController::class, 'showItem'])
 
     Route::resource('pengeluaran_pajak',PengeluaranPajakController::class)->except(['show']);
 
+    Route::get('/pengeluaran_pajak/{pengeluaran_pajak}',[PengeluaranPajakController::class, 'show'])->name('pengeluaran_pajak.show');
+
     //Pengeluaran Transport
     Route::get('pengeluaran_transport/print',[PengeluaranTransportController::class, 'print'])->name('pengeluaran_transport.print');
 
     Route::get('pengeluaran_transport/laporan',[PengeluaranTransportController::class, 'laporan'])->name('pengeluaran_transport.laporan');
 
     Route::resource('pengeluaran_transport',PengeluaranTransportController::class)->except(['show']);
+    Route::get('/pengeluaran_transport/{pengeluaran_transport}',[PengeluaranTransportController::class, 'show'])->name('pengeluaran_transport.show');
 
     //Jaminan Mitra
     Route::resource(    'jaminan_mitra', JaminanMitraController::class);

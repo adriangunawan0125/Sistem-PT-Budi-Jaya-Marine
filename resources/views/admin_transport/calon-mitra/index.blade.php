@@ -31,9 +31,9 @@
                     <td>{{ $item->alamat }}</td>
                     <td>
                         @if($item->is_checked)
-                            <span class="badge bg-success text-light">Disetujui</span>
+                            <span class="badge bg-success px-3 py-2 text-light">Disetujui</span>
                         @else
-                            <span class="badge bg-warning text-light">Belum Diproses</span>
+                            <span class="badge bg-warning px-3 py-2 text-light">Belum Diproses</span>
                         @endif
                     </td>
                     <td class="text-center">

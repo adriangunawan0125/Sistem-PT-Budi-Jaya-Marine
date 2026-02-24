@@ -69,6 +69,10 @@
                     @endif
                 </td>
                 <td>
+                    <a href="{{ route('pengeluaran_pajak.show', $item->id) }}"
+   class="btn btn-info btn-sm mb-1">
+    Detail
+</a>
                     <a href="{{ route('pengeluaran_pajak.edit', $item->id) }}"
                        class="btn btn-warning btn-sm">
                         Edit

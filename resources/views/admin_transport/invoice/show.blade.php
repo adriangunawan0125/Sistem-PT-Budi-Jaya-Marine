@@ -5,8 +5,10 @@
 
     <h4 class="mb-3">Detail Invoice</h4>
 
-    <p><b>Mitra:</b> {{ $mitra->nama_mitra }}</p>
-    <p><b>Unit:</b> {{ $mitra->unit->nama_unit ?? '-' }}</p>
+    <div class="mb-3">
+        <div><b>Mitra:</b> {{ $mitra->nama_mitra }}</div>
+        <div><b>Unit:</b> {{ $mitra->unit->nama_unit ?? '-' }}</div>
+    </div>
 
     @php
         $editableInvoice = $invoice && $invoice->items->isNotEmpty()
@@ -15,24 +17,21 @@
     @endphp
 
     {{-- ACTION BUTTONS --}}
-    <div class="mb-3 d-flex gap-2">
+    <div class="mb-3 d-flex flex-wrap gap-2">
         <a href="{{ route('invoice.create', ['mitra_id' => $mitra->id]) }}"
-           class="btn btn-primary"
-           style="margin-right: 7px">
+           class="btn btn-primary btn-sm" style="margin-right: 4px">
             + Invoice Baru
         </a>
 
         @if ($editableInvoice)
             <a href="{{ route('invoice.edit', $editableInvoice->id) }}"
-               class="btn btn-warning"
-               style="margin-right: 7px">
+               class="btn btn-warning btn-sm" style="margin-right: 4px">
                 Edit Invoice
             </a>
 
             <a href="{{ route('invoice.print', $editableInvoice->id) }}"
-               class="btn btn-danger trigger-loading"
-               data-loading-text="Membuat PDF..."
-               style="margin-right: 7px">
+               class="btn btn-danger btn-sm trigger-loading"
+               data-loading-text="Membuat PDF...">
                 Print PDF
             </a>
         @endif
@@ -46,42 +45,56 @@
 
     <style>
         .invoice-table{
-            table-layout: fixed;
-            min-width: 1400px;
+            table-layout: auto;
+            width: 100%;
         }
-        .invoice-table th,
+
+        .invoice-table th{
+            font-size:13px;
+            padding:10px;
+            text-align:center;
+            background:#f8f9fa;
+        }
+
         .invoice-table td{
-            vertical-align: middle;
+            font-size:13px;
+            padding:10px;
+            vertical-align:middle;
         }
-        .col-no     { width: 60px }
-        .col-inv    { width: 160px }
-        .col-item   { width: 320px }
-        .col-tgl    { width: 130px }
-        .col-num    { width: 150px }
-        .col-aksi   { width: 160px }
+
+        .invoice-table tbody tr:hover{
+            background:#f5f7fa;
+        }
+
+        .nowrap{
+            white-space: nowrap;
+        }
 
         .item-cell{
             white-space: normal;
             word-break: break-word;
+            max-width: 250px;
         }
-        .nowrap{
-            white-space: nowrap;
+
+        .total-row{
+            background:#f1f3f5;
+            font-weight:600;
         }
     </style>
 
     @if ($invoice && $invoice->items->isNotEmpty())
     <div class="table-responsive">
-        <table class="table table-bordered table-sm invoice-table">
-            <thead class="table-light text-center">
+        <table class="table table-bordered table-hover invoice-table">
+            <thead>
                 <tr>
-                    <th class="col-no">No</th>
-                    <th class="col-inv">No Invoice</th>
-                    <th class="col-item">Item</th>
-                    <th class="col-tgl">Tanggal TF</th>
-                    <th class="col-num">Cicilan</th>
-                    <th class="col-num">Tagihan</th>
-                    <th class="col-num">Amount</th>
-                    <th class="col-aksi">Aksi</th>
+                    <th style="width:50px;">No</th>
+                    <th style="width:160px;">No Invoice</th>
+                    <th>Item</th>
+                    <th style="width:120px;">Tgl TF</th>
+                    <th style="width:120px;">Cicilan</th>
+                    <th style="width:120px;">Tagihan</th>
+                    <th style="width:130px;">Sisa</th>
+                    <th style="width:100px;">Aksi</th>
                 </tr>
             </thead>
 
@@ -121,7 +134,7 @@
                             {{ $item->amount_rp }}
                         </td>
 
-                        <td class="text-center nowrap">
+                        <td class="text-center">
                             <a href="{{ route('invoice-item.show', $item->id) }}"
                                class="btn btn-info btn-sm trigger-loading">
                                 Detail
@@ -132,12 +145,12 @@
                     @php $grandTotal += $item->amount; @endphp
                 @endforeach
 
-                <tr class="table">
-                    <th colspan="6" class="text-end">TOTAL</th>
-                    <th class="text-end">
+                <tr class="total-row">
+                    <td colspan="6" class="text-end">TOTAL</td>
+                    <td class="text-end">
                         Rp {{ number_format($grandTotal,0,',','.') }}
-                    </th>
-                    <th></th>
+                    </td>
+                    <td></td>
                 </tr>
             </tbody>
         </table>
@@ -145,7 +158,7 @@
     @endif
 
     <a href="{{ route('invoice.index') }}"
-       class="btn btn-secondary mt-3 trigger-loading">
+       class="btn btn-secondary btn-sm mt-3 trigger-loading">
         Kembali
     </a>
 
@@ -173,7 +186,6 @@
 </div>
 
 
-{{-- SCRIPT --}}
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -183,11 +195,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.querySelectorAll(".trigger-loading").forEach(el => {
         el.addEventListener("click", function () {
-
-            // ganti teks khusus (contoh: Print PDF)
             const text = el.getAttribute("data-loading-text");
             loadingText.innerText = text ?? "Memuat data...";
-
             loadingModal.show();
         });
     });

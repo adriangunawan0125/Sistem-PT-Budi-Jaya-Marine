@@ -1,291 +1,379 @@
 @extends('layouts.app')
 
 @section('content')
+
+<style>
+    .compact-card .card-body {
+        padding: 1rem 1.25rem;
+    }
+
+    .compact-table th,
+    .compact-table td {
+        font-size: 12.5px;
+        padding: 8px 10px;
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+
+    .compact-table thead th {
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .4px;
+    }
+
+    .filter-label {
+        font-size: 11.5px;
+        font-weight: 500;
+        margin-bottom: 4px;
+    }
+
+    .btn-xs {
+        padding: 3px 8px;
+        font-size: 11.5px;
+    }
+</style>
+
 <div class="container">
 
-    <h4 class="mb-5">Rekap Pemasukan Transport (Harian)</h4>
-
     {{-- FILTER --}}
-    <form method="GET" class="mb-3">
-
-        <div class="d-flex flex-wrap align-items-end" style="margin-right: 7px;">
-
-            {{-- TANGGAL --}}
-            <div class="me-3 mb-2" style="margin-right: 7px;">
-                <label class="form-label mb-1">Tanggal</label>
-                <input type="date"
-                       name="tanggal"
-                       value="{{ request('tanggal', date('Y-m-d')) }}"
-                       class="form-control"
-                       style="width:170px">
-            </div>
-
-            {{-- MITRA --}}
-            <div class="me-3 mb-2" style="margin-right: 7px;">
-                <label class="form-label mb-1">Mitra</label>
-                <input type="text"
-                       name="nama"
-                       value="{{ request('nama') }}"
-                       placeholder="Cari nama mitra"
-                       class="form-control"
-                       style="width:220px">
-            </div>
-
-            {{-- KATEGORI --}}
-            <select name="kategori"
-                class="form-control d-inline-block me-2 mb-2"
-                style="width:160px; margin-right:20px;">
-                <option value="">Semua Kategori</option>
-                <option value="setoran" {{ request('kategori')=='setoran'?'selected':'' }}>Setoran</option>
-                <option value="cicilan" {{ request('kategori')=='cicilan'?'selected':'' }}>Cicilan</option>
-                <option value="deposit" {{ request('kategori')=='deposit'?'selected':'' }}>Deposit</option>
-            </select>
-
-            {{-- CHECKBOX --}}
-            <div class="form-check me-3 mb-2" style="margin-right: 40px;">
-                <input class="form-check-input"
-                       type="checkbox"
-                       name="tidak_setor"
-                       value="1"
-                       {{ request('tidak_setor')?'checked':'' }}>
-                <label class="form-check-label">Tidak TF</label>
-            </div>
-
-            {{-- BUTTON GROUP --}}
-            <div class="mb-2" style="margin-left:10px">
-                <button class="btn btn-primary trigger-loading">Filter</button>
-                <a href="{{ route('pemasukan.index') }}" class="btn btn-secondary">Reset</a>
-                <a href="{{ route('pemasukan.create') }}" class="btn btn-primary">Tambah</a>
-                <a href="{{ route('pemasukan.laporan.harian', ['tanggal'=>request('tanggal')]) }}"
-                   class="btn btn-info text-white trigger-loading">
-                    Laporan Harian
-                </a>
-            </div>
-
-        </div>
-
-    </form>
-
-      {{-- CARD MITRA TIDAK SETOR (OTOMATIS MUNCUL) --}}
-    @if(isset($mitraKosong))
-    <div class="card border-danger mb-3">
-        <div class="card-header bg-danger text-white">
-            Mitra Tidak TF ({{ \Carbon\Carbon::parse($tanggal)->format('d-m-Y') }})
-        </div>
+    <div class="card shadow-sm border-0 mb-4 compact-card">
         <div class="card-body">
-            @forelse($mitraKosong as $m)
-                <span class="badge bg-secondary text-light me-1 mb-1">
-                    {{ $m->nama_mitra }}
-                </span>
-            @empty
-                <span class="text-muted">Semua mitra sudah setor</span>
-            @endforelse
-        </div>
-    </div>
-    @endif
 
+            <form method="GET"
+                  action="{{ route('pemasukan.index') }}"
+                  id="filterForm">
 
-    {{-- TABLE --}}
-    <table class="table table-bordered align-middle">
-        <thead class="table-light text-center">
-        <tr>
-            <th>No</th>
-            <th>Tanggal</th>
-            <th>Mitra</th>
-            <th>Kategori</th>
-            <th>Deskripsi</th>
-            <th>Gambar</th>
-            <th>Nominal</th>
-            <th width="130">Aksi</th>
-        </tr>
-        </thead>
+                <div class="row g-3 align-items-end">
 
-        <tbody>
-        @forelse($pemasukan as $item)
-        <tr>
-            <td class="text-center">{{ $loop->iteration }}</td>
-            <td class="text-center">{{ \Carbon\Carbon::parse($item->tanggal)->format('d-m-Y') }}</td>
-            <td>{{ $item->mitra->nama_mitra ?? '-' }}</td>
-            <td class="text-center">{{ ucfirst($item->kategori) }}</td>
-            <td>{{ $item->deskripsi }}</td>
+                    <div class="col-md-2">
+                        <label class="filter-label">Tanggal</label>
+                        <input type="date"
+                               name="tanggal"
+                               value="{{ request('tanggal', date('Y-m-d')) }}"
+                               class="form-control form-control-sm">
+                    </div>
 
-            <td class="text-center">
-                @if($item->gambar)
-                    <img src="{{ asset('storage/pemasukan/'.$item->gambar) }}"
-                         width="65"
-                         class="img-thumbnail">
-                @else
-                    -
-                @endif
-            </td>
+                    <div class="col-md-3">
+                        <label class="filter-label">Mitra</label>
+                        <input type="text"
+                               name="nama"
+                               value="{{ request('nama') }}"
+                               class="form-control form-control-sm"
+                               placeholder="Cari nama mitra">
+                    </div>
 
-            <td><b>Rp {{ number_format($item->nominal,0,',','.') }}</b></td>
+                    <div class="col-md-2">
+                        <label class="filter-label">Kategori</label>
+                        <select name="kategori"
+                                class="form-control form-control-sm">
+                            <option value="">Semua</option>
+                            <option value="setoran" {{ request('kategori')=='setoran'?'selected':'' }}>Setoran</option>
+                            <option value="cicilan" {{ request('kategori')=='cicilan'?'selected':'' }}>Cicilan</option>
+                            <option value="deposit" {{ request('kategori')=='deposit'?'selected':'' }}>Deposit</option>
+                        </select>
+                    </div>
 
-            <td class="text-center">
-                <a href="{{ route('pemasukan.edit',$item->id) }}"
-                   class="btn btn-sm btn-warning mb-1">
-                    Edit
-                </a>
+                    <div class="col-md-2">
+                        <div class="form-check mt-4">
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   name="tidak_setor"
+                                   value="1"
+                                   {{ request('tidak_setor')?'checked':'' }}>
+                            <label class="form-check-label small">
+                                Tidak TF
+                            </label>
+                        </div>
+                    </div>
 
-                <button type="button"
-                        class="btn btn-sm btn-danger mb-1"
-                        data-bs-toggle="modal"
-                        data-bs-target="#deleteModal"
-                        data-id="{{ $item->id }}"
-                        data-name="{{ $item->mitra->nama_mitra ?? '-' }} ({{ ucfirst($item->kategori) }})">
-                    Hapus
-                </button>
-            </td>
-        </tr>
-        @empty
-        <tr>
-            <td colspan="8" class="text-center">Tidak ada data</td>
-        </tr>
-        @endforelse
-        </tbody>
-    </table>
-
-</div>
-
-{{-- ================= DELETE MODAL ================= --}}
-<div class="modal fade" id="deleteModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow">
-
-            <div class="modal-body text-center py-4">
-
-                <div class="mb-3">
-                    <i class="bi bi-exclamation-triangle-fill text-danger"
-                       style="font-size:60px;"></i>
-                </div>
-
-                <h5 class="fw-bold mb-2">Hapus Data Pemasukan?</h5>
-
-                <p class="text-muted mb-4">
-                    Data <strong id="deleteName"></strong> akan dihapus permanen
-                    dan tidak bisa dikembalikan.
-                </p>
-
-                <form id="deleteForm" method="POST">
-                    @csrf
-                    @method('DELETE')
-
-                    <div class="d-flex justify-content-center gap-2">
-                        <button type="button"
-                                class="btn btn-secondary px-4" style="margin-right: 10px"
-                                data-bs-dismiss="modal">
-                            Batal
-                        </button>
+                    <div class="col-md-3 d-flex align-items-end gap-2">
 
                         <button type="submit"
-                                class="btn btn-danger px-4">
-                            Ya, Hapus
+                                class="btn btn-primary btn-xs" style="margin-right: 4px">
+                            Filter
                         </button>
+
+                        <a href="{{ route('pemasukan.index') }}"
+                           class="btn btn-secondary btn-xs" style="margin-right: 4px">
+                            Reset
+                        </a>
+
+                        <a href="{{ route('pemasukan.create') }}"
+                           class="btn btn-success btn-xs ms-auto" style="margin-right: 4px">
+                            + Tambah
+                        </a>
+
                     </div>
-                </form>
-            </div>
+
+                </div>
+            </form>
+
         </div>
     </div>
+{{-- CARD MITRA TIDAK SETOR --}}
+@if(isset($mitraKosong))
+<div class="card border-danger mb-3">
+    <div class="card-header bg-danger text-white">
+        Mitra Tidak TF ({{ \Carbon\Carbon::parse($tanggal)->format('d-m-Y') }})
+    </div>
+    <div class="card-body">
+        @forelse($mitraKosong as $m)
+            <span class="badge text-light bg-secondary me-1 mb-1">
+                {{ $m->nama_mitra }}
+            </span>
+        @empty
+            <span class="text-muted">
+                Semua mitra sudah transfer
+            </span>
+        @endforelse
+    </div>
+</div>
+@endif
+    {{-- TABLE --}}
+    <div class="card shadow-sm border-0 compact-card">
+        <div class="card-body table-responsive">
+
+            <table class="table compact-table table-hover mb-0">
+                <thead class="table-light">
+                <tr>
+                    <th width="40">No</th>
+                    <th>Tanggal</th>
+                    <th>Mitra</th>
+                    <th>Kategori</th>
+                    <th>Deskripsi</th>
+                    <th width="80">Bukti</th>
+                    <th>Nominal</th>
+                    <th width="150" class="text-center">Aksi</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                @forelse($pemasukan as $item)
+                <tr>
+                    <td>{{ $loop->iteration }}</td>
+                    <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}</td>
+                    <td>{{ $item->mitra->nama_mitra ?? '-' }}</td>
+                    <td>{{ ucfirst($item->kategori) }}</td>
+                    <td>{{ $item->deskripsi }}</td>
+
+                    <td>
+                        @if($item->gambar)
+                            <a href="{{ asset('storage/pemasukan/'.$item->gambar) }}"
+                               target="_blank"
+                               class="btn btn-primary btn-xs">
+                                Lihat
+                            </a>
+                        @else
+                            -
+                        @endif
+                    </td>
+
+                    <td>
+                        Rp {{ number_format($item->nominal, 0, ',', '.') }}
+                    </td>
+
+                    <td class="text-center">
+                        <div class="d-flex justify-content-center gap-1">
+
+                            <a href="{{ route('pemasukan.show',$item->id) }}"
+                               class="btn btn-info btn-xs btnDetail" style="margin-right: 4px">
+                               Detail
+                            </a>
+
+                            <a href="{{ route('pemasukan.edit',$item->id) }}"
+                               class="btn btn-warning btn-xs" style="margin-right: 4px">
+                               Edit
+                            </a>
+
+                            <form action="{{ route('pemasukan.destroy',$item->id) }}"
+                                  method="POST"
+                                  class="deleteForm">
+                                @csrf
+                                @method('DELETE')
+                                <button type="button"
+                                        class="btn btn-danger btn-xs btnDelete">
+                                    Hapus
+                                </button>
+                            </form>
+
+                        </div>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="8"
+                        class="text-center py-4 text-muted">
+                        Tidak ada data ditemukan
+                    </td>
+                </tr>
+                @endforelse
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
 </div>
 
-{{-- ================= LOADING MODAL ================= --}}
-<div class="modal fade" id="loadingModal"
+
+{{-- LOADING MODAL --}}
+<div class="modal fade"
+     id="loadingModal"
      data-bs-backdrop="static"
      data-bs-keyboard="false"
      tabindex="-1">
+
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">
             <div class="modal-body text-center py-4">
+
                 <div class="spinner-border text-primary mb-3"
                      style="width:3rem;height:3rem;"></div>
-                <div class="fw-semibold">Memuat data...</div>
+
+                <div class="fw-semibold">
+                    Memuat Data ...
+                </div>
+
             </div>
         </div>
     </div>
 </div>
-<!-- ================= SUCCESS MODAL ================= -->
-@if (session('success'))
-    <input type="hidden" id="success-message" value="{{ session('success') }}">
-@endif
 
-<div class="modal fade" id="successModal" tabindex="-1">
+
+{{-- DELETE MODAL --}}
+<div class="modal fade"
+     id="deleteModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1">
+
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">
 
             <div class="modal-body text-center py-4">
 
-                <div class="mb-3">
-                    <i class="bi bi-check-circle-fill text-success"
-                       style="font-size:60px;"></i>
+                <i class="bi bi-exclamation-triangle-fill text-danger"
+                   style="font-size:60px;"></i>
+
+                <h5 class="fw-bold mt-3">Konfirmasi Hapus</h5>
+
+                <div class="text-muted mb-4">
+                    Yakin ingin menghapus data ini?
                 </div>
 
-                <h5 class="fw-bold mb-2">Berhasil</h5>
-                <div id="successText" class="text-muted"></div>
+                <div class="d-flex justify-content-center gap-2">
 
-                <div class="mt-4">
-                    <button class="btn btn-primary px-4"
+                    <button type="button"
+                            class="btn btn-secondary px-4"
                             data-bs-dismiss="modal">
-                        OK
+                        Batal
                     </button>
+
+                    <button type="button"
+                            class="btn btn-danger px-4"
+                            id="confirmDeleteBtn">
+                        Hapus
+                    </button>
+
                 </div>
 
             </div>
-
         </div>
     </div>
 </div>
+
+
+{{-- SUCCESS MODAL --}}
+@if(session('success'))
+<div class="modal fade"
+     id="successModal"
+     tabindex="-1">
+
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+
+            <div class="modal-body text-center py-4">
+
+                <i class="bi bi-check-circle-fill text-success"
+                   style="font-size:60px;"></i>
+
+                <h5 class="fw-bold mt-3">Berhasil</h5>
+
+                <div class="text-muted mb-4">
+                    {{ session('success') }}
+                </div>
+
+                <button type="button"
+                        class="btn btn-primary px-4"
+                        data-bs-dismiss="modal">
+                    OK
+                </button>
+
+            </div>
+        </div>
+    </div>
+</div>
+@endif
 
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener("DOMContentLoaded", function(){
 
-    // LOADING
     const loadingModal = new bootstrap.Modal(
-        document.getElementById('loadingModal')
+        document.getElementById("loadingModal")
     );
 
-    document.querySelectorAll('.trigger-loading').forEach(el => {
-        el.addEventListener('click', function () {
+    const deleteModal = new bootstrap.Modal(
+        document.getElementById("deleteModal")
+    );
+
+    let deleteForm;
+
+    // DETAIL
+    document.querySelectorAll(".btnDetail").forEach(btn => {
+        btn.addEventListener("click", function(e){
+            e.preventDefault();
+            const url = this.getAttribute("href");
             loadingModal.show();
+            setTimeout(function(){
+                window.location.href = url;
+            }, 250);
         });
     });
 
-    // DELETE MODAL
-    const deleteModal = document.getElementById('deleteModal');
-    const deleteForm  = document.getElementById('deleteForm');
-    const deleteName  = document.getElementById('deleteName');
-
-    deleteModal.addEventListener('show.bs.modal', function (event) {
-        const button = event.relatedTarget;
-        const id     = button.getAttribute('data-id');
-        const name   = button.getAttribute('data-name');
-
-        deleteName.textContent = name;
-        deleteForm.action = `/pemasukan/${id}`;
-    });
-
-});
-</script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-
-    // ================= SUCCESS MODAL =================
-    const successInput = document.getElementById('success-message');
-    if (successInput) {
-        const successModal = new bootstrap.Modal(
-            document.getElementById('successModal')
-        );
-
-        document.getElementById('successText').innerText =
-            successInput.value;
-
-        setTimeout(() => {
-            successModal.show();
-        }, 200);
+    // FILTER
+    const filterForm = document.getElementById("filterForm");
+    if(filterForm){
+        filterForm.addEventListener("submit", function(){
+            loadingModal.show();
+        });
     }
 
+    // DELETE
+    document.querySelectorAll(".btnDelete").forEach(btn => {
+        btn.addEventListener("click", function(){
+            deleteForm = this.closest("form");
+            deleteModal.show();
+        });
+    });
+
+    document.getElementById("confirmDeleteBtn")
+    .addEventListener("click", function(){
+        if(deleteForm){
+            deleteForm.submit();
+        }
+    });
+
+    // SUCCESS
+    @if(session('success'))
+        const successModal = new bootstrap.Modal(
+            document.getElementById("successModal")
+        );
+        successModal.show();
+    @endif
+
 });
 </script>
-
 
 @endsection
