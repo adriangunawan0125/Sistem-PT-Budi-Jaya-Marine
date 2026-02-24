@@ -147,18 +147,26 @@ table{
             <table width="100%" style="border-collapse:collapse;">
                 <tr>
 
-                @foreach($item->images as $img)
+              @foreach($item->images as $img)
 
-                    <td width="50%" style="padding:5px; border:none;">
-                        <img src="{{ public_path('storage/'.$img->image_path) }}"
-                             style="width:100%; height:230px; object-fit:cover;">
-                    </td>
+@php
+    $path = storage_path('app/public/'.$img->image_path);
+@endphp
 
-                    @if($loop->iteration % 2 == 0)
-                        </tr><tr>
-                    @endif
+<td width="50%" style="padding:5px; border:none;">
 
-                @endforeach
+    @if(file_exists($path))
+        <img src="{{ $path }}"
+             style="width:100%; height:230px; object-fit:cover;">
+    @endif
+
+</td>
+
+@if($loop->iteration % 2 == 0)
+    </tr><tr>
+@endif
+
+@endforeach
 
                 </tr>
             </table>
