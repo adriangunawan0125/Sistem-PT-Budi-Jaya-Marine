@@ -113,8 +113,20 @@
                    class="form-control form-control-sm"
                    required>
         </div>
+        
 
     </div>
+<div class="row g-3 mb-2">
+
+    <div class="col-md-4">
+        <label class="form-label small">Manpower</label>
+        <input type="text"
+               name="items[{{ $i }}][manpower]"
+               value="{{ $item->manpower }}"
+               class="form-control form-control-sm">
+    </div>
+
+</div>
 
     <div class="mb-2">
         <label class="form-label small">Kind of Work</label>
@@ -254,6 +266,15 @@ function addRow(){
 
             </div>
 
+            <div class="row g-3 mb-2">
+                <div class="col-md-4">
+                    <label class="form-label small">Manpower</label>
+                    <input type="text"
+                           name="items[${index}][manpower]"
+                           class="form-control form-control-sm">
+                </div>
+            </div>
+
             <div class="mb-2">
                 <label class="form-label small">Kind of Work</label>
                 <textarea name="items[${index}][kind_of_work]"
@@ -264,7 +285,7 @@ function addRow(){
 
             <div class="text-end">
                 <button type="button"
-                        class="btn btn-sm btn-outline-danger remove-row">
+                        class="btn btn-sm btn-danger remove-row">
                     Remove
                 </button>
             </div>
@@ -274,7 +295,6 @@ function addRow(){
 
     index++;
 }
-
 
 document.addEventListener('click', function(e){
     if(e.target.classList.contains('remove-row')){

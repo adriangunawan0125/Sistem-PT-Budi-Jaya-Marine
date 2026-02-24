@@ -130,6 +130,7 @@
     </div>
 </div>
 @endif
+
     {{-- TABLE --}}
     <div class="card shadow-sm border-0 compact-card">
         <div class="card-body table-responsive">

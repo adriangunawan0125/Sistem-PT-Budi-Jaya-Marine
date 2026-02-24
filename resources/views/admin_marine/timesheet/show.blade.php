@@ -87,12 +87,12 @@
 
         <button type="button"
                 id="btnPrintPdf"
-                class="btn btn-danger btn-sm w-100">
+                class="btn btn-danger btn-sm w-100 mb-1">
             Print PDF
         </button>
 
         <a href="{{ route('timesheet.edit', $timesheet->id) }}"
-           class="btn btn-warning btn-sm w-100">
+           class="btn btn-warning btn-sm w-100 mb-1">
             Edit
         </a>
 
