@@ -29,18 +29,31 @@
                    required>
         </div>
 
-        <div class="mb-3">
-            <label class="form-label">Nama Mitra</label>
-            <select name="mitra_id" class="form-control" required>
-                <option value="">-- Pilih Mitra --</option>
-                @foreach($mitras as $mitra)
-                    <option value="{{ $mitra->id }}"
-                        {{ old('mitra_id') == $mitra->id ? 'selected' : '' }}>
-                        {{ $mitra->nama_mitra }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
+       <div class="mb-3">
+    <label class="form-label">Nama Mitra</label>
+    <select name="mitra_id" class="form-control" required>
+        <option value="">-- Pilih Mitra --</option>
+
+        <optgroup label="Mitra Aktif">
+            @foreach($mitras->where('status','aktif') as $mitra)
+                <option value="{{ $mitra->id }}"
+                    {{ old('mitra_id') == $mitra->id ? 'selected' : '' }}>
+                    {{ $mitra->nama_mitra }}
+                </option>
+            @endforeach
+        </optgroup>
+
+        <optgroup label="Ex - Mitra">
+            @foreach($mitras->where('status','berakhir') as $mitra)
+                <option value="{{ $mitra->id }}"
+                    {{ old('mitra_id') == $mitra->id ? 'selected' : '' }}>
+                    {{ $mitra->nama_mitra }}
+                </option>
+            @endforeach
+        </optgroup>
+
+    </select>
+</div>
 
         <div class="mb-3">
             <label class="form-label">Kategori</label>

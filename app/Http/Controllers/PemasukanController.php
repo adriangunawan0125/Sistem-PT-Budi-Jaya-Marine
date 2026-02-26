@@ -20,11 +20,7 @@ public function index(Request $request)
 
     /* ================= QUERY UTAMA ================= */
     $query = Pemasukan::with('mitra')
-        ->whereDate('tanggal', $tanggal)
-        ->whereHas('mitra', function ($q) {
-            // 🔒 hanya mitra AKTIF
-            $q->where('status', 'aktif');
-        });
+        ->whereDate('tanggal', $tanggal);
 
     /* ================= FILTER NAMA ================= */
     if ($nama) {
@@ -41,8 +37,7 @@ public function index(Request $request)
     /* ================= FILTER TIDAK SETOR ================= */
     if ($tidakSetor) {
 
-        $mitraTidakSetor = Mitra::where('status', 'aktif') // ⛔ exclude berakhir
-            ->whereDoesntHave('pemasukans', function ($q) use ($tanggal) {
+        $mitraTidakSetor = Mitra::whereDoesntHave('pemasukans', function ($q) use ($tanggal) {
                 $q->whereDate('tanggal', $tanggal);
             })
             ->orderBy('nama_mitra')
@@ -56,7 +51,6 @@ public function index(Request $request)
         ]);
     }
 
-    /* ================= DATA NORMAL ================= */
     $pemasukan = $query->orderBy('tanggal', 'desc')->get();
     $total     = $pemasukan->sum('nominal');
 
@@ -75,9 +69,9 @@ public function show($id)
 }
 
     /* ================= CREATE ================= */
-    public function create()
+ public function create()
 {
-    $mitras = Mitra::aktif()->orderBy('nama_mitra')->get();
+    $mitras = Mitra::orderBy('nama_mitra')->get();
     return view('admin_transport.pemasukan.create', compact('mitras'));
 }
 
@@ -131,10 +125,12 @@ if ($request->hasFile('gambar1')) {
 
 
     /* ================= EDIT ================= */
-   public function edit($id)
+public function edit($id)
 {
-    $pemasukan = Pemasukan::findOrFail($id);
-    $mitras = Mitra::aktif()->orderBy('nama_mitra')->get();
+    $pemasukan = Pemasukan::with('mitra')->findOrFail($id);
+
+    // ambil semua mitra (aktif + berakhir)
+    $mitras = Mitra::orderBy('nama_mitra')->get();
 
     return view('admin_transport.pemasukan.edit',
         compact('pemasukan','mitras'));

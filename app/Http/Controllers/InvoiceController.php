@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\Pemasukan;
 
 class InvoiceController extends Controller
 {
@@ -336,11 +337,12 @@ class InvoiceController extends Controller
 }
 
      //PRINT PDF   
+
 public function print(Invoice $invoice)
 {
     $invoice->load(['mitra.unit', 'items']);
 
-    /* ================= SORT ITEM BERDASARKAN TANGGAL INVOICE ================= */
+    /* ================= SORT ITEM BERDASARKAN TANGGAL ================= */
     $sortedItems = $invoice->items
         ->sortByDesc(function ($item) {
             return $item->tanggal_invoices ?? $item->created_at;
@@ -358,26 +360,34 @@ public function print(Invoice $invoice)
 
     $grandTotal = $invoice->items->sum('amount');
 
-    /* ================= AMBIL 2 TRANSFER TERAKHIR ================= */
-    $latestTransfers = [];
 
-    foreach ($sortedItems as $item) {
+    /* ================================================================
+       AMBIL BUKTI TRANSFER DARI TABEL PEMASUKAN (BERDASARKAN MITRA)
+       ================================================================ */
 
-        foreach ([
-            $item->gambar_transfer,
-            $item->gambar_transfer1,
-            $item->gambar_transfer2
-        ] as $img) {
+    $latestTransfers = Pemasukan::where('mitra_id', $invoice->mitra_id)
+        ->where(function ($q) {
+            $q->whereNotNull('gambar')
+              ->orWhereNotNull('gambar1');
+        })
+        ->orderByDesc('tanggal')
+        ->orderByDesc('id')
+        ->get()
+        ->flatMap(function ($p) {
+            return array_filter([
+                $p->gambar ? 'pemasukan/' . $p->gambar : null,
+                $p->gambar1 ? 'pemasukan/' . $p->gambar1 : null,
+            ]);
+        })
+        ->take(2) // maksimal 2 bukti terakhir
+        ->values()
+        ->toArray();
 
-            if ($img) {
-                $latestTransfers[] = $img;
-            }
-        }
-    }
 
-    $latestTransfers = array_slice($latestTransfers, 0, 2);
+    /* ================================================================
+       AMBIL 1 BUKTI TRIP TERAKHIR DARI INVOICE ITEMS
+       ================================================================ */
 
-    /* ================= AMBIL 1 TRIP TERAKHIR ================= */
     $latestTrip = null;
 
     foreach ($sortedItems as $item) {
@@ -393,7 +403,9 @@ public function print(Invoice $invoice)
         }
     }
 
+
     /* ================= LOAD PDF ================= */
+
     $pdf = Pdf::loadView('admin_transport.invoice.print', [
         'invoice'         => $invoice,
         'items'           => $invoice->items,

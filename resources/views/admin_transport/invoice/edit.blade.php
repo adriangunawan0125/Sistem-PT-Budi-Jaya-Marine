@@ -40,7 +40,6 @@
                     <th>Tgl TF</th>
                     <th>Cicilan</th>
                     <th>Tagihan</th>
-                    <th>Bukti Transfer</th>
                     <th>Bukti Trip</th>
                     <th></th>
                 </tr>
@@ -95,48 +94,6 @@
                         <input type="hidden"
                                name="items[{{ $i }}][tagihan]"
                                value="{{ $item->tagihan }}">
-                    </td>
-
-                    {{-- ================= TRANSFER ================= --}}
-                    <td>
-                        <div class="upload-group transfer-group">
-
-                            <div class="upload-buttons">
-                                <label class="upload-btn">
-                                    <i class="bi bi-upload"></i>
-                                    <input type="file"
-                                           name="items[{{ $i }}][gambar_transfer]"
-                                           class="image-input transfer-input"
-                                           hidden>
-                                </label>
-
-                                <button type="button"
-                                        class="btn btn-xs btn-outline-secondary"
-                                        onclick="addTransfer(this,{{ $i }})">
-                                    +
-                                </button>
-                            </div>
-
-                            <div class="preview-area">
-
-                                @foreach(['gambar_transfer','gambar_transfer1','gambar_transfer2'] as $field)
-                                    @if($item->$field)
-                                        <div class="preview-box">
-                                            <img src="{{ asset('storage/'.$item->$field) }}"
-                                                 class="preview-img">
-                                            <span class="remove-img"
-                                                  onclick="removeOldImage(this)">
-                                                ×
-                                            </span>
-                                            <input type="hidden"
-                                                   name="items[{{ $i }}][hapus_{{ $field }}]"
-                                                   value="0">
-                                        </div>
-                                    @endif
-                                @endforeach
-
-                            </div>
-                        </div>
                     </td>
 
                     {{-- ================= TRIP ================= --}}
@@ -319,39 +276,6 @@ function removeOldImage(btn){
     box.style.opacity = 0.3;
 }
 
-
-/* ================= ADD TRANSFER ================= */
-function addTransfer(btn,index){
-
-    const group = btn.closest(".transfer-group");
-    const btnArea = group.querySelector(".upload-buttons");
-    const count = btnArea.querySelectorAll(".transfer-input").length;
-
-    if(count >= 3){
-        alert("Maksimal 3 bukti transfer");
-        return;
-    }
-
-    let fieldName;
-
-    if(count === 1){
-        fieldName = 'gambar_transfer1';
-    }else{
-        fieldName = 'gambar_transfer2';
-    }
-
-    btnArea.insertAdjacentHTML("afterbegin",`
-        <label class="upload-btn">
-            <i class="bi bi-upload"></i>
-            <input type="file"
-                   name="items[${index}][${fieldName}]"
-                   class="image-input transfer-input"
-                   hidden>
-        </label>
-    `);
-}
-
-
 /* ================= ADD TRIP ================= */
 function addTrip(btn,index){
 
@@ -420,27 +344,7 @@ function addItem(){
                    name="items[${i}][tagihan]"
                    value="0">
         </td>
-
-        <td>
-            <div class="upload-group transfer-group">
-                <div class="upload-buttons">
-                    <label class="upload-btn">
-                        <i class="bi bi-upload"></i>
-                        <input type="file"
-                               name="items[${i}][gambar_transfer]"
-                               class="image-input transfer-input"
-                               hidden>
-                    </label>
-
-                    <button type="button"
-                            class="btn btn-xs btn-outline-secondary"
-                            onclick="addTransfer(this,${i})">
-                        +
-                    </button>
-                </div>
-                <div class="preview-area"></div>
-            </div>
-        </td>
+            {{-- ================= TRIP ================= --}}
 
         <td>
             <div class="upload-group trip-group">

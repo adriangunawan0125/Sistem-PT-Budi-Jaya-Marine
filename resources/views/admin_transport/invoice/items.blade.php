@@ -82,38 +82,6 @@
     </div>
 
     {{-- ======================= --}}
-    {{-- BUKTI TRANSFER --}}
-    {{-- ======================= --}}
-    <div class="mb-4">
-        <b>Bukti Transfer</b><br>
-
-        @php
-            $transferImages = [
-                $item->gambar_transfer,
-                $item->gambar_transfer1,
-                $item->gambar_transfer2,
-            ];
-        @endphp
-
-        @if(collect($transferImages)->filter()->count())
-            <div class="d-flex flex-wrap gap-3 mt-2">
-                @foreach($transferImages as $img)
-                    @if($img)
-                        <img src="{{ asset('storage/'.$img) }}"
-                             class="img-thumbnail"
-                             style="height:150px; cursor:pointer; object-fit:cover;"
-                             data-bs-toggle="modal"
-                             data-bs-target="#imageModal"
-                             onclick="showImage(this.src)">
-                    @endif
-                @endforeach
-            </div>
-        @else
-            <div class="text-muted mt-2">Tidak ada gambar</div>
-        @endif
-    </div>
-
-    {{-- ======================= --}}
     {{-- BUKTI TRIP --}}
     {{-- ======================= --}}
     <div class="mb-4">

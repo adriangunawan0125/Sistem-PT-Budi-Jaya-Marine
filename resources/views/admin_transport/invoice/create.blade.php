@@ -50,7 +50,6 @@
                     <th>Tgl TF</th>
                     <th>Cicilan</th>
                     <th>Tagihan</th>
-                    <th>Bukti Transfer</th>
                     <th>Bukti Trip</th>
                     <th></th>
                 </tr>
@@ -77,27 +76,6 @@
                         <input type="hidden" name="items[0][tagihan]" value="0">
                     </td>
 
-                    {{-- TRANSFER --}}
-                    <td>
-                        <div class="upload-group transfer-group">
-                            <div class="upload-buttons">
-                                <label class="upload-btn">
-                                    <i class="bi bi-upload"></i>
-                                    <input type="file"
-                                           name="items[0][gambar_transfer]"
-                                           class="image-input transfer-input"
-                                           hidden>
-                                </label>
-
-                                <button type="button"
-                                        class="btn btn-xs btn-outline-secondary"
-                                        onclick="addTransfer(this,0)">
-                                    +
-                                </button>
-                            </div>
-                            <div class="preview-area"></div>
-                        </div>
-                    </td>
 
                     {{-- TRIP --}}
                     <td>
@@ -275,28 +253,6 @@ document.addEventListener("change", function(e){
     }
 });
 
-/* ADD TRANSFER */
-function addTransfer(btn,index){
-
-    const group = btn.closest(".transfer-group");
-    const btnArea = group.querySelector(".upload-buttons");
-    const count = btnArea.querySelectorAll(".transfer-input").length;
-
-    if(count >= 3){
-        alert("Maksimal 3 bukti transfer");
-        return;
-    }
-
-    btnArea.insertAdjacentHTML("afterbegin",`
-        <label class="upload-btn">
-            <i class="bi bi-upload"></i>
-            <input type="file"
-                   name="items[${index}][gambar_transfer${count}]"
-                   class="image-input transfer-input"
-                   hidden>
-        </label>
-    `);
-}
 
 /* ADD TRIP */
 function addTrip(btn,index){
@@ -343,27 +299,6 @@ function addItem(){
                    data-hidden="items[${i}][tagihan]"
                    placeholder="Rp 0">
             <input type="hidden" name="items[${i}][tagihan]" value="0">
-        </td>
-
-        <td>
-            <div class="upload-group transfer-group">
-                <div class="upload-buttons">
-                    <label class="upload-btn">
-                        <i class="bi bi-upload"></i>
-                        <input type="file"
-                               name="items[${i}][gambar_transfer]"
-                               class="image-input transfer-input"
-                               hidden>
-                    </label>
-
-                    <button type="button"
-                            class="btn btn-xs btn-outline-secondary"
-                            onclick="addTransfer(this,${i})">
-                        +
-                    </button>
-                </div>
-                <div class="preview-area"></div>
-            </div>
         </td>
 
         <td>
