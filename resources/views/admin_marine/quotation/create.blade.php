@@ -381,26 +381,46 @@ applyTypeToAll();
 /* ================= CALCULATE ================= */
 function calculateRow(input){
 
-let type = document.getElementById('global-type').value;
+    let type = document.getElementById('global-type').value;
+    let row = input.closest('tr');
 
-let row = input.closest('tr');
-let price = parseFloat(row.querySelector('.price').value)||0;
-let qty = parseFloat(row.querySelector('.qty').value)||0;
-let day = parseFloat(row.querySelector('.day')?.value)||0;
-let hour = parseFloat(row.querySelector('.hour')?.value)||0;
+    let price = parseFloat(row.querySelector('.price')?.value);
+    let qty   = parseFloat(row.querySelector('.qty')?.value);
 
-let total = 0;
+    let dayVal  = row.querySelector('.day')?.value;
+    let hourVal = row.querySelector('.hour')?.value;
 
-switch(type){
-case 'day': total = price * qty * day; break;
-case 'hour': total = price * qty * hour; break;
-case 'day_hour': total = hour>0 ? price*qty*day*hour : price*qty*day; break;
-default: total = price * qty;
-}
+    price = isNaN(price) ? 0 : price;
+    qty   = isNaN(qty)   ? 0 : qty;
 
-row.querySelector('.total').value = total;
+    let total = 0;
 
-updateGrandTotal();
+    switch(type){
+
+        case 'day':
+            let day = dayVal === "" ? 1 : parseFloat(dayVal);
+            total = price * qty * (isNaN(day) ? 1 : day);
+        break;
+
+        case 'hour':
+            let hour = hourVal === "" ? 1 : parseFloat(hourVal);
+            total = price * qty * (isNaN(hour) ? 1 : hour);
+        break;
+
+        case 'day_hour':
+            let d = dayVal === "" ? 1 : parseFloat(dayVal);
+            let h = hourVal === "" ? 1 : parseFloat(hourVal);
+            total = price * qty *
+                    (isNaN(d) ? 1 : d) *
+                    (isNaN(h) ? 1 : h);
+        break;
+
+        default:
+            total = price * qty;
+    }
+
+    row.querySelector('.total').value = total;
+    updateGrandTotal();
 }
 
 /* ================= GRAND TOTAL ================= */

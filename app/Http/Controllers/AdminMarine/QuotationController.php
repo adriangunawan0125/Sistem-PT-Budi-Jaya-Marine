@@ -264,80 +264,94 @@ public function index(Request $request)
     ]);
 }
 
-
-
     /* ================= SAVE DETAIL ================= */
-    private function saveDetail($quotation, $subItems = [], $terms = [])
-    {
-        if (!empty($subItems)) {
+/* ================= SAVE DETAIL ================= */
+private function saveDetail($quotation, $subItems = [], $terms = [])
+{
+    if (!empty($subItems)) {
 
-            foreach ($subItems as $sub) {
+        foreach ($subItems as $sub) {
 
-                if(empty($sub['name'])) continue;
-
-                $subItem = QuotationSubItem::create([
-                    'quotation_id' => $quotation->id,
-                    'name'         => $sub['name'],
-                    'item_type'    => $sub['item_type'] ?? 'basic',
-                ]);
-
-                if(!empty($sub['items'])) {
-
-                    foreach ($sub['items'] as $item) {
-
-                        if(empty($item['item'])) continue;
-
-                        $price = (float) ($item['price'] ?? 0);
-                        $qty   = (float) ($item['qty'] ?? 0);
-                        $day   = (float) ($item['day'] ?? 0);
-                        $hour  = (float) ($item['hour'] ?? 0);
-
-                        switch($sub['item_type']){
-
-                            case 'day':
-                                $total = $price * $qty * $day;
-                            break;
-
-                            case 'hour':
-                                $total = $price * $qty * $hour;
-                            break;
-
-                            case 'day_hour':
-                                $total = $hour > 0
-                                    ? $price * $qty * $day * $hour
-                                    : $price * $qty * $day;
-                            break;
-
-                            default:
-                                $total = $price * $qty;
-                            break;
-                        }
-
-                        QuotationItem::create([
-                            'sub_item_id' => $subItem->id,
-                            'item'        => $item['item'],
-                            'price'       => $price,
-                            'qty'         => $qty,
-                            'unit'        => $item['unit'] ?? null,
-                            'day'         => $day ?: null,
-                            'hour'        => $hour ?: null,
-                            'total'       => $total,
-                        ]);
-                    }
-                }
+            // Lewati hanya jika name kosong DAN item juga kosong semua
+            if (
+                empty($sub['name']) &&
+                (empty($sub['items']) ||
+                 collect($sub['items'])->every(fn($i) => empty($i['item'])))
+            ) {
+                continue;
             }
-        }
 
-        if (!empty($terms)) {
-            foreach ($terms as $term) {
-                if(!empty($term)){
-                    QuotationTermsCondition::create([
-                        'quotation_id' => $quotation->id,
-                        'description'  => $term,
+            $subItem = QuotationSubItem::create([
+                'quotation_id' => $quotation->id,
+                'name'         => $sub['name'] ?? '-', // supaya tidak null
+                'item_type'    => $sub['item_type'] ?? 'basic',
+            ]);
+
+            if (!empty($sub['items'])) {
+
+                foreach ($sub['items'] as $item) {
+
+                    if (empty($item['item'])) continue;
+
+                    $price = isset($item['price']) ? (float) $item['price'] : 0;
+                    $qty   = isset($item['qty'])   ? (float) $item['qty']   : 0;
+
+                    // NULL jika kosong
+                    $day  = (!isset($item['day'])  || $item['day'] === '')
+                            ? null
+                            : (float) $item['day'];
+
+                    $hour = (!isset($item['hour']) || $item['hour'] === '')
+                            ? null
+                            : (float) $item['hour'];
+
+                    // Perhitungan → NULL dianggap 1
+                    switch ($sub['item_type']) {
+
+                        case 'day':
+                            $total = $price * $qty * ($day ?? 1);
+                        break;
+
+                        case 'hour':
+                            $total = $price * $qty * ($hour ?? 1);
+                        break;
+
+                        case 'day_hour':
+                            $total = $price * $qty
+                                   * ($day  ?? 1)
+                                   * ($hour ?? 1);
+                        break;
+
+                        default:
+                            $total = $price * $qty;
+                        break;
+                    }
+
+                    QuotationItem::create([
+                        'sub_item_id' => $subItem->id,
+                        'item'        => $item['item'],
+                        'price'       => $price,
+                        'qty'         => $qty,
+                        'unit'        => $item['unit'] ?? null,
+                        'day'         => $day,
+                        'hour'        => $hour,
+                        'total'       => round($total, 2),
                     ]);
                 }
             }
         }
     }
 
+    // ===== TERMS =====
+    if (!empty($terms)) {
+        foreach ($terms as $term) {
+            if (!empty($term)) {
+                QuotationTermsCondition::create([
+                    'quotation_id' => $quotation->id,
+                    'description'  => $term,
+                ]);
+            }
+        }
+    }
+}
 }

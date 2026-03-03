@@ -114,9 +114,6 @@ Route::get('/laporan-pengeluaran-transport/item/{id}',
 
 // LAPORAN INVOICE
 
-// Rekap / List invoice
-// LAPORAN INVOICE (OWNER)
-
 // Rekap invoice (LIST)
 Route::get('/laporan-invoice', 
     [OwnerTransportController::class, 'laporanInvoice']
@@ -297,20 +294,25 @@ Route::resource('pemasukan', PemasukanController::class);
     
 });
 
+
+
+
+
+
 // ADMIN MARINE
 Route::middleware(['auth', 'role:admin_marine'])->group(function () {
 Route::get('/admin-marine', 
     [AdminMarineController::class, 'index']
 )->name('admin.marine.dashboard');
 
-Route::get('/mitra-marine', [MitraMarineController::class, 'index'])->name('mitra-marine.index');
-Route::get('/mitra-marine/create', [MitraMarineController::class, 'create'])->name('mitra-marine.create');
-Route::post('/mitra-marine/store', [MitraMarineController::class, 'store'])->name('mitra-marine.store');
-Route::get('/mitra-marine/{id}', [MitraMarineController::class, 'show'])->name('mitra-marine.show');
-Route::get('/mitra-marine/edit/{id}', [MitraMarineController::class, 'edit'])->name('mitra-marine.edit');
-Route::post('/mitra-marine/update/{id}', [MitraMarineController::class, 'update'])->name('mitra-marine.update');
-Route::delete('/mitra-marine/delete/{id}', [MitraMarineController::class, 'destroy'])->name('mitra-marine.delete');
-Route::get('/mitra-marine/show/{id}', [MitraMarineController::class, 'show'])->name('mitra-marine.show');
+//Route::get('/mitra-marine', [MitraMarineController::class, 'index'])->name('mitra-marine.index');
+//Route::get('/mitra-marine/create', [MitraMarineController::class, 'create'])->name('mitra-marine.create');
+//Route::post('/mitra-marine/store', [MitraMarineController::class, 'store'])->name('mitra-marine.store');
+//Route::get('/mitra-marine/{id}', [MitraMarineController::class, 'show'])->name('mitra-marine.show');
+//Route::get('/mitra-marine/edit/{id}', [MitraMarineController::class, 'edit'])->name('mitra-marine.edit');
+//Route::post('/mitra-marine/update/{id}', [MitraMarineController::class, 'update'])->name('mitra-marine.update');
+//Route::delete('/mitra-marine/delete/{id}', [MitraMarineController::class, 'destroy'])->name('mitra-marine.delete');
+//Route::get('/mitra-marine/show/{id}', [MitraMarineController::class, 'show'])->name('mitra-marine.show');
 
 Route::resource('quotations', \App\Http\Controllers\AdminMarine\QuotationController::class);
 // SUB ITEM
@@ -337,9 +339,6 @@ Route::get('quotations/{quotation}/print',
     [QuotationController::class, 'print']
 )->name('quotations.print');
 
-
-
-// TERMS
 Route::post('quotations/{quotation}/term', 
     [\App\Http\Controllers\AdminMarine\QuotationController::class,'storeTerm']
 )->name('quotations.term.store');
@@ -348,11 +347,9 @@ Route::delete('term/{term}',
     [\App\Http\Controllers\AdminMarine\QuotationController::class,'deleteTerm']
 )->name('quotations.term.delete');
    
-    
-    Route::resource('companies', CompanyController::class);
-
-    Route::resource('marine-invoices', MarineInvoiceController::class);
-    Route::get('/marine-invoices/{id}/print',[MarineInvoiceController::class, 'print'])->name('marine-invoices.print');
+   //Route::resource('companies', CompanyController::class);
+    //Route::resource('marine-invoices', MarineInvoiceController::class);
+    //Route::get('/marine-invoices/{id}/print',[MarineInvoiceController::class, 'print'])->name('marine-invoices.print');
 
     
     
@@ -363,50 +360,41 @@ Route::patch('/po-masuk/{poMasuk}/update-status',
 )->name('po-masuk.update-status');
 
 /* ================= PO SUPPLIER ================= */
-/* ================= PO SUPPLIER ================= */
-
-// index
 Route::get('po-supplier', [PoSupplierController::class, 'index'])
     ->name('po-supplier.index');
 
-// create (pakai route model binding)
 Route::get('po-supplier/create/{poMasuk}', [PoSupplierController::class, 'create'])
     ->name('po-supplier.create');
 
-// store
 Route::post('po-supplier', [PoSupplierController::class, 'store'])
     ->name('po-supplier.store');
 
-    Route::get('po-supplier/{poSupplier}', [PoSupplierController::class, 'show'])
+Route::get('po-supplier/{poSupplier}', [PoSupplierController::class, 'show'])
     ->name('po-supplier.show');
 
-// edit
 Route::get('po-supplier/{poSupplier}/edit', [PoSupplierController::class, 'edit'])
     ->name('po-supplier.edit');
 
-// update
 Route::put('po-supplier/{poSupplier}', [PoSupplierController::class, 'update'])
     ->name('po-supplier.update');
 
-// destroy
 Route::delete('po-supplier/{poSupplier}', [PoSupplierController::class, 'destroy'])
     ->name('po-supplier.destroy');
+
 Route::get('po-supplier/{poSupplier}/print',
     [PoSupplierController::class, 'print']
 )->name('po-supplier.print');
 
 /* ================= DELIVERY ORDER ================= */
-// INDEX - Semua Delivery Order
 Route::get('delivery-orders', 
     [DeliveryOrderController::class, 'index']
 )->name('delivery-order.index');
 
-// Create tetap dari PO
+// create dari po masuk
 Route::get('po-masuk/{poMasuk}/delivery-orders/create', 
     [DeliveryOrderController::class, 'create']
 )->name('delivery-order.create');
 
-// Store
 Route::post('delivery-orders', 
     [DeliveryOrderController::class, 'store']
 )->name('delivery-order.store');
@@ -416,35 +404,28 @@ Route::get('delivery-orders/{deliveryOrder}',
     [DeliveryOrderController::class, 'show']
 )->name('delivery-order.show');
 
-// Edit
 Route::get('delivery-orders/{deliveryOrder}/edit', 
     [DeliveryOrderController::class, 'edit']
 )->name('delivery-order.edit');
 
-// Update
 Route::put('delivery-orders/{deliveryOrder}', 
     [DeliveryOrderController::class, 'update']
 )->name('delivery-order.update');
 
-// Delete
 Route::delete('delivery-orders/{deliveryOrder}', 
     [DeliveryOrderController::class, 'destroy']
 )->name('delivery-order.destroy');
 
-// Print
 Route::get('delivery-orders/{deliveryOrder}/print',
     [DeliveryOrderController::class, 'print']
 )->name('delivery-order.print');
 
-
-// PO Masuk Status
 Route::patch('po-masuk/{poMasuk}/approve', [PoMasukController::class,'approve'])
     ->name('po-masuk.approve');
 
 Route::patch('po-masuk/{poMasuk}/close', [PoMasukController::class,'close'])
     ->name('po-masuk.close');
 
-// Delivery Order Status
 Route::patch(
     'delivery-order/{deliveryOrder}/update-status',
     [DeliveryOrderController::class, 'updateStatus']
@@ -454,7 +435,9 @@ Route::patch('/po-supplier/{poSupplier}/update-status',
     [PoSupplierController::class, 'updateStatus']
 )->name('po-supplier.update-status');
 
-    Route::resource('pengeluaran-po', PengeluaranPoController::class);
+
+// Pengeluaran po
+Route::resource('pengeluaran-po', PengeluaranPoController::class);
     Route::get('pengeluaran-po/create/{poMasuk}', 
     [PengeluaranPoController::class,'create'])
     ->name('pengeluaran-po.create');
@@ -477,42 +460,34 @@ Route::delete('pengeluaran-po/destroy/{pengeluaranPo}',
 
 /* ================= INVOICE PO ================= */
 
-/* INDEX */
 Route::get('invoice-po', 
     [InvoicePoController::class,'index'])
     ->name('invoice-po.index');
 
-/* CREATE (by PO Masuk) */
 Route::get('invoice-po/create/{poMasuk}', 
     [InvoicePoController::class,'create'])
     ->name('invoice-po.create');
 
-/* STORE */
 Route::post('invoice-po/store', 
     [InvoicePoController::class,'store'])
     ->name('invoice-po.store');
 
-/* SHOW */
 Route::get('invoice-po/show/{invoicePo}', 
     [InvoicePoController::class,'show'])
     ->name('invoice-po.show');
 
-/* EDIT */
 Route::get('invoice-po/edit/{invoicePo}', 
     [InvoicePoController::class,'edit'])
     ->name('invoice-po.edit');
 
-/* UPDATE */
 Route::put('invoice-po/update/{invoicePo}', 
     [InvoicePoController::class,'update'])
     ->name('invoice-po.update');
 
-/* DELETE */
 Route::delete('invoice-po/destroy/{invoicePo}', 
     [InvoicePoController::class,'destroy'])
     ->name('invoice-po.destroy');
 
-/* PRINT */
 Route::get('invoice-po/print/{invoicePo}', 
     [InvoicePoController::class,'print'])
     ->name('invoice-po.print');
@@ -521,8 +496,7 @@ Route::patch('invoice-po/{invoicePo}/status',
     [InvoicePoController::class, 'updateStatus'])
     ->name('invoice-po.update-status');
 
-// TIMESHEET ROUTES
-
+// TIMESHEET 
 Route::get('timesheet/index',
     [App\Http\Controllers\AdminMarine\TimesheetController::class, 'index']
 )->name('timesheet.index');
@@ -556,7 +530,6 @@ Route::get('timesheet/{timesheet}/print',
 )->name('timesheet.print');
 
 /* ================= WORKING REPORT ================= */
-
 Route::get('working-report',
     [WorkingReportController::class, 'index']
 )->name('working-report.index');
@@ -589,13 +562,14 @@ Route::get('working-report/{workingReport}/print',
     [WorkingReportController::class, 'print']
 )->name('working-report.print');
 
+
+// SOA
 Route::get('soa', [App\Http\Controllers\AdminMarine\SoaController::class, 'index'])
     ->name('soa.index');
 
 Route::get('soa/create/{poMasukId?}',
     [SoaController::class, 'create']
 )->name('soa.create');
-
 
 Route::post('soa/store', [App\Http\Controllers\AdminMarine\SoaController::class, 'store'])
     ->name('soa.store');
@@ -615,8 +589,7 @@ Route::delete('soa/{soa}', [App\Http\Controllers\AdminMarine\SoaController::clas
 Route::get('soa/{soa}/print', [App\Http\Controllers\AdminMarine\SoaController::class, 'print'])
     ->name('soa.print');
 
-
-
+// income marine
 Route::resource(
     'pemasukan-marine',
     PemasukanMarineController::class

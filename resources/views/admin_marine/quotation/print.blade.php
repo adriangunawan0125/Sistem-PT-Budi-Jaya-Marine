@@ -152,9 +152,14 @@ In compliance with your inquiry, we are pleased to offer you this quotation as f
 
 @foreach($quotation->subItems as $sub)
 
+@php
+    $showSub = !empty(trim($sub->name)) && trim($sub->name) !== '-';
+@endphp
+
+@if($showSub)
 <tr class="sub-row">
     <td></td>
-    <td>{{ $sub->name }} ({{ strtoupper($sub->item_type) }})</td>
+    <td>{{ $sub->name }}</td>
     <td></td>
     <td></td>
 
@@ -169,6 +174,7 @@ In compliance with your inquiry, we are pleased to offer you this quotation as f
     <td></td>
     <td></td>
 </tr>
+@endif
 
 @foreach($sub->items as $item)
 <tr>
@@ -287,7 +293,7 @@ Best regards,<br>
 
 <br><br><br><br><br>
 
-Suartini T.
+Suhartini T.
 
 </body>
 </html>
