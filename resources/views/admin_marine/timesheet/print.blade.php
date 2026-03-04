@@ -55,6 +55,10 @@ table{
 .signature{
     margin-top:60px;
 }
+.time-nowrap{
+    white-space:nowrap;
+}
+
 </style>
 </head>
 
@@ -79,57 +83,61 @@ table{
     </table>
 </div>
 
-<h3 class="center" style="margin:10px 0;">TIME SHEET</h3>
-{{-- ================= HEADER INFO ================= --}}
-<table style="width:100%; margin-top:10px; margin-bottom:10px;">
+<h3 class="center" style="margin:10px 0; margin-bottom:15px;">TIME SHEET</h3>
+<table style="width:100%; margin-top:10px; margin-bottom:15px;">
 <tr>
 
-    {{-- LEFT BLOCK --}}
-    <td width="50%" valign="top">
-        <table style="width:100%;">
-            <tr>
-                <td width="130">Company Name</td>
-                <td width="10" class="center">:</td>
-                <td>{{ $timesheet->poMasuk->mitra_marine }}</td>
-            </tr>
-            <tr>
-                <td>Project</td>
-                <td class="center">:</td>
-                <td>{{ $timesheet->project }}</td>
-            </tr>
-            <tr>
-                <td>Vessel</td>
-                <td class="center">:</td>
-                <td>{{ $timesheet->poMasuk->vessel }}</td>
-            </tr>
-        </table>
-    </td>
+<td width="70%" valign="top">
 
-    {{-- RIGHT BLOCK --}}
-    <td width="50%" valign="top" style="padding-left:40px;">
-        <table style="width:100%;">
-            <tr>
-                <td width="110">Place</td>
-                <td width="10" class="center">:</td>
-                <td>{{ $timesheet->place ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td>PO No.</td>
-                <td class="center">:</td>
-                <td>{{ $timesheet->poMasuk->no_po_klien }}</td>
-            </tr>
-            <tr>
-                <td>Manpower</td>
-                <td class="center">:</td>
-                <td>{{ $timesheet->manpower }}</td>
-            </tr>
-        </table>
-    </td>
+<table>
+<tr>
+<td style="width:95px;">Company Name</td>
+<td style="width:6px;">:</td>
+<td>{{ $timesheet->poMasuk->mitra_marine }}</td>
+</tr>
 
+<tr>
+<td>Project</td>
+<td>:</td>
+<td>{{ $timesheet->project }}</td>
+</tr>
+
+<tr>
+<td>Vessel</td>
+<td>:</td>
+<td>{{ $timesheet->poMasuk->vessel }}</td>
 </tr>
 </table>
 
+</td>
 
+
+<td width="30%" valign="top">
+
+<table style="margin-left:auto;">
+<tr>
+<td style="width:75px;">Place</td>
+<td style="width:6px;">:</td>
+<td>{{ $timesheet->place ?? '-' }}</td>
+</tr>
+
+<tr>
+<td>PO No.</td>
+<td>:</td>
+<td>{{ $timesheet->poMasuk->no_po_klien }}</td>
+</tr>
+
+<tr>
+<td>Manpower</td>
+<td>:</td>
+<td>{{ $timesheet->manpower }}</td>
+</tr>
+</table>
+
+</td>
+
+</tr>
+</table>
 
 {{-- ================= TABLE ================= --}}
 <table class="item-table">
@@ -137,8 +145,8 @@ table{
 <tr>
     <th width="4%">No</th>
     <th width="10%">Date</th>
-    <th width="7%">Day</th>
-    <th width="12%">Time</th>
+    <th width="8%">Day</th>
+    <th width="14%">Time</th>
     <th width="7%">Hours</th>
     <th width="8%">Manpower</th>
     <th>Kind Of Work</th>
@@ -148,31 +156,35 @@ table{
 <tbody>
 @foreach($timesheet->items as $index => $item)
 <tr>
-    <td class="center">{{ $index+1 }}</td>
 
-    <td class="center">
-        {{ \Carbon\Carbon::parse($item->work_date)->format('n/j/Y') }}
-    </td>
+<td class="center">
+{{ $index+1 }}
+</td>
 
-    <td class="center">
-        {{ \Carbon\Carbon::parse($item->work_date)->format('l') }}
-    </td>
+<td class="center">
+{{ \Carbon\Carbon::parse($item->work_date)->format('n/j/Y') }}
+</td>
 
-    <td class="center">
-        {{ substr($item->time_start,0,5) }} - {{ substr($item->time_end,0,5) }}
-    </td>
+<td class="center">
+{{ \Carbon\Carbon::parse($item->work_date)->format('l') }}
+</td>
 
-    <td class="center">
-        {{ number_format($item->hours,2) }}
-    </td>
+<td class="center time-nowrap">
+{{ \Carbon\Carbon::parse($item->time_start)->format('H:i') }} - {{ \Carbon\Carbon::parse($item->time_end)->format('H:i') }}
+</td>
 
-    <td class="center">
-        {{ $item->manpower }}
-    </td>
+<td class="center">
+{{ rtrim(rtrim(number_format($item->hours,2,'.',''),'0'),'.') }}
+</td>
 
-    <td>
-        {!! nl2br(e(trim($item->kind_of_work))) !!}
-    </td>
+<td class="center">
+{{ $item->manpower }}
+</td>
+
+<td>
+{!! nl2br(e(trim($item->kind_of_work))) !!}
+</td>
+
 </tr>
 @endforeach
 </tbody>
