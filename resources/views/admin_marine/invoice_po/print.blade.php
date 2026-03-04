@@ -276,7 +276,7 @@ Payment Term : TT Payment
 <td width="60%"></td>
 <td width="40%" class="center">
     Bekasi, {{ $invoiceDate->format('d F Y') }}<br>
-
+<br><br><br><br><br><br><br><br>
    <!-- <img src="{{ public_path('assets/stamp.png') }}" width="120"><br> -->
     <strong>Nita Nilasari</strong><br>
     (Finance Manager)
