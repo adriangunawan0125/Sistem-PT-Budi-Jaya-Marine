@@ -181,7 +181,9 @@ Please receive the following undermentioned goods in good order and condition by
 <tr>
     <td class="center">{{ $index + 1 }}</td>
     <td>{{ $item->item }}</td>
-    <td class="center">{{ $item->qty }}</td>
+<td class="center">
+{{ rtrim(rtrim(number_format($item->qty,2,'.',''),'0'),'.') }}
+</td>
     <td class="center">{{ $item->unit }}</td>
 </tr>
 @endforeach
